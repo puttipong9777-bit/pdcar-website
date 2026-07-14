@@ -1,0 +1,96 @@
+import { createClient } from "@supabase/supabase-js";
+import type { PublicVehicleListing, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
+
+type PublicVehicleRow = Record<string, unknown>;
+
+function text(value: unknown) {
+  return value === null || value === undefined ? "" : String(value);
+}
+
+function optionalNumber(value: unknown) {
+  if (value === null || value === undefined || value === "") return undefined;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : undefined;
+}
+
+function photos(value: unknown): PublicVehiclePhoto[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const row = item as Record<string, unknown>;
+    const url = text(row.url);
+    if (!url) return [];
+    return [{
+      fileId: text(row.fileId),
+      url,
+      isPrimary: Boolean(row.isPrimary),
+      sortOrder: Number(row.sortOrder ?? 0)
+    }];
+  });
+}
+
+function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
+  const vehiclePhotos = photos(row.photos);
+  const brand = text(row.brand);
+  const model = text(row.model);
+  const carId = text(row.car_id);
+  return {
+    carId,
+    slug: text(row.website_slug) || carId.toLowerCase(),
+    status: row.status === "reserved" ? "reserved" : "available",
+    brand,
+    model,
+    variant: text(row.variant) || undefined,
+    year: Number(row.year ?? 0),
+    color: text(row.color) || undefined,
+    mileage: optionalNumber(row.mileage),
+    fuelType: text(row.fuel_type) || undefined,
+    transmission: text(row.transmission) || undefined,
+    conditionSummary: text(row.condition_summary) || undefined,
+    salePrice: optionalNumber(row.sale_price),
+    downPayment: optionalNumber(row.listing_down_payment),
+    financeAmount: optionalNumber(row.listing_finance_amount),
+    installment: optionalNumber(row.listing_installment),
+    monthlyPayment: optionalNumber(row.listing_monthly_payment),
+    title: text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" "),
+    description: text(row.public_description) || undefined,
+    featured: Boolean(row.website_featured),
+    coverImageUrl: text(row.cover_image_url) || vehiclePhotos[0]?.url,
+    photos: vehiclePhotos,
+    updatedAt: text(row.updated_at)
+  };
+}
+
+export async function getPublicVehicles(): Promise<VehicleDataResult> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    return {
+      vehicles: [],
+      source: "not_configured",
+      message: "โปรเจกต์พร้อมแล้ว เหลือเชื่อม Supabase Public View"
+    };
+  }
+
+  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const { data, error } = await supabase
+    .from("public_vehicle_listings")
+    .select("*")
+    .order("website_featured", { ascending: false })
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    return {
+      vehicles: [],
+      source: "view_not_ready",
+      message: "ยังไม่ได้เปิด Public View สำหรับเว็บไซต์"
+    };
+  }
+
+  return { vehicles: (data ?? []).map(mapVehicle), source: "supabase" };
+}
+
+export async function getPublicVehicle(identifier: string) {
+  const result = await getPublicVehicles();
+  return result.vehicles.find((vehicle) => vehicle.carId === identifier || vehicle.slug === identifier) ?? null;
+}
