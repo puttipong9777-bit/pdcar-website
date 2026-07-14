@@ -38,22 +38,19 @@ select
   inventory.website_title,
   inventory.website_slug,
   inventory.website_featured,
-  images.cover_image_url,
   coalesce(images.photos, '[]'::jsonb) as photos,
+  inventory.website_published_at,
   inventory.updated_at
 from public.inventory
 left join lateral (
   select
-    (array_agg(vehicle_files.public_url order by vehicle_files.is_primary desc, vehicle_files.sort_order, vehicle_files.created_at)
-      filter (where vehicle_files.public_url is not null))[1] as cover_image_url,
     jsonb_agg(
       jsonb_build_object(
         'fileId', vehicle_files.file_id,
-        'url', vehicle_files.public_url,
         'isPrimary', vehicle_files.is_primary,
         'sortOrder', vehicle_files.sort_order
       ) order by vehicle_files.is_primary desc, vehicle_files.sort_order, vehicle_files.created_at
-    ) filter (where vehicle_files.public_url is not null) as photos
+    ) as photos
   from public.vehicle_files
   where vehicle_files.car_id = inventory.car_id
     and vehicle_files.mime_type like 'image/%'

@@ -8,3 +8,5 @@
 - เปิด anon select เฉพาะ `public_vehicle_listings` ที่เลือก safe columns แล้ว
 - รูป Google Drive แบบ private ต้องผ่าน public media service หรือ mirror ไป public web bucket ก่อนแสดง
 - ห้ามใช้ URL ที่มี access token หรือ signed token ระยะสั้นเป็น URL ถาวรของรูป
+- รูปอ่านผ่าน ERP `GET /api/public/vehicle-images/{fileId}` ซึ่งตรวจรถที่เผยแพร่และสถานะทุกครั้งก่อนส่งไฟล์
+- Public View ส่งเฉพาะ File ID และไม่ส่ง Google Drive ID, storage path หรือ signed URL

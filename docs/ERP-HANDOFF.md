@@ -2,6 +2,14 @@
 
 เอกสารนี้ระบุข้อเท็จจริงที่เว็บไซต์รับต่อจาก ERP ณ commit `b099495`
 
+## Verified integration 2026-07-14
+
+- ERP publication controls are implemented on the inventory detail page.
+- `public.public_vehicle_listings` is installed in the shared Supabase project.
+- The view exposes photo file IDs but no storage path or signed URL.
+- Private images are read through `GET /api/public/vehicle-images/{fileId}`.
+- The website deployment remains separate from ERP while keeping the same Car ID.
+
 ## สิ่งที่ ERP มีแล้ว
 
 ### Inventory

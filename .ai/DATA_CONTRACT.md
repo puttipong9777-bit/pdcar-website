@@ -14,7 +14,8 @@
 - `listing_installment`, `listing_monthly_payment`
 - `public_description`
 - `website_title`, `website_slug`, `website_featured`
-- `cover_image_url`, `photos`
+- `photos` ซึ่งมีเฉพาะ `fileId`, `isPrimary`, `sortOrder`
+- `website_published_at`, `updated_at`
 - `updated_at`
 
 ## ฟิลด์ที่ห้ามเผยแพร่
@@ -30,7 +31,7 @@
 `photos` เป็น JSON array:
 
 ```json
-[{ "fileId": "FILE-...", "url": "https://...", "isPrimary": true, "sortOrder": 1 }]
+[{ "fileId": "FILE-...", "isPrimary": true, "sortOrder": 1 }]
 ```
 
-เว็บไซต์ไม่ควรเดาโฟลเดอร์ Google Drive เอง ต้องใช้ URL ที่ Public View หรือ public media service ส่งให้เท่านั้น
+เว็บไซต์ไม่เดาโฟลเดอร์ Google Drive และไม่รับ storage path โดยตรง แต่สร้าง URL รูปจาก `NEXT_PUBLIC_ERP_URL` และ `fileId` ผ่าน public media service ของ ERP

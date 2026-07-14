@@ -15,14 +15,15 @@ function optionalNumber(value: unknown) {
 
 function photos(value: unknown): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
+  const erpUrl = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
-    const url = text(row.url);
-    if (!url) return [];
+    const fileId = text(row.fileId);
+    if (!fileId) return [];
     return [{
-      fileId: text(row.fileId),
-      url,
+      fileId,
+      url: `${erpUrl}/api/public/vehicle-images/${encodeURIComponent(fileId)}`,
       isPrimary: Boolean(row.isPrimary),
       sortOrder: Number(row.sortOrder ?? 0)
     }];
@@ -55,7 +56,7 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
     title: text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" "),
     description: text(row.public_description) || undefined,
     featured: Boolean(row.website_featured),
-    coverImageUrl: text(row.cover_image_url) || vehiclePhotos[0]?.url,
+    coverImageUrl: vehiclePhotos[0]?.url,
     photos: vehiclePhotos,
     updatedAt: text(row.updated_at)
   };
@@ -83,7 +84,7 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     return {
       vehicles: [],
       source: "view_not_ready",
-      message: "ยังไม่ได้เปิด Public View สำหรับเว็บไซต์"
+      message: "ไม่สามารถเชื่อมต่อข้อมูลรถได้ชั่วคราว กรุณาลองใหม่อีกครั้ง"
     };
   }
 

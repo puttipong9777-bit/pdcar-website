@@ -1,13 +1,20 @@
 # Next Steps
 
-## Phase 1: Data boundary
+## Verified 2026-07-14
+
+- Public Data View ถูกใช้จริงใน Supabase production และ anon read ตอบ HTTP 200
+- ERP มีตัวควบคุม publish/unpublish, title, slug และ featured ในหน้ารายละเอียดรถ
+- รูป private จาก Google Drive หรือ Supabase Storage ส่งผ่าน ERP public image API
+- เว็บไซต์อ่านข้อมูลรถจาก Supabase โดยไม่คัดลอกฐานข้อมูลชุดใหม่
+
+## Phase 1: Data boundary (completed)
 
 - ตรวจ SQL migration กับ schema production
 - เพิ่มตัวควบคุมเผยแพร่ใน ERP
 - เลือกวิธีส่งรูปสาธารณะ: Supabase web bucket หรือ public media proxy
 - รัน migration หลังอนุมัติ
 
-## Phase 2: Website MVP
+## Phase 2: Website MVP (in progress)
 
 - เชื่อม Environment Variables
 - ตรวจรถพร้อมขายและติดจองจากข้อมูลจริง
