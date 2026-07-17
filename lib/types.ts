@@ -29,6 +29,9 @@ export type PublicVehicleListing = {
   description?: string;
   featured: boolean;
   coverImageUrl?: string;
+  youtubeVideoId?: string;
+  youtubeVideoUrl?: string;
+  videoCaption?: string;
   photos: PublicVehiclePhoto[];
   updatedAt: string;
 };

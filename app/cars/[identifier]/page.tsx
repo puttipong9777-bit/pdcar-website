@@ -25,6 +25,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
       <Link className="back-link" href="/#inventory"><ArrowLeft size={18} />กลับไปดูรถทั้งหมด</Link>
       <div className="detail-layout">
         <section className="gallery">
+          {vehicle.youtubeVideoId ? <div className="vehicle-video"><iframe src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(vehicle.youtubeVideoId)}?playsinline=1&rel=0`} title={`วิดีโอ ${vehicle.title}`} loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div> : null}
           {gallery.length ? gallery.map((photo) => <div className="gallery-image" key={photo.fileId}><Image src={photo.url} alt={vehicle.title} fill sizes="(max-width: 900px) 100vw, 60vw" /></div>) : <div className="gallery-empty">กำลังเพิ่มรูปรถ</div>}
         </section>
         <aside className="vehicle-summary">

@@ -15,8 +15,8 @@
 - `public_description`
 - `website_title`, `website_slug`, `website_featured`
 - `photos` ซึ่งมีเฉพาะ `fileId`, `isPrimary`, `sortOrder`
+- `vertical_video` ซึ่งมีเฉพาะ `youtubeVideoId`, `youtubeUrl`, `title`, `caption`, `publishedAt`
 - `website_published_at`, `updated_at`
-- `updated_at`
 
 ## ฟิลด์ที่ห้ามเผยแพร่
 

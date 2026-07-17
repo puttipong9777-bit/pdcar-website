@@ -30,8 +30,19 @@ function photos(value: unknown): PublicVehiclePhoto[] {
   });
 }
 
+function verticalVideo(value: unknown) {
+  if (!value || typeof value !== "object") return {};
+  const row = value as Record<string, unknown>;
+  return {
+    youtubeVideoId: text(row.youtubeVideoId) || undefined,
+    youtubeVideoUrl: text(row.youtubeUrl) || undefined,
+    videoCaption: text(row.caption) || undefined
+  };
+}
+
 function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
   const vehiclePhotos = photos(row.photos);
+  const video = verticalVideo(row.vertical_video);
   const brand = text(row.brand);
   const model = text(row.model);
   const carId = text(row.car_id);
@@ -57,6 +68,7 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
     description: text(row.public_description) || undefined,
     featured: Boolean(row.website_featured),
     coverImageUrl: vehiclePhotos[0]?.url,
+    ...video,
     photos: vehiclePhotos,
     updatedAt: text(row.updated_at)
   };
