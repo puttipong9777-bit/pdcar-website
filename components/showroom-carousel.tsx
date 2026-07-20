@@ -105,7 +105,7 @@ export function ShowroomCarousel({ vehicles }: { vehicles: PublicVehicleListing[
           vehicles.map((vehicle, index) => {
             const offset = circularOffset(index, activeIndex, vehicles.length);
             const distance = Math.abs(offset);
-            const isVisible = distance <= 2;
+            const isVisible = distance <= 3;
             const position = offset === 0
               ? "center"
               : offset === -1
@@ -114,7 +114,11 @@ export function ShowroomCarousel({ vehicles }: { vehicles: PublicVehicleListing[
                   ? "right-one"
                   : offset === -2
                     ? "left-two"
-                    : "right-two";
+                    : offset === 2
+                      ? "right-two"
+                      : offset < 0
+                        ? "left-three"
+                        : "right-three";
             const style = {
               "--carousel-drag": `${dragX}px`
             } as CSSProperties;
