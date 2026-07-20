@@ -14,6 +14,16 @@ const price = new Intl.NumberFormat("th-TH", {
 
 const number = new Intl.NumberFormat("th-TH");
 
+const showroomImages: Record<string, string> = {
+  PD0001: "/images/showroom/pd0001.png",
+  PD0002: "/images/showroom/pd0002.png",
+  PD0003: "/images/showroom/pd0003.png",
+  PD0004: "/images/showroom/pd0004.png",
+  PD0006: "/images/showroom/pd0006.png",
+  PD0007: "/images/showroom/pd0007.png",
+  PD0008: "/images/showroom/pd0008.png"
+};
+
 function circularOffset(index: number, activeIndex: number, length: number) {
   let offset = index - activeIndex;
   if (offset > length / 2) offset -= length;
@@ -122,6 +132,8 @@ export function ShowroomCarousel({ vehicles }: { vehicles: PublicVehicleListing[
             const style = {
               "--carousel-drag": `${dragX}px`
             } as CSSProperties;
+            const showroomImage = showroomImages[vehicle.carId.toUpperCase()];
+            const imageUrl = showroomImage || vehicle.coverImageUrl;
 
             return (
               <button
@@ -134,10 +146,10 @@ export function ShowroomCarousel({ vehicles }: { vehicles: PublicVehicleListing[
                 aria-current={index === activeIndex ? "true" : undefined}
                 tabIndex={isVisible ? 0 : -1}
               >
-                <span className="showroom-car-media">
-                  {vehicle.coverImageUrl ? (
+                <span className={`showroom-car-media${showroomImage ? " is-cutout" : ""}`}>
+                  {imageUrl ? (
                     <Image
-                      src={vehicle.coverImageUrl}
+                      src={imageUrl}
                       alt=""
                       fill
                       priority={index === 0}
