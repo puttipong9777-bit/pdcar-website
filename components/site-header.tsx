@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 const navigation = [
-  ["โชว์รูม", "/#showroom"],
+  ["หน้าแรก", "/#showroom"],
   ["รถในร้าน", "/#inventory"],
   ["วิดีโอ", "/#videos"],
   ["บทความ", "/#articles"],

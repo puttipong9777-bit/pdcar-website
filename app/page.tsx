@@ -13,7 +13,6 @@ import {
   Sparkles,
   WalletCards
 } from "lucide-react";
-import { ShowroomCarousel } from "@/components/showroom-carousel";
 import { VehicleBrowser } from "@/components/vehicle-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import { getPublicVehicles } from "@/lib/vehicle-data";
@@ -30,23 +29,22 @@ export default async function HomePage() {
       <section className="premium-hero" id="showroom">
         <div className="hero-glow glow-one" aria-hidden="true" />
         <div className="hero-glow glow-two" aria-hidden="true" />
-        <div className="premium-hero-grid">
+        <div className="premium-hero-content">
           <div className="premium-hero-copy">
             <p className="hero-kicker"><span />PD CAR CENTER · NAKHON PATHOM</p>
             <h1>เลือกรถที่ใช่<br /><em>ขับมั่นใจ</em> ทุกเส้นทาง</h1>
-            <p className="hero-lead">สำรวจรถมือสองคัดคุณภาพจากหน้าร้านจริง ปัดเพื่อเลือกรถ ดูราคา และรายละเอียดได้อย่างลื่นไหลบนทุกหน้าจอ</p>
+            <p className="hero-lead">สำรวจรถมือสองคัดคุณภาพจากหน้าร้านจริง เลือกจากรายการด้านล่าง ดูราคา รายละเอียด และติดต่อร้านได้ง่ายในหน้าเดียว</p>
             <div className="hero-actions">
               <a className="primary-action gold" href="#inventory">ดูรถทั้งหมด <ArrowDown size={18} /></a>
               <a className="text-action" href={`tel:${phone}`}><Phone size={18} />ปรึกษาเรื่องรถ</a>
             </div>
           </div>
-          <ShowroomCarousel vehicles={result.vehicles} />
         </div>
 
         <div className="hero-proof" aria-label="จุดเด่นของเว็บไซต์">
           <div><BadgeCheck /><p><strong>รถคัดคุณภาพ</strong><span>ข้อมูลจากสต็อกจริง</span></p></div>
           <div><Clock3 /><p><strong>อัปเดตตลอด</strong><span>พร้อมขายและติดจอง</span></p></div>
-          <div><Smartphone /><p><strong>ดูได้ทุกหน้าจอ</strong><span>ปัดเลือกได้ด้วยนิ้ว</span></p></div>
+          <div><Smartphone /><p><strong>ดูได้ทุกหน้าจอ</strong><span>ค้นหาและกรองได้ง่าย</span></p></div>
           <div><WalletCards /><p><strong>ช่วยจัดไฟแนนซ์</strong><span>ปรึกษาได้กับทางร้าน</span></p></div>
         </div>
       </section>
