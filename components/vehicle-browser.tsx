@@ -12,14 +12,20 @@ const number = new Intl.NumberFormat("th-TH");
 export function VehicleBrowser({ vehicles }: { vehicles: PublicVehicleListing[] }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | PublicVehicleStatus>("all");
+  const [brand, setBrand] = useState("all");
+  const [year, setYear] = useState("all");
+  const brands = useMemo(() => Array.from(new Set(vehicles.map((vehicle) => vehicle.brand).filter(Boolean))).sort(), [vehicles]);
+  const years = useMemo(() => Array.from(new Set(vehicles.map((vehicle) => vehicle.year))).sort((a, b) => b - a), [vehicles]);
   const filtered = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase("th-TH");
     return vehicles.filter((vehicle) => {
       const matchesStatus = status === "all" || vehicle.status === status;
+      const matchesBrand = brand === "all" || vehicle.brand === brand;
+      const matchesYear = year === "all" || String(vehicle.year) === year;
       const haystack = [vehicle.carId, vehicle.brand, vehicle.model, vehicle.variant, vehicle.year].filter(Boolean).join(" ").toLocaleLowerCase("th-TH");
-      return matchesStatus && (!needle || haystack.includes(needle));
+      return matchesStatus && matchesBrand && matchesYear && (!needle || haystack.includes(needle));
     });
-  }, [query, status, vehicles]);
+  }, [brand, query, status, vehicles, year]);
 
   return (
     <div>
@@ -28,6 +34,20 @@ export function VehicleBrowser({ vehicles }: { vehicles: PublicVehicleListing[] 
           <Search aria-hidden="true" size={20} />
           <span className="sr-only">ค้นหารถ</span>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ค้นหายี่ห้อ รุ่น ปี หรือ Car ID" />
+        </label>
+        <label className="filter-field">
+          <span>ยี่ห้อ</span>
+          <select value={brand} onChange={(event) => setBrand(event.target.value)}>
+            <option value="all">ทุกยี่ห้อ</option>
+            {brands.map((item) => <option value={item} key={item}>{item}</option>)}
+          </select>
+        </label>
+        <label className="filter-field">
+          <span>ปีรถ</span>
+          <select value={year} onChange={(event) => setYear(event.target.value)}>
+            <option value="all">ทุกปี</option>
+            {years.map((item) => <option value={item} key={item}>{item}</option>)}
+          </select>
         </label>
         <div className="segments" aria-label="กรองสถานะรถ">
           {([['all', 'ทั้งหมด'], ['available', 'พร้อมขาย'], ['reserved', 'ติดจอง']] as const).map(([value, label]) => (

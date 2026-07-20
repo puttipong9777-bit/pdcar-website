@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Phone, X } from "lucide-react";
+import { Menu, MessageCircle, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -10,11 +10,13 @@ const navigation = [
   ["รถในร้าน", "/#inventory"],
   ["วิดีโอ", "/#videos"],
   ["บทความ", "/#articles"],
+  ["เกี่ยวกับเรา", "/#about"],
   ["ติดต่อ", "/#contact"]
 ] as const;
 
 export function SiteHeader() {
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
+  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -27,10 +29,12 @@ export function SiteHeader() {
       <nav className="desktop-nav" aria-label="เมนูหลัก">
         {navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
         <a className="call-button" href={`tel:${phone}`}><Phone size={17} />{phone}</a>
+        {lineUrl ? <a className="header-line-button" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} />แชทไลน์</a> : null}
       </nav>
 
       <div className="mobile-header-actions">
         <a className="mobile-call" href={`tel:${phone}`} aria-label={`โทร ${phone}`}><Phone size={19} /></a>
+        {lineUrl ? <a className="mobile-line" href={lineUrl} target="_blank" rel="noreferrer" aria-label="คุยกับร้านทาง LINE"><MessageCircle size={19} /></a> : null}
         <button
           className="menu-toggle"
           type="button"

@@ -3,9 +3,11 @@ import {
   ArrowRight,
   BadgeCheck,
   Calculator,
+  CarFront,
   CheckCircle2,
   Clock3,
   FileCheck2,
+  Headphones,
   MapPin,
   Phone,
   ShieldCheck,
@@ -13,6 +15,7 @@ import {
   Sparkles,
   WalletCards
 } from "lucide-react";
+import Image from "next/image";
 import { VehicleBrowser } from "@/components/vehicle-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import { getPublicVehicles } from "@/lib/vehicle-data";
@@ -26,49 +29,68 @@ export default async function HomePage() {
 
   return (
     <main>
-      <section className="premium-hero" id="showroom">
-        <div className="hero-glow glow-one" aria-hidden="true" />
-        <div className="hero-glow glow-two" aria-hidden="true" />
-        <div className="premium-hero-content">
-          <div className="premium-hero-copy">
-            <p className="hero-kicker"><span />PD CAR CENTER · NAKHON PATHOM</p>
-            <h1>เลือกรถที่ใช่<br /><em>ขับมั่นใจ</em> ทุกเส้นทาง</h1>
-            <p className="hero-lead">สำรวจรถมือสองคัดคุณภาพจากหน้าร้านจริง เลือกจากรายการด้านล่าง ดูราคา รายละเอียด และติดต่อร้านได้ง่ายในหน้าเดียว</p>
-            <div className="hero-actions">
-              <a className="primary-action gold" href="#inventory">ดูรถทั้งหมด <ArrowDown size={18} /></a>
-              <a className="text-action" href={`tel:${phone}`}><Phone size={18} />ปรึกษาเรื่องรถ</a>
-            </div>
+      <section className="dealership-hero" id="showroom">
+        <Image className="dealership-hero-image" src="/images/storefront.jpg" alt="หน้าร้าน PD Car Center นครปฐม" fill priority sizes="100vw" />
+        <div className="dealership-hero-shade" aria-hidden="true" />
+        <div className="dealership-hero-inner">
+          <p className="hero-kicker"><span />PD CAR CENTER · NAKHON PATHOM</p>
+          <h1>รถสวย คุณภาพดี<br /><em>คัดพิเศษทุกคัน</em></h1>
+          <p className="hero-lead">เลือกรถมือสองจากสต็อกหน้าร้านจริง ดูราคาและรายละเอียดได้ชัดเจน พร้อมปรึกษาเรื่องรถและไฟแนนซ์กับทางร้านโดยตรง</p>
+          <div className="hero-actions">
+            <a className="primary-action" href="#inventory">ค้นหารถที่ใช่ <ArrowDown size={18} /></a>
+            <a className="outline-action" href={`tel:${phone}`}><Phone size={18} />โทรปรึกษาฟรี</a>
+          </div>
+          <div className="hero-assurances" aria-label="จุดเด่นของร้าน">
+            <div><BadgeCheck /><p><strong>รถคัดคุณภาพ</strong><span>ข้อมูลจากสต็อกจริง</span></p></div>
+            <div><ShieldCheck /><p><strong>ข้อมูลชัดเจน</strong><span>ดูราคาและรายละเอียดได้ทันที</span></p></div>
+            <div><Headphones /><p><strong>ดูแลทุกขั้นตอน</strong><span>ตั้งแต่เลือกรถจนถึงวันรับรถ</span></p></div>
           </div>
         </div>
+      </section>
 
-        <div className="hero-proof" aria-label="จุดเด่นของเว็บไซต์">
-          <div><BadgeCheck /><p><strong>รถคัดคุณภาพ</strong><span>ข้อมูลจากสต็อกจริง</span></p></div>
-          <div><Clock3 /><p><strong>อัปเดตตลอด</strong><span>พร้อมขายและติดจอง</span></p></div>
-          <div><Smartphone /><p><strong>ดูได้ทุกหน้าจอ</strong><span>ค้นหาและกรองได้ง่าย</span></p></div>
-          <div><WalletCards /><p><strong>ช่วยจัดไฟแนนซ์</strong><span>ปรึกษาได้กับทางร้าน</span></p></div>
-        </div>
+      <section className="stock-highlights" aria-label="ข้อมูลเด่นของ PD Car Center">
+        <div><CarFront /><p><strong>{result.vehicles.length}</strong><span>คันพร้อมเลือกบนเว็บไซต์</span></p></div>
+        <div><Clock3 /><p><strong>อัปเดตจริง</strong><span>สถานะพร้อมขายและติดจอง</span></p></div>
+        <div><Smartphone /><p><strong>ดูง่ายทุกจอ</strong><span>คอมพิวเตอร์ ไอแพด และมือถือ</span></p></div>
+        <div><WalletCards /><p><strong>ช่วยจัดไฟแนนซ์</strong><span>สอบถามแผนที่เหมาะกับคุณ</span></p></div>
       </section>
 
       <section className="inventory-section" id="inventory">
         <div className="section-heading wide-heading">
           <div>
-            <p className="eyebrow gold-text">ONLINE INVENTORY</p>
-            <h2>รถพร้อมให้คุณเลือก</h2>
-            <p>ค้นหาและเปรียบเทียบรถจากสต็อกหน้าร้านได้ในที่เดียว</p>
+            <p className="eyebrow">SELECTED CARS</p>
+            <h2>รถสวยแนะนำจากหน้าร้าน</h2>
+            <p>ค้นหาตามยี่ห้อ ปี และสถานะ แล้วกดดูภาพและรายละเอียดของรถแต่ละคันได้เลย</p>
           </div>
-          <span>{result.vehicles.length} คันในโชว์รูม</span>
+          <span>{result.vehicles.length} คันในเว็บไซต์</span>
         </div>
         {result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
         <VehicleBrowser vehicles={result.vehicles} />
       </section>
 
+      <section className="about-showcase" id="about">
+        <div className="about-showcase-image">
+          <Image src="/images/storefront.jpg" alt="รถภายในร้าน PD Car Center" fill sizes="(max-width: 820px) 100vw, 52vw" />
+        </div>
+        <div className="about-showcase-copy">
+          <p className="eyebrow light">WELCOME TO PD CAR CENTER</p>
+          <h2>ยินดีต้อนรับสู่<br /><em>PD Car Center</em></h2>
+          <p>เราอยากให้การเลือกรถมือสองเป็นเรื่องง่าย คุณจึงดูสต็อก ราคา ภาพจริง และข้อมูลสำคัญได้ก่อนเดินทางมาที่ร้าน แล้วค่อยนัดชมรถคันที่สนใจแบบสบายใจ</p>
+          <div className="about-points">
+            <span><CheckCircle2 />เลือกรถจากหน้าร้านจริง</span>
+            <span><CheckCircle2 />สอบถามรายละเอียดกับผู้ดูแลโดยตรง</span>
+          </div>
+          <a className="secondary-action" href="#contact">ดูข้อมูลติดต่อ <ArrowRight size={17} /></a>
+        </div>
+      </section>
+
       <section className="stories-section" id="videos">
         <div className="stories-heading">
           <div>
-            <p className="eyebrow gold-text">VERTICAL CAR STORIES</p>
-            <h2>ดูรถจริงให้ใกล้ขึ้น<br />ผ่านคลิปแนวตั้ง</h2>
+            <p className="eyebrow light">VERTICAL CAR VIDEOS · 9:16</p>
+            <h2>ชมรถจริงให้ใกล้ขึ้น<br />ผ่านวิดีโอแนวตั้ง</h2>
           </div>
-          <p>คลิปของรถแต่ละคันจะเรียงตามสต็อกหน้าร้าน ปัดซ้าย–ขวาเพื่อชมต่อได้เหมือนดูวิดีโอบนโทรศัพท์</p>
+          <p>วิดีโอของรถแต่ละคันแสดงในสัดส่วน 9:16 เหมาะกับการรับชมบนโทรศัพท์ และเลื่อนชมคันถัดไปได้อย่างเป็นธรรมชาติ</p>
         </div>
         <VehicleStories vehicles={result.vehicles} />
       </section>
@@ -76,10 +98,10 @@ export default async function HomePage() {
       <section className="knowledge-section" id="articles">
         <div className="section-heading knowledge-heading">
           <div>
-            <p className="eyebrow gold-text">PDCAR KNOWLEDGE</p>
-            <h2>รู้ก่อนซื้อ เลือกได้มั่นใจกว่า</h2>
+            <p className="eyebrow">PDCAR KNOWLEDGE</p>
+            <h2>บทความน่ารู้ก่อนซื้อรถ</h2>
           </div>
-          <p>บทความสั้น อ่านง่าย และนำไปใช้ตัดสินใจเลือกรถได้จริง</p>
+          <p>คำแนะนำสั้น กระชับ และนำไปใช้ตัดสินใจเลือกรถได้จริง</p>
         </div>
 
         <div className="article-grid">
@@ -132,31 +154,47 @@ export default async function HomePage() {
 
       <section className="confidence-section">
         <div className="confidence-copy">
-          <p className="eyebrow gold-text">WHY PD CAR CENTER</p>
-          <h2>ดูรถง่าย<br />คุยกับร้านได้ตรง ๆ</h2>
-          <p>เว็บไซต์ออกแบบมาให้คุณเริ่มต้นค้นหารถได้สะดวก ก่อนนัดเข้ามาดูรถจริงที่ร้านนครปฐม</p>
+          <p className="eyebrow">WHY PD CAR CENTER</p>
+          <h2>เลือกรถง่าย<br />คุยกับร้านได้ตรง ๆ</h2>
+          <p>เว็บไซต์นี้ช่วยให้คุณเตรียมข้อมูลให้พร้อม ก่อนนัดเข้ามาดูและทดลองขับรถจริงที่ร้านนครปฐม</p>
         </div>
         <div className="confidence-list">
           <div><CheckCircle2 /><p><strong>ข้อมูลตรงกับหน้าร้าน</strong><span>แสดงเฉพาะรถที่ร้านอนุญาตให้เผยแพร่</span></p></div>
           <div><CheckCircle2 /><p><strong>ราคาและค่างวดอ่านง่าย</strong><span>ดูข้อมูลสำคัญก่อนติดต่อสอบถามเพิ่มเติม</span></p></div>
-          <div><CheckCircle2 /><p><strong>ติดต่อคนดูแลได้ทันที</strong><span>โทรหรือคุยผ่าน LINE เพื่อขอนัดดูรถ</span></p></div>
+          <div><CheckCircle2 /><p><strong>ติดต่อผู้ดูแลได้ทันที</strong><span>โทรหรือคุยผ่าน LINE เพื่อนัดดูรถ</span></p></div>
+          <div><CheckCircle2 /><p><strong>ใช้งานได้ทุกอุปกรณ์</strong><span>จัดวางเหมาะกับคอมพิวเตอร์ ไอแพด และโทรศัพท์</span></p></div>
         </div>
       </section>
 
       <section className="contact-band" id="contact">
-        <div className="contact-location">
-          <MapPin size={26} />
-          <p><strong>PD Car Center</strong><span>23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</span></p>
-        </div>
-        <div className="contact-actions">
-          {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer">คุยกับเราทาง LINE <ArrowRight size={18} /></a> : null}
-          <a className="phone-action" href={`tel:${phone}`}><Phone size={19} />{phone}</a>
+        <Image src="/images/storefront.jpg" alt="" fill sizes="100vw" aria-hidden="true" />
+        <div className="contact-band-shade" aria-hidden="true" />
+        <div className="contact-band-copy">
+          <p>สนใจรถสวย คุยง่าย ออกรถได้จริง</p>
+          <h2>ปรึกษาฟรี ไม่มีค่าใช้จ่าย</h2>
+          <div className="contact-actions">
+            <a className="phone-action" href={`tel:${phone}`}><Phone size={19} />{phone}</a>
+            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer">คุยกับเราทาง LINE <ArrowRight size={18} /></a> : null}
+          </div>
         </div>
       </section>
 
       <footer className="site-footer">
-        <div><Sparkles size={18} /><strong>PD Car Center</strong></div>
-        <p>รถมือสองคัดคุณภาพ นครปฐม</p>
+        <div className="footer-brand">
+          <div><Sparkles size={18} /><strong>PD Car Center</strong></div>
+          <p>รถมือสองคัดคุณภาพ ดูข้อมูลง่าย และติดต่อร้านได้โดยตรง</p>
+        </div>
+        <div className="footer-links">
+          <strong>เมนูหลัก</strong>
+          <a href="#inventory">รถในร้าน</a>
+          <a href="#videos">วิดีโอ 9:16</a>
+          <a href="#articles">บทความ</a>
+        </div>
+        <div className="footer-contact">
+          <strong>ติดต่อเรา</strong>
+          <a href={`tel:${phone}`}><Phone size={16} />{phone}</a>
+          <p><MapPin size={16} />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</p>
+        </div>
       </footer>
     </main>
   );
