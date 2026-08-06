@@ -5,6 +5,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublicVehicle } from "@/lib/vehicle-data";
 
+export const dynamic = "force-dynamic";
+
 const price = new Intl.NumberFormat("th-TH", { style: "currency", currency: "THB", maximumFractionDigits: 0 });
 const number = new Intl.NumberFormat("th-TH");
 

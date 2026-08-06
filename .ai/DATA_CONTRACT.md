@@ -18,6 +18,14 @@
 - `vertical_video` ซึ่งมีเฉพาะ `youtubeVideoId`, `youtubeUrl`, `title`, `caption`, `publishedAt`
 - `website_published_at`, `updated_at`
 
+## YouTube video reference
+
+`vertical_video` may originate from the existing ERP vertical-video publication
+job or from a manually posted YouTube clip synchronized by Make. Both sources are
+resolved by the ERP public view using the same Car ID; the website receives only
+the newest public YouTube reference and never receives a Drive URL or webhook
+secret.
+
 ## ฟิลด์ที่ห้ามเผยแพร่
 
 - ราคาซื้อ ต้นทุน ค่าใช้จ่าย กำไร และค่าคอมมิชชัน
