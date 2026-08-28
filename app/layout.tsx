@@ -4,8 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pdcar-website.vercel.app"),
-  verification: {
-    facebook: "1h2omtxmsu0vgdm1ustg0x9zokcgl9",
+  other: {
+    "facebook-domain-verification": "1h2omtxmsu0vgdm1ustg0x9zokcgl9",
   },
   title: {
     default: "PD Car Center | รถมือสองนครปฐม",
