@@ -50,3 +50,11 @@ Replaced SDK select(*) with explicit contract columns, GET-only PostgREST reques
 PASS: eight automated built-handler tests: allowed columns/GET/key non-disclosure, service-role refusal, new slug/ID/price/reserved/unpublish on next request, sold exclusion, server social metadata/photo order/video/JSON escaping, sitemap/robots/preview-noindex/HEAD/method handling, missing-config 503, pagination. These use mock fixtures only, not production writes or claims about production permissions. Lint/typecheck/build PASS.
 
 BLOCKED: actual production URL/anon key/LINE value absent; live connection and anonymous access restrictions NOT TESTED. Need owner-approved existing public values supplied through secure Cloudflare configuration; never through commits or report. Zero-row/schema-only permission checks may establish denial but a 200 with zero rows does NOT prove sensitive rows inaccessible under RLS. Existing SQL is not proof of current deployed permissions. No private table data fetched.
+
+## Phase 4 — image delivery
+
+Pages aliases next/image to native img: eager/high-priority shop hero/logo, lazy/async other images, existing fill positioning/sizes/width/height and unchanged CSS aspect ratios. All public car images keep the ERP file-ID endpoint and source order. Also disabled Next image optimization in retained Next configuration, ensuring fallback builds do not generate /_next/image either.
+
+PASS (automated fixture): initial HTML has direct ERP-origin image src, lazy loading, correct cover before gallery side image, video embed, no /_next/image. Real cover/gallery image bytes remain BLOCKED (no public file ID and outbound origin access denied). Do not interpret fixture images as live availability.
+
+Bandwidth: browser downloads original ERP image bytes; no Cloudflare paid resizing enabled. Static shop images use Pages CDN. ERP image requests and Google Drive/storage retrieval remain on Vercel and may increase original-byte transfer compared with optimized thumbnails. No new image cache/mirror introduced because it could continue exposing unpublished car media. A future thumbnail service must honor ERP publication checks and is outside this migration; no private documents/files copied. An unavailable/paused ERP still prevents live photos.
