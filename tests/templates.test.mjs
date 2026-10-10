@@ -14,7 +14,7 @@ async function compare(rows, settings = env) {
     return Response.json(rows.slice(offset, offset + 100));
   };
   try {
-    const response = await handleRequest(new Request("https://www.pdcarcenter.com/"), settings);
+    const response = await handleRequest(new Request("https://preview.pages.dev/"), settings);
     const html = await response.text();
     const data = JSON.parse(html.match(/<script id="page-data" type="application\/json">(.*?)<\/script>/s)[1]);
     const markup = html.slice(html.indexOf('<div id="app">') + 14, html.indexOf('</div><script id="page-data"'));

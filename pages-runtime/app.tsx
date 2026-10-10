@@ -15,9 +15,9 @@ export type PageData = {
   articles?: PublishedArticle[]; article?: PublishedArticle; page?: number;
   phone: string; lineUrl?: string; tracking?: boolean;
 };
-export type HomeSlots = {count: ReactNode; inventory: ReactNode; stories: ReactNode};
+export type HomeSlots = {count: ReactNode; inventory: ReactNode; stories: ReactNode; business?: ReactNode};
 export function App({data, homeSlots}: {data: PageData; homeSlots?: HomeSlots}) {
-  return <><BusinessJsonLd phone={data.phone}/><SiteHeader phone={data.phone} lineUrl={data.lineUrl}/>
+  return <>{homeSlots?.business ?? <BusinessJsonLd phone={data.phone}/>}<SiteHeader phone={data.phone} lineUrl={data.lineUrl}/>
     {data.kind === "home" ? <HomeContent result={data.result} phone={data.phone} lineUrl={data.lineUrl} slots={homeSlots}/> :
     data.kind === "vehicle" && data.vehicle ? <VehicleContent vehicle={data.vehicle} phone={data.phone} lineUrl={data.lineUrl} tracking={data.tracking}/> :
     data.kind === "sell-car" ? <SellCarContent phone={data.phone} lineUrl={data.lineUrl}/> :

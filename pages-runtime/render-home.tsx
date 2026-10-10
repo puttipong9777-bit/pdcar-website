@@ -1,3 +1,4 @@
+import {BusinessJsonLd} from "./business";
 import {renderToString} from "react-dom/server.browser";
 import {CatalogBrowser} from "@/components/catalog-browser";
 import {VehicleStories} from "@/components/vehicle-stories";
@@ -9,10 +10,10 @@ function url(value:string) {
 }
 export function renderHome(data:PageData) {
   const values:Record<string,string> = {
-    COUNT:String(data.result.vehicles.length),PHONE:escape(data.phone),LINE:url(data.lineUrl || ""),
+    BUSINESS:renderToString(<BusinessJsonLd phone={data.phone}/>),COUNT:String(data.result.vehicles.length),PHONE:escape(data.phone),LINE:url(data.lineUrl || ""),
     INVENTORY:renderToString(<CatalogBrowser vehicles={data.result.vehicles}/>),
     STORIES:renderToString(<VehicleStories vehicles={data.result.vehicles}/>)
   };
   // One pass prevents public text resembling a marker from being substituted.
-  return __PDCAR_TEMPLATES__[data.lineUrl ? 1:0].replace(/__PDCAR_STATIC_(COUNT|PHONE|LINE|INVENTORY|STORIES)__/g,(_,name:string)=>values[name]);
+  return __PDCAR_TEMPLATES__[data.lineUrl ? 1:0].replace(/__PDCAR_STATIC_(COUNT|PHONE|LINE|INVENTORY|STORIES|BUSINESS)__/g,(_,name:string)=>values[name]);
 }
