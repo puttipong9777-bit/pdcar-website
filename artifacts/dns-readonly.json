@@ -1,0 +1,80 @@
+{
+  "checkedAt": "2026-10-10T08:11:19.572Z",
+  "records": [
+    {
+      "name": "pdcarcenter.com",
+      "type": "A",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "pdcarcenter.com",
+      "type": "AAAA",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "pdcarcenter.com",
+      "type": "CNAME",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "pdcarcenter.com",
+      "type": "NS",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "pdcarcenter.com",
+      "type": "MX",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "pdcarcenter.com",
+      "type": "TXT",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "pdcarcenter.com",
+      "type": "CAA",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "A",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "AAAA",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "CNAME",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "NS",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "MX",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "TXT",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "www.pdcarcenter.com",
+      "type": "CAA",
+      "error": "ECONNREFUSED"
+    },
+    {
+      "name": "_dmarc.pdcarcenter.com",
+      "type": "TXT",
+      "error": "ECONNREFUSED"
+    }
+  ]
+}
