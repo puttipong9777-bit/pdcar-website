@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import type { PublicVehicleListing, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
 
 type PublicVehicleRow = Record<string, unknown>;
@@ -85,22 +84,52 @@ export async function getPublicVehicles(env: Record<string, string | undefined> 
     };
   }
 
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const { data, error } = await supabase
-    .from("public_vehicle_listings")
-    .select("*")
-    .order("website_featured", { ascending: false })
-    .order("updated_at", { ascending: false });
-
-  if (error) {
-    return {
-      vehicles: [],
-      source: "view_not_ready",
-      message: "ไม่สามารถเชื่อมต่อข้อมูลรถได้ชั่วคราว กรุณาลองใหม่อีกครั้ง"
-    };
+  try {
+    if (!isPublicKey(key)) throw new Error("Only an anonymous/public key is permitted");
+    const endpoint = new URL("/rest/v1/public_vehicle_listings", url);
+    endpoint.searchParams.set("select", PUBLIC_COLUMNS.join(","));
+    endpoint.searchParams.set("status", "in.(available,reserved)");
+    endpoint.searchParams.set("order", "website_featured.desc,updated_at.desc,car_id.asc");
+    const rows: PublicVehicleRow[] = [];
+    // Explicit paging avoids silently truncating stock at the PostgREST row cap.
+    const pageSize = 100;
+    for (let page = 0; page < 40; page++) {
+      endpoint.searchParams.set("limit", String(pageSize));
+      endpoint.searchParams.set("offset", String(page * pageSize));
+      const response = await fetch(endpoint, {
+        method: "GET", cache: "no-store", signal: AbortSignal.timeout(8000),
+        headers: { apikey: key, ...(key.startsWith("sb_publishable_") ? {} : { Authorization: `Bearer ${key}` }) }
+      });
+      if (!response.ok) throw new Error("Public view unavailable");
+      const data: unknown = await response.json();
+      if (!Array.isArray(data)) throw new Error("Invalid public view response");
+      rows.push(...data);
+      if (data.length < pageSize) {
+        return { vehicles: rows.filter((row) => row.status === "available" || row.status === "reserved")
+          .map((row) => mapVehicle(row, env.NEXT_PUBLIC_ERP_URL)), source: "supabase" };
+      }
+    }
+    // Fail visibly rather than publishing a silently incomplete inventory/sitemap.
+    throw new Error("Inventory exceeds request budget");
+  } catch {
+    return { vehicles: [], source: "view_not_ready", message: "ไม่สามารถเชื่อมต่อข้อมูลรถได้ชั่วคราว กรุณาลองใหม่อีกครั้ง" };
   }
+}
 
-  return { vehicles: (data ?? []).map((row) => mapVehicle(row, env.NEXT_PUBLIC_ERP_URL)), source: "supabase" };
+export const PUBLIC_COLUMNS = [
+  "car_id", "status", "brand", "model", "variant", "year", "color", "mileage", "fuel_type",
+  "transmission", "condition_summary", "sale_price", "listing_down_payment", "listing_finance_amount",
+  "listing_installment", "listing_monthly_payment", "public_description", "website_title", "website_slug",
+  "website_featured", "photos", "vertical_video", "updated_at"
+];
+
+export function isPublicKey(key: string) {
+  if (key.startsWith("sb_publishable_")) return true;
+  try {
+    const payload = key.split(".")[1];
+    const claims = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return claims.role === "anon";
+  } catch { return false; }
 }
 
 export async function getPublicVehicle(identifier: string) {
