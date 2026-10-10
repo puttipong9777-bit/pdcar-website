@@ -1,0 +1,27 @@
+
+> pdcar-website@0.1.0 test:browser
+> playwright test
+
+[WebServer] (node:4379) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ▲ [WARNING] Proxy environment variables detected. We'll use your proxy for fetch requests.
+[WebServer] 
+[WebServer] 
+
+Running 4 tests using 1 worker
+
+(node:4439) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [desktop] › tests/browser/website.spec.ts:7:5 › inventory, filtering, contact links, images, videos and layout (2.2s)
+  ✓  2 [desktop] › tests/browser/website.spec.ts:60:5 › new slug, price, reserved and unpublish update without rebuilding (1.6s)
+(node:4661) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [mobile] › tests/browser/website.spec.ts:7:5 › inventory, filtering, contact links, images, videos and layout (2.6s)
+  ✓  4 [mobile] › tests/browser/website.spec.ts:60:5 › new slug, price, reserved and unpublish update without rebuilding (1.8s)
+
+  4 passed (13.0s)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

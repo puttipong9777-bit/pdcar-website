@@ -5,13 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/build-pages.mjs",
-    "start": "next start",
+    "start": "wrangler pages dev out",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "verify": "npm run lint && npm run typecheck && npm run build",
     "build:next": "next build",
     "dev:pages": "wrangler pages dev out",
-    "test": "node --test --test-force-exit tests/*.test.mjs"
+    "test": "node --test --test-force-exit tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "start:next": "next start"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

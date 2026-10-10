@@ -96,3 +96,37 @@ test("pagination retrieves stock beyond a page", async () => {
     assert.equal(calls[1].url.searchParams.get("offset"), "100");
   });
 });
+test("older public view without optional vertical_video keeps listings available", async () => {
+  const original = globalThis.fetch;
+  const selects = [];
+  globalThis.fetch = async (url) => {
+    const select = new URL(url).searchParams.get("select");
+    selects.push(select);
+    if (select.includes("vertical_video")) return Response.json({ code: "42703", message: "column public_vehicle_listings.vertical_video does not exist" }, { status: 400 });
+    return Response.json([car({ vertical_video: undefined })]);
+  };
+  try {
+    const response = await handleRequest(request("/cars/PD0001"), env);
+    assert.equal(response.status, 200);
+    assert.match(await response.text(), /399,000/);
+    assert.equal(selects.length, 2);
+    assert.ok(!selects[1].includes("vertical_video"));
+    assert.ok(!selects[1].includes("*"));
+  } finally { globalThis.fetch = original; }
+});
+test("missing required columns and permission failures do not trigger schema fallback", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return Response.json({ code: "42703", message: "column sale_price does not exist" }, { status: 400 }); };
+  try {
+    assert.equal((await handleRequest(request("/"), env)).status, 503);
+    assert.equal(calls, 1);
+  } finally { globalThis.fetch = original; }
+});
+test("detail queries narrow the public view with escaped exact identifier literals", async () => {
+  await withRows([car()], async (calls) => {
+    await handleRequest(request('/cars/a%22%2Cb'), env);
+    assert.equal(calls[0].url.searchParams.get("or"), '(car_id.eq."a\\",b",website_slug.eq."a\\",b")');
+    assert.equal(calls[0].url.searchParams.get("status"), "in.(available,reserved)");
+  });
+});

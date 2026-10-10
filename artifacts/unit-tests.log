@@ -1,0 +1,32 @@
+
+> pdcar-website@0.1.0 test
+> node --test --test-force-exit tests/*.test.mjs
+
+(node:4345) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///workspace/pdcar-website/out/_worker.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /workspace/pdcar-website/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ only explicit public columns and GET; credentials never serialized (59.542489ms)
+✔ service role is refused before any network call (8.291839ms)
+✔ new slug, direct Car ID, updates and unpublish take effect on next request (11.014069ms)
+✔ sold or non-public statuses are discarded defensively (2.162331ms)
+✔ social previews, photos/order, videos and safe JSON appear in initial HTML (2.639083ms)
+✔ sitemap, preview noindex, robots, health, HEAD and method boundaries (5.791672ms)
+✔ unconfigured data returns 503, never a false not-found (2.778032ms)
+✔ pagination retrieves stock beyond a page (2.995378ms)
+✔ older public view without optional vertical_video keeps listings available (2.634241ms)
+✔ missing required columns and permission failures do not trigger schema fallback (1.885961ms)
+✔ detail queries narrow the public view with escaped exact identifier literals (0.804227ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 219.163221
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

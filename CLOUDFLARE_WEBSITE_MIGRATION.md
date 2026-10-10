@@ -66,3 +66,41 @@ Prepared `wrangler.jsonc` with pages_build_output_dir=out, native Functions comp
 PASS: actual local Wrangler 4.149.0/workerd compiled artifact; `/api/health` returned 200 JSON at localhost:8788. Wrangler's generated CF_PAGES_URL binding is a local placeholder, NOT an actual deployment URL. Remote request.cf lookup failed due restricted network and emulator used its documented local default.
 
 BLOCKED: actual pages.dev deployment. No existing Cloudflare account ID/API token/OAuth session found; Cloudflare API CONNECT blocked by outbound proxy (403). No attempt to create credentials, login/OAuth, Git integration or paid resources. No real preview URL exists. Owner approval needed for connection/access and secure existing public configuration; cloud network access also needs restoration. Continue mock/local QA while blocked.
+
+## Phase 6 — actual local QA and remaining remote gates
+
+PASS: clean final `npm ci` (356 packages), `npm run lint`, `npm run typecheck`, `npm run build`, 11/11 built-handler automated tests. Retained Next build (`npm run build:next`) PASS. Node v24.19.0 / npm 11.9.0; Node 22 deployment setting still needs remote verification.
+
+PASS: 4/4 Playwright tests using real local Wrangler/workerd, Chromium `/usr/bin/chromium`, desktop 1440x1000 and iPhone 13 viewport/device emulation. Tests cover homepage, search/model, brand/year/status filters, phone/LINE link destinations, direct detail/refresh, cover/gallery bytes/order, installment/price, video embedding, menu, no horizontal overflow, no console/page errors, no Next optimizer requests, new slug/price/reserved/unpublish without rebuild. Screenshots visually inspected. Source is local mock server; gallery fixtures intentionally use the existing shop photograph, and YouTube frame is mocked. This is not an iPhone Safari/hardware or live YouTube test.
+
+Evidence: `artifacts/verify.log`, `npm-ci.log`, `unit-tests.log`, `next-build.log`, `browser-tests.log`, `browser-results.json`; `desktop-home-mock.jpg`, `desktop-detail-mock.jpg`, `mobile-home-mock.jpg`, `mobile-detail-mock.jpg`. Tests never modify production data. CSS unchanged from baseline; existing typography retained (baseline body font inheritance can depend on OS fonts).
+
+CPU risk: `artifacts/local-cpu.json` measures Node process CPU, not Cloudflare billing. Median home request CPU: 1 car 4.209 ms, 10 cars 6.663 ms, 50 cars 8.557 ms, 100 cars 14.148 ms; several p95/initial samples exceed 10 ms. **Free runtime quota acceptance is BLOCKED**, not PASS. Must obtain actual preview CPU/startup metrics with real inventory size and cold/warm requests. If 10 ms exceeded consistently, optimize static shell rendering/dynamic islands before deployment acceptance; do not enable Paid or switch to Workers hosting. No production readiness claim.
+
+| Test | Local/mock | Actual pages.dev / production source |
+| --- | --- | --- |
+| Homepage and inventory | PASS | BLOCKED: no deployment/config |
+| Supabase public-view contract | PASS allowlist/read-only | BLOCKED: no credentials/network |
+| Anon cannot access private rows | NOT TESTED | BLOCKED: live permission evidence absent |
+| Search, brand/year/status filters | PASS | NOT TESTED |
+| Direct slug/Car ID and refresh | PASS | NOT TESTED |
+| New slug/car, price/status, unpublish | PASS mocks | NOT TESTED; never write-test production |
+| Images, cover/order, lazy sizing | PASS fixtures | BLOCKED: ERP/media availability |
+| Price and installments | PASS | NOT TESTED |
+| Phone/LINE destinations | PASS fixture LINE | BLOCKED: actual LINE value absent |
+| YouTube embed | PASS mocked frame | NOT TESTED playback |
+| Desktop/mobile layout/screenshots | PASS Chromium + iPhone emulation | NOT TESTED actual device/remote |
+| Console/page errors and missing fixture assets | PASS none observed | NOT TESTED live assets |
+| SEO/social tags, canonical, robots, sitemap | PASS initial HTML | NOT TESTED Google/Facebook fetch/cache |
+| ERP non-impact | PASS no writes, no ERP files changed | BLOCKED live ERP health read |
+| npm ci/lint/typecheck/Pages build | PASS | BLOCKED remote build |
+| Automated tests | PASS 11 unit + 4 browser | NOT TESTED remote |
+| Retained Next build | PASS | NOT TESTED rollback deployment |
+| Free resource quotas | Local CPU RISK | BLOCKED actual metrics/account plan |
+| HTTPS/CDN/cache headers | PASS local no-store/routes | NOT TESTED remote TLS/CDN |
+
+FAIL encountered and resolved: initial npm default-cache permission failure and initial TypeScript/lint issues. No known failing final functional local test. Live success criteria remain unfulfilled.
+
+Phase 6 review correction: legacy view missing vertical_video now falls back only on PostgREST 400/code 42703 naming that optional column; explicit safe select remains, missing required columns still fail closed. Two additional tests PASS. No ERP schema changes.
+
+Phase 6 additional review: detail requests now filter the same public view by safely quoted exact Car ID/slug instead of mapping all inventory; HEAD skips HTML/JSON rendering. npm start now starts Pages locally; start:next pairs explicitly with build:next. Added filter-escaping test; final 11 unit and 4 browser tests PASS. Actual Free CPU compliance remains NOT TESTED (preview access BLOCKED), not a demonstrated Cloudflare quota failure.

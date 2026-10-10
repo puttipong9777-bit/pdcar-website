@@ -29,15 +29,17 @@ export async function handleRequest(request: Request, env: Env, assets?: Binding
     try { identifier = decodeURIComponent(path.replace(/^\/cars\//, "").replace(/\/$/, "")); }
     catch { return reply("Bad request", "text/plain", 400); }
   }
-  const result = await getPublicVehicles(env);
+  const result = await getPublicVehicles(env, identifier);
   const unavailable = result.source !== "supabase";
   if (path === "/sitemap.xml") {
     if (unavailable) return reply("Temporarily unavailable", "text/plain", 503);
+    if (request.method === "HEAD") return reply("", "application/xml; charset=utf-8");
     const locations = [origin + "/", ...result.vehicles.map((car) => `${origin}/cars/${encodeURIComponent(car.slug)}`)];
     return reply(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${locations.map((loc) => `<url><loc>${escape(loc)}</loc></url>`).join("")}</urlset>`, "application/xml; charset=utf-8");
   }
   const vehicle = identifier === undefined ? undefined : result.vehicles.find((car) => car.carId === identifier || car.slug === identifier);
   const status = unavailable ? 503 : identifier !== undefined && !vehicle ? 404 : 200;
+  if (request.method === "HEAD") return reply("", "text/html; charset=utf-8", status);
   const data: PageData = {
     kind: identifier === undefined ? "home" : unavailable ? "unavailable" : vehicle ? "vehicle" : "not-found",
     result: identifier === undefined ? result : { ...result, vehicles: [] }, vehicle,

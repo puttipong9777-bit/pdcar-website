@@ -73,7 +73,7 @@ function mapVehicle(row: PublicVehicleRow, erpOrigin?: string): PublicVehicleLis
   };
 }
 
-export async function getPublicVehicles(env: Record<string, string | undefined> = process.env): Promise<VehicleDataResult> {
+export async function getPublicVehicles(env: Record<string, string | undefined> = process.env, identifier?: string): Promise<VehicleDataResult> {
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
   const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
@@ -89,6 +89,12 @@ export async function getPublicVehicles(env: Record<string, string | undefined> 
     const endpoint = new URL("/rest/v1/public_vehicle_listings", url);
     endpoint.searchParams.set("select", PUBLIC_COLUMNS.join(","));
     endpoint.searchParams.set("status", "in.(available,reserved)");
+    if (identifier !== undefined) {
+      // PostgREST quoted literals prevent slugs containing punctuation from
+      // changing the filter grammar. URLSearchParams handles URL encoding.
+      const literal = `"${identifier.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+      endpoint.searchParams.set("or", `(car_id.eq.${literal},website_slug.eq.${literal})`);
+    }
     endpoint.searchParams.set("order", "website_featured.desc,updated_at.desc,car_id.asc");
     const rows: PublicVehicleRow[] = [];
     // Explicit paging avoids silently truncating stock at the PostgREST row cap.
@@ -96,10 +102,20 @@ export async function getPublicVehicles(env: Record<string, string | undefined> 
     for (let page = 0; page < 40; page++) {
       endpoint.searchParams.set("limit", String(pageSize));
       endpoint.searchParams.set("offset", String(page * pageSize));
-      const response = await fetch(endpoint, {
+      const read = () => fetch(endpoint, {
         method: "GET", cache: "no-store", signal: AbortSignal.timeout(8000),
         headers: { apikey: key, ...(key.startsWith("sb_publishable_") ? {} : { Authorization: `Bearer ${key}` }) }
       });
+      let response = await read();
+      if (!response.ok && page === 0 && response.status === 400) {
+        const error = await response.clone().json().catch(() => null);
+        // Older approved views predate the optional YouTube field. Only this
+        // precise missing-column error may drop it; never widen to select(*).
+        if (error?.code === "42703" && /\bvertical_video\b/.test(String(error.message))) {
+          endpoint.searchParams.set("select", PUBLIC_COLUMNS.filter((column) => column !== "vertical_video").join(","));
+          response = await read();
+        }
+      }
       if (!response.ok) throw new Error("Public view unavailable");
       const data: unknown = await response.json();
       if (!Array.isArray(data)) throw new Error("Invalid public view response");
@@ -133,6 +149,6 @@ export function isPublicKey(key: string) {
 }
 
 export async function getPublicVehicle(identifier: string) {
-  const result = await getPublicVehicles();
+  const result = await getPublicVehicles(process.env, identifier);
   return result.vehicles.find((vehicle) => vehicle.carId === identifier || vehicle.slug === identifier) ?? null;
 }
