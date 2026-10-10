@@ -57,11 +57,15 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
   console.log("browser stage: detail loaded");
   await page.reload();
   console.log("browser stage: detail reloaded");
-  await page.locator(".gallery-more summary").click();
+  if (testInfo.project.name === "mobile") await page.locator(".gallery-more summary").click();
+  else await expect(page.locator(".gallery-more summary")).toBeHidden();
   await expect(page.locator(".gallery-image img")).toHaveCount(2);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /mock-front/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
-  for (const img of await page.locator(".gallery-image img").all()) await img.scrollIntoViewIfNeeded();
+  for (const img of await page.locator(".gallery-image img").all()) {
+    await expect(img).toBeVisible();
+    await img.scrollIntoViewIfNeeded();
+  }
   for (const img of await page.locator(".gallery-image img").all()) await expect.poll(() => img.evaluate((node) => node instanceof HTMLImageElement && node.complete && node.naturalWidth > 0), { message: "Gallery images load after disclosure and scrolling" }).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));

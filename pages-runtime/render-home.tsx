@@ -10,7 +10,7 @@ function url(value:string) {
 }
 export function renderHome(data:PageData) {
   const values:Record<string,string> = {
-    BUSINESS:renderToString(<BusinessJsonLd phone={data.phone}/>),COUNT:String(data.result.vehicles.length),PHONE:escape(data.phone),LINE:url(data.lineUrl || ""),
+    BUSINESS:renderToString(<BusinessJsonLd phone={data.phone}/>),COUNT:data.result.vehicles.length.toLocaleString("th-TH"),PHONE:escape(data.phone),LINE:url(data.lineUrl || ""),
     INVENTORY:renderToString(<CatalogBrowser vehicles={data.result.vehicles}/>),
     STORIES:renderToString(<VehicleStories vehicles={data.result.vehicles}/>)
   };
