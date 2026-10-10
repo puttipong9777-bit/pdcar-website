@@ -1,5 +1,7 @@
 # DNS, TLS and rollback plan — READ ONLY
 
+**Production source gap: deployment is on hold.** The reported current Vercel source includes later commits absent from this checkout. Recover and reconcile the exact deployed source before any new deployment; see [PRODUCTION_SOURCE_GAP.md](PRODUCTION_SOURCE_GAP.md). Earlier tests cover the supplied baseline/mocks only.
+
 Current disposition: **DO NOT CUT OVER**. No actual pages.dev preview exists and
 live data, images, anonymous permissions, TLS and Free CPU remain unverified.
 

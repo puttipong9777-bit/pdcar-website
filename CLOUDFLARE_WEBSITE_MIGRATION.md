@@ -2,6 +2,8 @@
 
 ## Status / boundaries
 
+**NEW BLOCKER — production source mismatch. No new deployment.** User Vercel screenshots, relayed by the parent, identify current Production source `codex/sell-car-seo` / `cca3ad4` and later sell-car/catalog/product-view commits absent from the supplied baseline. Production feature/route/SEO parity is **BLOCKED**. All earlier preservation, screenshot and test claims below apply only to the supplied repository baseline/mocks, not the actual deployed www.pdcarcenter.com. The work is preserved pending source recovery. See [docs/PRODUCTION_SOURCE_GAP.md](docs/PRODUCTION_SOURCE_GAP.md) for verified lookups, evidence limits and the minimum recovery evidence.
+
 Draft implementation and local QA delivered; live migration is BLOCKED. No deployment or cutover has occurred. Website repository only. ERP, Supabase schema/data, DNS, production domain, and Vercel projects are untouched. No paid resources or credentials requested/created. Baseline: `e14a409e5643c551aab98e10b263fba1e6c1d5ba`. Branch: `migration/cloudflare-pages`.
 
 ## Phase 1 — audit (2026-10-10, Codex Cloud)
@@ -85,7 +87,8 @@ CPU risk: `artifacts/local-cpu.json` measures Node process CPU, not Cloudflare b
 
 | Test | Local/mock | Actual pages.dev / production source |
 | --- | --- | --- |
-| Homepage and inventory | PASS | BLOCKED: no deployment/config |
+| Production source/feature parity | NOT ESTABLISHED beyond supplied baseline | BLOCKED: deployed source commits unavailable |
+| Homepage and inventory | PASS for supplied baseline | BLOCKED: source gap and no deployment/config |
 | Supabase public-view contract | PASS allowlist/read-only | BLOCKED: no credentials/network |
 | Anon cannot access private rows | NOT TESTED | BLOCKED: live permission evidence absent |
 | Search, brand/year/status filters | PASS | NOT TESTED |
@@ -201,3 +204,12 @@ Final Node 22 checks: clean npm ci PASS; lint PASS; typecheck PASS; Pages build 
 Four added unit cases compare compiled markup with React SSR across 128 combinations of optional card fields/statuses, empty stock and LINE variants, hostile delimiters/template-shaped text, and javascript URL protection. Equality ignores only React's empty text-boundary comments. No new external package was needed. Current artifacts replace the initial test logs; the initial per-phase results remain in git history.
 
 Additional/updated implementation files: `.node-version`, `.gitignore`, `eslint.config.mjs`; home/browser/card/story components; `lib/format.ts`; `pages-runtime/app.tsx`, `worker.tsx`, `prerender.tsx`, `render-home.ts`; build/benchmark scripts; `tests/templates.test.mjs`, browser tests; README/deployment guidance and the evidence files above. Remaining setup blockers are unchanged and listed in the access handoff. The draft must remain unmerged until actual preview and Free runtime acceptance.
+
+
+## Production provenance update — deployment hold
+
+Read-only audit confirms screenshot commit `6b82915` is in the supplied baseline, while `cca3ad4`, `1cbe6fa`, and `b9b9494` are absent from local objects and return GitHub 422/no commit found in the supplied repository. `codex/sell-car-seo` returns GitHub 404. The supplied baseline has 11 commits through Aug 28; later screenshot titles suggest sell-car acquisition/SEO, Meta catalog/product view and Facebook inventory quantity work that cannot be audited here. Exact feature behavior is unknown; nothing was reimplemented from titles.
+
+First unblock: obtain the current Production deployment's Source/commit hyperlink identifying its actual repository and full SHA, plus deployment URL/ID if necessary to establish the association. If Git source is unavailable, recover an authorized exact-revision source archive through cloud access without secrets. Full details and limitations are in `docs/PRODUCTION_SOURCE_GAP.md`.
+
+Existing code, tests and measurements are retained as work against the supplied baseline. No new runtime tests were necessary for this documentation-only provenance update. Do not deploy until source recovery, comparison and reconciliation are complete; missing Cloudflare access/config/network and actual Free CPU acceptance remain separate later gates. Existing Vercel production must remain intact; the retained older Next build is not a verified production-equivalent rollback artifact.

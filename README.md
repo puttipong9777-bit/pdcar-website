@@ -1,5 +1,7 @@
 # PD Car Center customer website
 
+**Production source gap: deployment is on hold.** The reported current Vercel source includes later commits absent from this checkout. Recover and reconcile the exact deployed source before any new deployment; see [PRODUCTION_SOURCE_GAP.md](docs/PRODUCTION_SOURCE_GAP.md). Earlier tests cover the supplied baseline/mocks only.
+
 Public vehicle website, separate from ERP, reading only the existing Supabase
 `public_vehicle_listings` view. Car IDs, slugs, ERP public media and business data
 remain owned by the existing system.

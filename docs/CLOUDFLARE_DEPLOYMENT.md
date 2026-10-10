@@ -1,5 +1,7 @@
 # Preview deployment checklist (not yet deployed)
 
+**Production source gap: deployment is on hold.** The reported current Vercel source includes later commits absent from this checkout. Recover and reconcile the exact deployed source before any new deployment; see [PRODUCTION_SOURCE_GAP.md](PRODUCTION_SOURCE_GAP.md). Earlier tests cover the supplied baseline/mocks only.
+
 This is **Cloudflare Pages Free**, using native advanced-mode Pages Functions.
 `out/_worker.js` is a Pages Functions artifact, not a Workers-hosted site.
 Do not use `wrangler deploy`, Workers Builds, next-on-pages or an OpenNext adapter.

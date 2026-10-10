@@ -1,5 +1,7 @@
 # Access/setup handoff (no credentials included)
 
+**Production source gap: deployment is on hold.** The reported current Vercel source includes later commits absent from this checkout. Recover and reconcile the exact deployed source before any new deployment; see [PRODUCTION_SOURCE_GAP.md](PRODUCTION_SOURCE_GAP.md). Earlier tests cover the supplied baseline/mocks only.
+
 All work runs in Codex Cloud `/workspace/pdcar-website`; never on the owner's Windows computer.
 
 ## Destinations requiring cloud egress
