@@ -2,7 +2,7 @@
 
 ## Status / boundaries
 
-Work in progress; no deployment or cutover has occurred. Website repository only. ERP, Supabase schema/data, DNS, production domain, and Vercel projects are untouched. No paid resources or credentials requested/created. Baseline: `e14a409e5643c551aab98e10b263fba1e6c1d5ba`. Branch: `migration/cloudflare-pages`.
+Draft implementation and local QA delivered; live migration is BLOCKED. No deployment or cutover has occurred. Website repository only. ERP, Supabase schema/data, DNS, production domain, and Vercel projects are untouched. No paid resources or credentials requested/created. Baseline: `e14a409e5643c551aab98e10b263fba1e6c1d5ba`. Branch: `migration/cloudflare-pages`.
 
 ## Phase 1 — audit (2026-10-10, Codex Cloud)
 
@@ -34,8 +34,14 @@ Official sources checked 2026-10-10:
 
 ## Phase ledger
 
-1. Audit recorded; dependency installation running. All runtime/build/browser/live checks pending.
-2–8. Pending. No preview URL exists.
+1. Audit completed and published.
+2. Pages candidate architecture implemented and published; real Free CPU acceptance pending.
+3. Public read boundary implemented/tested with mocks; live credentials/permissions blocked.
+4. Direct ERP image handling implemented/tested with fixtures; live media blocked.
+5. Deployment prepared; actual Cloudflare preview BLOCKED.
+6. Local automated/browser QA completed; remote acceptance BLOCKED/NOT TESTED.
+7. DNS/rollback plan prepared read-only; live DNS evidence BLOCKED.
+8. Handoff prepared for draft PR; no merge or cutover. Actual preview URL: NONE.
 
 ## Phase 2 — native Pages implementation
 
@@ -110,3 +116,47 @@ Phase 6 additional review: detail requests now filter the same public view by sa
 Read-only A/AAAA/CNAME/NS/MX/TXT/CAA queries for apex/www and DMARC TXT all failed ECONNREFUSED in the cloud resolver. Current records and TLS/redirect chain are BLOCKED, not absent. Evidence: `artifacts/dns-readonly.json`. Prepared conditional external-DNS www CNAME association, apex redirect preserving path/query, mail/DNSSEC/CAA inventory and exact-record rollback in `docs/CLOUDFLARE_DNS_ROLLBACK.md`. Prefer no nameserver change. This plan is preparatory only; actual preview acceptance has not passed, so cutover must not proceed. No DNS changed.
 
 `docs/CLOUDFLARE_ACCESS_HANDOFF.md` lists exact blocked destinations and secure setup route. Git executor credentials stopped authenticating after phase 5; later commits are published through the already-authorized connected GitHub app, with blob/tree hashes verified against the local checkout. No new GitHub credential created. A metadata upload was initially rejected by automatic review as a possible secret; read-only comparison confirmed the unchanged public Facebook verification meta tag already in public main, and the retry was approved. No secret exposed or approval bypassed.
+
+
+## Phase 8 — handoff
+
+**Actual preview URL: none. No Cloudflare deployment was performed.** This branch is a reviewable migration candidate, not a completed live migration. Existing website/ERP production state has not been changed.
+
+### Files and reasons
+
+| Files | Reason |
+| --- | --- |
+| app/page.tsx, app/cars/[identifier]/page.tsx | Thin retained Next entry points; reuse extracted presentation |
+| components/home-content.tsx, components/vehicle-content.tsx | Existing JSX extracted for shared Pages/Next rendering |
+| components/site-header.tsx, app/layout.tsx | Runtime public phone/LINE props; production metadata origin corrected |
+| lib/vehicle-data.ts | Explicit public GET allowlist, anon-key check, pagination, exact detail filter, safe optional-video compatibility |
+| pages-runtime/app.tsx, client.tsx | Shared page tree and hydration; fresh full-document navigation/back-forward restore |
+| pages-runtime/worker.tsx | Native Pages request routing, request-time HTML/metadata/sitemap, HTTP errors, preview noindex, HEAD fast path |
+| pages-runtime/image.tsx, link.tsx | Native images/anchors in Pages bundle, preserving layout/loading and fresh navigation |
+| scripts/build-pages.mjs | Bundle static assets and native Pages _worker.js; route assets outside Functions |
+| next.config.ts | Disable legacy Next optimizer in fallback build |
+| package.json, package-lock.json | Reproducible esbuild/Wrangler/Playwright tools and explicit Pages/Next commands |
+| wrangler.jsonc, .node-version | Pages output/runtime date and proposed Node 22 build setting |
+| .gitignore, eslint.config.mjs | Ignore local secrets/build/test caches, lint source rather than bundles |
+| playwright.config.ts, tests/fixtures.mjs, tests/mock-server.mjs, tests/pages.test.mjs, tests/browser/website.spec.ts | Isolated no-write regression and workerd/browser tests |
+| artifacts/browser-results.json, browser-tests.log, unit-tests.log, verify.log, npm-ci.log, next-build.log | Actual command/test evidence |
+| artifacts/desktop-home-mock.jpg, desktop-detail-mock.jpg, mobile-home-mock.jpg, mobile-detail-mock.jpg | Actual mock-only browser screenshots |
+| artifacts/local-cpu.json, dns-readonly.json | Measured local CPU warning and failed read-only DNS evidence |
+| docs/CLOUDFLARE_DEPLOYMENT.md, CLOUDFLARE_ACCESS_HANDOFF.md, CLOUDFLARE_DNS_ROLLBACK.md | Preview setup, secure approval/network handoff, conditional DNS/rollback |
+| README.md, CLOUDFLARE_WEBSITE_MIGRATION.md | Correct run commands; remove dangerous production-SQL setup advice; complete status/handoff |
+
+No CSS, public images, public data contract, SQL migration or ERP repository files were changed.
+
+### Build / deployment / freshness
+
+Preset None, repository root, `npm ci && npm run verify && npm test`, output `out`, Pages Functions advanced mode. Node 22 proposed; local tests used 24.19.0. Five existing public variable names are listed in phase 1; values are neither logged nor committed. Use runtime bindings, not a static inventory export. JS/CSS static assets revalidate; dynamic HTML/sitemap/health use no-store. Changes appear on next navigation/refresh, with no intentional cache delay, subject to Supabase response latency (8-second timeout per upstream page). Open idle tabs are snapshots just as in baseline. No polling or paid services added. Social platforms can retain their own preview caches independently of site headers.
+
+### Free plan limits and remaining risks
+
+Official sources checked 2026-10-10: Pages Functions pricing, Pages platform limits, and https://developers.cloudflare.com/workers/platform/limits/ . Functions share the account-wide 100,000 requests/day Free allowance (UTC reset); static requests that bypass Functions are free/unlimited. Runtime Free CPU 10 ms/request, memory 128 MB, external subrequests 50/request. Pages Free allows 500 builds/month, one concurrent build, 20-minute build timeout, 20,000 files/site, 25 MiB/asset. These are limits, not measurements of this account or a cost guarantee. No paid plan/resources enabled.
+
+Actual Free CPU acceptance is NOT TESTED because deployment is blocked. Local CPU warning must be investigated with cold/warm real preview metrics; larger inventory may require build-time static-shell extraction and lighter dynamic rendering. Do not solve it by silently enabling Paid, switching hosting, caching unpublished data or dropping SEO. App caps list pagination at 40 requests (+ at most one legacy-video retry), failing visibly instead of truncating; realistic volume needs acceptance testing. Real API schema/grants and ERP photo availability remain unknown. Native original images may transfer more bytes; unavailable ERP photos cannot be repaired by this website move alone.
+
+### Remaining owner/platform actions
+
+Approve secure Cloudflare Pages access/Git integration (website only), provide existing public configuration via settings/secret UI, and restore allowed cloud network access listed in the access handoff. Then verify Free plan, deploy preview, record actual URL/commit, run live read-only data/media checks and remote browser/SEO/TLS/CPU QA. Live anon permission checks must avoid sensitive rows; zero-row success alone is inconclusive. DNS records/SSL/mail/redirect baseline require read-only access. Only after all gates pass should a separate explicit DNS/custom-domain cutover approval be sought. No raw tokens in chat. No merge, ERP changes, production write tests or Vercel deletion.
