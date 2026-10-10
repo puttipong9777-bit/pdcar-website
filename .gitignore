@@ -2,13 +2,7 @@ node_modules/
 .next/
 .vercel/
 out/
-.env
-.env.local
-.env*.local
-npm-debug.log*
-*.tsbuildinfo
-Thumbs.db
-.DS_Store
-
-.vercel
 .env*
+!.env.example
+*.tsbuildinfo
+supabase/.temp/

@@ -2,14 +2,15 @@
   --navy: #061629;
   --navy-2: #0b2340;
   --navy-3: #10345f;
-  --blue: #1769d2;
+  --blue: #175cdb;
   --blue-bright: #2f83ed;
   --green: #1bb866;
+  --gold: #f2b544;
   --red: #df3150;
   --ink: #111d2e;
   --muted: #667286;
   --line: #dfe5ed;
-  --soft: #f4f7fb;
+  --soft: #f2f5f9;
   --white: #fff;
   --header-height: 76px;
 }
@@ -17,7 +18,9 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: var(--header-height); }
 body { margin: 0; color: var(--ink); background: #fff; font-family: "Segoe UI", Tahoma, "Noto Sans Thai", sans-serif; }
-body, button, input, select, summary { font: inherit; }
+button, input, select, summary { font: inherit; }
+body { font-size: 16px; line-height: 1.6; }
+:focus-visible { outline: 3px solid #3988ff; outline-offset: 4px; }
 a { color: inherit; text-decoration: none; }
 button { color: inherit; }
 img, video { max-width: 100%; }
@@ -50,7 +53,7 @@ img, video { max-width: 100%; }
 .desktop-nav > a:not(.call-button):not(.header-line-button) { position: relative; padding-block: 10px; }
 .desktop-nav > a:not(.call-button):not(.header-line-button)::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: var(--blue-bright); transform: scaleX(0); transition: transform .2s ease; }
 .desktop-nav > a:not(.call-button):not(.header-line-button):hover::after { transform: scaleX(1); }
-.call-button, .header-line-button, .primary-action, .outline-action, .secondary-action, .phone-action, .line-action {
+.call-button, .header-line-button, .sell-nav-link, .primary-action, .outline-action, .secondary-action, .phone-action, .line-action {
   min-height: 44px;
   display: inline-flex;
   align-items: center;
@@ -63,18 +66,21 @@ img, video { max-width: 100%; }
 }
 .call-button { color: #fff; border: 1px solid rgba(255, 255, 255, .36); }
 .header-line-button { color: #fff; background: var(--green); }
+.sell-nav-link { color: var(--navy) !important; background: var(--gold); }
 .call-button:hover, .header-line-button:hover, .primary-action:hover, .secondary-action:hover, .phone-action:hover, .line-action:hover { transform: translateY(-2px); }
 .mobile-header-actions { display: none; align-items: center; gap: 7px; }
-.mobile-call, .mobile-line, .menu-toggle { width: 42px; height: 42px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, .16); border-radius: 50%; color: #fff; background: rgba(255, 255, 255, .08); }
+.mobile-call, .mobile-line, .menu-toggle { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, .16); border-radius: 50%; color: #fff; background: rgba(255, 255, 255, .08); }
 .mobile-line { color: #fff; background: var(--green); }
 .menu-toggle { cursor: pointer; }
 .mobile-navigation { display: none; }
+.mobile-menu-sell { color: var(--navy) !important; background: #fff4d9; }
 
 /* Hero */
 .dealership-hero { min-height: 650px; display: flex; align-items: center; position: relative; overflow: hidden; color: #fff; background: var(--navy); }
 .dealership-hero-image { object-fit: cover; object-position: center 58%; }
 .dealership-hero-shade { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(3, 13, 27, .96) 0%, rgba(3, 15, 31, .82) 42%, rgba(3, 15, 31, .35) 76%, rgba(3, 15, 31, .46) 100%), linear-gradient(0deg, rgba(5, 18, 35, .52), transparent 50%); }
-.dealership-hero-inner { width: min(1280px, 100%); margin: 0 auto; padding: 72px clamp(22px, 5vw, 72px) 64px; position: relative; z-index: 2; }
+.dealership-hero-inner { width: min(1280px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) minmax(290px, 380px); align-items: center; gap: clamp(36px, 6vw, 90px); margin: 0 auto; padding: 72px clamp(22px, 5vw, 72px) 64px; position: relative; z-index: 2; }
+.dealership-hero-copy { min-width: 0; }
 .hero-kicker { display: flex; align-items: center; gap: 10px; margin: 0 0 17px; color: #8cc0ff; font-size: 11px; font-weight: 900; letter-spacing: .14em; }
 .hero-kicker span { width: 35px; height: 2px; background: var(--blue-bright); }
 .dealership-hero h1 { max-width: 760px; margin: 0; font-size: clamp(50px, 6.1vw, 84px); line-height: 1.03; letter-spacing: -.055em; text-shadow: 0 5px 28px rgba(0, 0, 0, .34); }
@@ -89,6 +95,24 @@ img, video { max-width: 100%; }
 .hero-assurances p { display: flex; flex-direction: column; gap: 3px; margin: 0; }
 .hero-assurances strong { font-size: 13px; }
 .hero-assurances span { color: #aebdd0; font-size: 10px; line-height: 1.35; }
+.hero-sell-card { padding: 28px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 12px; background: rgba(4, 18, 35, .74); box-shadow: 0 24px 60px rgba(0, 0, 0, .26); backdrop-filter: blur(14px); }
+.hero-sell-card > svg { margin: 24px 0 10px; color: var(--gold); }
+.hero-sell-label { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--navy); background: var(--gold); font-size: 11px; font-weight: 900; }
+.hero-sell-card h2 { margin: 0; color: #fff; font-size: clamp(27px, 2.5vw, 36px); line-height: 1.18; letter-spacing: -.035em; }
+.hero-sell-card p { margin: 14px 0 21px; color: #c2cfdd; font-size: 13px; line-height: 1.7; }
+.hero-sell-card a { min-height: 46px; display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; width: 100%; padding: 0 15px; border-radius: 5px; color: var(--navy); background: #fff; font-weight: 900; }
+
+/* Sell-car acquisition */
+.sell-acquisition-section { display: grid; grid-template-columns: .92fr 1.08fr; gap: clamp(38px, 7vw, 96px); align-items: center; padding: clamp(68px, 8vw, 108px) max(24px, calc((100vw - 1210px) / 2)); color: #fff; background: linear-gradient(135deg, #0c2e54, #07182d); }
+.sell-acquisition-copy h2 { margin: 6px 0 0; color: #fff; font-size: clamp(36px, 4.5vw, 57px); line-height: 1.12; letter-spacing: -.045em; }
+.sell-acquisition-copy > p:not(.eyebrow) { max-width: 590px; margin: 18px 0 0; color: #c0cede; line-height: 1.75; }
+.sell-acquisition-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.sell-acquisition-steps { display: grid; gap: 10px; }
+.sell-acquisition-steps > div { display: flex; align-items: center; gap: 15px; padding: 20px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 8px; background: rgba(255, 255, 255, .055); }
+.sell-acquisition-steps svg { flex: 0 0 auto; width: 27px; height: 27px; color: var(--gold); }
+.sell-acquisition-steps p { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.sell-acquisition-steps strong { color: #fff; font-size: 16px; }
+.sell-acquisition-steps span { color: #aebed0; font-size: 12px; line-height: 1.45; }
 
 /* Highlights */
 .stock-highlights { max-width: 1280px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0 auto; padding: 0 clamp(20px, 4vw, 54px); background: #fff; }
@@ -123,6 +147,7 @@ img, video { max-width: 100%; }
 .segments button { min-height: 42px; padding: 0 12px; border: 0; border-radius: 4px; color: #b8c5d6; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .segments button.active { color: var(--navy); background: #fff; }
 .vehicle-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+.vehicle-result-count { margin: -8px 0 16px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .vehicle-card { min-width: 0; overflow: hidden; border: 1px solid #dfe4eb; border-radius: 7px; background: #fff; box-shadow: 0 8px 24px rgba(12, 34, 64, .055); transition: transform .25s ease, box-shadow .25s ease; }
 .vehicle-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(12, 34, 64, .12); }
 .vehicle-image { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: #e9edf3; }
@@ -143,6 +168,9 @@ img, video { max-width: 100%; }
 .price-row small { color: var(--muted); font-size: 10px; }
 .price-row strong { margin-top: 3px; color: var(--blue); font-size: 18px; }
 .monthly { max-width: 48%; display: flex; align-items: center; gap: 5px; color: var(--navy-3); font-size: 9px; font-weight: 800; }
+.card-detail-link { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--blue); font-size: 11px; font-weight: 900; }
+.card-detail-link svg { flex: 0 0 auto; transition: transform .2s ease; }
+.card-detail-link:hover svg { transform: translateX(3px); }
 .empty-state { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 1px dashed #bec9d7; border-radius: 7px; color: var(--muted); background: #fff; }
 .empty-state h3 { margin: 13px 0 4px; color: var(--navy); }
 .empty-state p { margin: 0; }
@@ -167,6 +195,7 @@ img, video { max-width: 100%; }
 .stories-heading h2 { color: #fff; }
 .stories-heading > p { max-width: 500px; margin: 0; color: #acbbce; line-height: 1.7; }
 .story-rail { display: flex; gap: 15px; overflow-x: auto; padding: 8px max(20px, calc((100vw - 1210px) / 2)) 28px; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--blue-bright) rgba(255, 255, 255, .09); overscroll-behavior-inline: contain; }
+.story-swipe-hint { width: min(1210px, calc(100% - 40px)); display: flex; align-items: center; justify-content: flex-end; gap: 7px; margin: -18px auto 10px; color: #89a2c0; font-size: 11px; font-weight: 800; }
 .story-card { width: clamp(230px, 20vw, 282px); flex: 0 0 auto; position: relative; aspect-ratio: 9 / 16; overflow: hidden; scroll-snap-align: start; border: 1px solid rgba(255, 255, 255, .14); border-radius: 10px; background: #122a47; box-shadow: 0 18px 40px rgba(0, 0, 0, .22); }
 .story-card > img, .story-card > video, .story-card > iframe { width: 100%; height: 100%; border: 0; object-fit: cover; }
 .story-card > img { position: absolute; inset: 0; transition: transform .5s ease; }
@@ -234,14 +263,19 @@ img, video { max-width: 100%; }
 /* Vehicle detail */
 .detail-page { max-width: 1240px; margin: 0 auto; padding: 38px clamp(18px, 4vw, 52px) 76px; }
 .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px; color: var(--blue); font-weight: 800; }
-.detail-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, .75fr); gap: 30px; align-items: start; }
-.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.detail-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, .75fr); grid-template-areas: "gallery summary"; gap: 30px; align-items: start; }
+.gallery { grid-area: gallery; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .gallery-image { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 7px; background: #edf1f6; }
-.gallery-image:first-child { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+.gallery-image-primary { grid-column: 1 / -1; aspect-ratio: 16 / 10; }
 .gallery-image img { object-fit: cover; }
 .vehicle-video { grid-column: 1 / -1; position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 7px; background: #0c1828; }
 .vehicle-video iframe { width: 100%; height: 100%; border: 0; }
-.vehicle-summary { position: sticky; top: calc(var(--header-height) + 14px); padding: 24px; border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: 0 12px 34px rgba(12, 34, 64, .09); }
+.gallery-more { grid-column: 1 / -1; }
+.gallery-more > summary { display: none; }
+.gallery-more-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.gallery-more-grid .gallery-image { width: 100%; }
+.gallery-empty { grid-column: 1 / -1; min-height: 360px; border-radius: 8px; background: var(--soft); }
+.vehicle-summary { grid-area: summary; position: sticky; top: calc(var(--header-height) + 14px); padding: 24px; border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: 0 12px 34px rgba(12, 34, 64, .09); }
 .vehicle-summary h1 { margin: 6px 0 16px; color: var(--navy); font-size: 30px; line-height: 1.25; }
 .detail-price { display: block; color: var(--blue); font-size: 30px; }
 .spec-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 22px 0; }
@@ -254,6 +288,74 @@ img, video { max-width: 100%; }
 .finance-box { display: flex; flex-direction: column; gap: 4px; padding: 15px; margin: 18px 0; border-left: 4px solid var(--blue); border-radius: 4px; background: #eaf3ff; }
 .finance-box strong { color: var(--blue); font-size: 22px; }
 .primary-action.full { width: 100%; }
+.line-action.full { width: 100%; }
+.detail-actions { display: grid; gap: 9px; margin-top: 18px; }
+.mobile-sticky-actions { display: none; }
+
+/* Sell-car landing page */
+.sell-page { color: var(--ink); background: #fff; }
+.sell-page-hero { min-height: 665px; display: flex; align-items: center; position: relative; overflow: hidden; color: #fff; background: var(--navy); }
+.sell-page-hero > img { object-fit: cover; object-position: center 58%; }
+.sell-page-hero-shade { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(3, 14, 29, .97), rgba(3, 17, 35, .86) 48%, rgba(3, 17, 35, .48)); }
+.sell-page-hero-inner { width: min(1210px, calc(100% - 44px)); margin: 0 auto; padding: 48px 0 64px; position: relative; z-index: 2; }
+.sell-back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 56px; color: #c2d3e8; font-size: 12px; font-weight: 800; }
+.sell-page-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 390px); align-items: center; gap: clamp(42px, 8vw, 112px); }
+.sell-page-hero h1 { margin: 0; font-size: clamp(48px, 5.8vw, 76px); line-height: 1.05; letter-spacing: -.055em; }
+.sell-page-hero h1 em { color: #75b3ff; font-style: normal; }
+.sell-page-hero-grid > div > p:not(.hero-kicker) { max-width: 680px; margin: 22px 0 0; color: #d1ddeb; line-height: 1.75; }
+.sell-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 29px; }
+.sell-quick-card { padding: 27px; border: 1px solid rgba(255, 255, 255, .2); border-radius: 11px; background: rgba(5, 19, 37, .76); box-shadow: 0 24px 60px rgba(0, 0, 0, .25); backdrop-filter: blur(15px); }
+.sell-quick-card > span { display: inline-flex; padding: 6px 10px; border-radius: 999px; color: var(--navy); background: var(--gold); font-size: 11px; font-weight: 900; }
+.sell-quick-card ul { display: grid; gap: 4px; margin: 18px 0; padding: 0; list-style: none; }
+.sell-quick-card li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, .1); color: #f3f7fb; font-size: 13px; font-weight: 700; }
+.sell-quick-card li svg { width: 18px; flex: 0 0 auto; color: #75b3ff; }
+.sell-quick-card small { display: block; color: #aabbd0; font-size: 10px; line-height: 1.55; }
+.sell-trust-strip { max-width: 1210px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 auto; padding: 0 22px; }
+.sell-trust-strip > div { display: flex; align-items: center; gap: 14px; min-height: 126px; padding: 22px; border-right: 1px solid var(--line); }
+.sell-trust-strip > div:last-child { border-right: 0; }
+.sell-trust-strip svg { flex: 0 0 auto; width: 28px; height: 28px; color: var(--blue); }
+.sell-trust-strip p { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.sell-trust-strip strong { color: var(--navy); font-size: 15px; }
+.sell-trust-strip span { color: var(--muted); font-size: 11px; line-height: 1.45; }
+.sell-process-section, .sell-faq-section { padding: clamp(72px, 8vw, 108px) max(24px, calc((100vw - 1210px) / 2)); background: var(--soft); border-top: 1px solid var(--line); }
+.sell-section-heading { display: grid; grid-template-columns: minmax(0, .9fr) minmax(260px, .55fr); column-gap: 55px; align-items: end; margin-bottom: 34px; }
+.sell-section-heading .eyebrow { grid-column: 1 / -1; }
+.sell-section-heading h2 { margin: 6px 0 0; color: var(--navy); font-size: clamp(36px, 4.4vw, 56px); line-height: 1.14; letter-spacing: -.045em; }
+.sell-section-heading > p:last-child { margin: 0 0 5px; color: var(--muted); line-height: 1.7; }
+.sell-process-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.sell-process-grid article { min-width: 0; padding: 26px 23px; border: 1px solid #dce4ee; border-radius: 8px; background: #fff; box-shadow: 0 8px 25px rgba(12, 34, 64, .045); }
+.sell-process-grid article > span { color: #9ab1cc; font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+.sell-process-grid article > svg { display: block; width: 28px; height: 28px; margin: 28px 0 17px; color: var(--blue); }
+.sell-process-grid h3 { margin: 0; color: var(--navy); font-size: 19px; }
+.sell-process-grid p { margin: 11px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.sell-prepare-section { display: grid; grid-template-columns: 1.12fr .88fr; gap: 15px; padding: clamp(72px, 8vw, 108px) max(24px, calc((100vw - 1210px) / 2)); color: #fff; background: var(--navy); }
+.sell-prepare-card, .sell-privacy-card { min-width: 0; padding: clamp(28px, 4vw, 50px); border-radius: 9px; }
+.sell-prepare-card { background: linear-gradient(135deg, #0d335d, #081f3b); }
+.sell-prepare-card h2 { margin: 8px 0 26px; color: #fff; font-size: clamp(34px, 4vw, 50px); line-height: 1.16; letter-spacing: -.04em; }
+.sell-checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 18px; }
+.sell-checklist span { display: flex; align-items: flex-start; gap: 9px; color: #d7e2ee; font-size: 12px; line-height: 1.55; }
+.sell-checklist svg { width: 18px; flex: 0 0 auto; color: #6eb2ff; }
+.sell-privacy-card { display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255, 255, 255, .15); background: rgba(255, 255, 255, .055); }
+.sell-privacy-card > svg { color: var(--gold); }
+.sell-privacy-card h3 { margin: 17px 0 12px; color: #fff; font-size: 24px; line-height: 1.35; }
+.sell-privacy-card > p { margin: 0; color: #b8c6d7; font-size: 12px; line-height: 1.7; }
+.sell-privacy-card > div { display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; padding-top: 19px; border-top: 1px solid rgba(255, 255, 255, .12); color: #e5edf6; font-size: 12px; line-height: 1.6; }
+.sell-privacy-card > div svg { flex: 0 0 auto; color: #70b1fb; }
+.sell-faq-section { background: #fff; }
+.sell-faq-section .sell-section-heading { display: block; }
+.sell-faq-list { border-top: 1px solid var(--line); }
+.sell-faq-list details { border-bottom: 1px solid var(--line); }
+.sell-faq-list summary { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: var(--navy); font-weight: 900; cursor: pointer; list-style: none; }
+.sell-faq-list summary::-webkit-details-marker { display: none; }
+.sell-faq-list summary svg { flex: 0 0 auto; color: var(--blue); transition: transform .2s ease; }
+.sell-faq-list details[open] summary svg { transform: rotate(90deg); }
+.sell-faq-list details p { max-width: 850px; margin: -4px 0 23px; color: var(--muted); line-height: 1.75; }
+.sell-final-cta { display: flex; align-items: center; justify-content: space-between; gap: 42px; padding: 58px max(24px, calc((100vw - 1210px) / 2)); color: #fff; background: linear-gradient(115deg, #0d3159, #07192f); }
+.sell-final-cta p, .sell-final-cta h2 { margin: 0; }
+.sell-final-cta p { color: #84bfff; font-size: 11px; font-weight: 900; letter-spacing: .1em; }
+.sell-final-cta h2 { margin-top: 6px; font-size: clamp(32px, 4vw, 48px); line-height: 1.2; }
+.sell-final-cta span { display: block; margin-top: 9px; color: #b5c4d5; font-size: 12px; }
+.sell-final-cta > div:last-child { display: flex; flex-wrap: wrap; gap: 9px; flex: 0 0 auto; }
 
 @media (max-width: 1180px) {
   :root { --header-height: 72px; }
@@ -268,17 +370,22 @@ img, video { max-width: 100%; }
   .segments { grid-column: 1 / -1; }
   .segments button { flex: 1; }
   .vehicle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .detail-layout { grid-template-columns: 1fr; }
+  .dealership-hero-inner { grid-template-columns: minmax(0, 1fr) minmax(270px, 330px); gap: 34px; }
+  .detail-layout { grid-template-columns: 1fr; grid-template-areas: "summary" "gallery"; }
   .vehicle-summary { position: static; }
+  .sell-process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 820px) {
   .brand small { display: none; }
   .dealership-hero { min-height: 620px; }
+  .dealership-hero-inner { grid-template-columns: 1fr; }
+  .hero-sell-card { display: none; }
   .dealership-hero-image { object-position: 57% center; }
   .dealership-hero-shade { background: linear-gradient(90deg, rgba(3, 13, 27, .93), rgba(3, 15, 31, .66)), linear-gradient(0deg, rgba(3, 13, 27, .62), transparent 52%); }
   .dealership-hero h1 { font-size: clamp(45px, 9vw, 66px); }
   .stock-highlights { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-inline: 18px; }
+  .sell-acquisition-section { grid-template-columns: 1fr; }
   .stock-highlights > div { justify-content: flex-start; border-bottom: 1px solid var(--line); }
   .stock-highlights > div:nth-child(2) { border-right: 0; }
   .stock-highlights > div:nth-last-child(-n+2) { border-bottom: 0; }
@@ -294,6 +401,15 @@ img, video { max-width: 100%; }
   .confidence-list { grid-template-columns: 1fr 1fr; }
   .site-footer { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
+  .sell-page-hero-grid, .sell-prepare-section { grid-template-columns: 1fr; }
+  .sell-page-hero { min-height: auto; }
+  .sell-back-link { margin-bottom: 34px; }
+  .sell-trust-strip { grid-template-columns: 1fr; padding-inline: 18px; }
+  .sell-trust-strip > div { min-height: 100px; border-right: 0; border-bottom: 1px solid var(--line); }
+  .sell-trust-strip > div:last-child { border-bottom: 0; }
+  .sell-section-heading { grid-template-columns: 1fr; gap: 12px; }
+  .sell-section-heading > p:last-child { margin-top: 0; }
+  .sell-final-cta { align-items: flex-start; flex-direction: column; }
 }
 
 @media (max-width: 600px) {
@@ -302,7 +418,7 @@ img, video { max-width: 100%; }
   .brand { gap: 8px; }
   .brand img { width: 52px; height: 40px; }
   .brand strong { font-size: 15px; }
-  .mobile-call, .mobile-line, .menu-toggle { width: 39px; height: 39px; }
+  .mobile-call, .mobile-line, .menu-toggle { width: 44px; height: 44px; }
   .dealership-hero { min-height: 590px; align-items: flex-end; }
   .dealership-hero-image { object-position: 60% center; }
   .dealership-hero-inner { padding: 56px 17px 29px; }
@@ -316,6 +432,10 @@ img, video { max-width: 100%; }
   .hero-assurances svg { width: 19px; height: 19px; }
   .hero-assurances strong { font-size: 10px; }
   .hero-assurances span { font-size: 8px; }
+  .sell-acquisition-section { gap: 34px; padding: 55px 17px; }
+  .sell-acquisition-copy h2 { font-size: 34px; }
+  .sell-acquisition-actions { align-items: stretch; flex-direction: column; }
+  .sell-acquisition-actions a { width: 100%; }
   .stock-highlights { padding-inline: 0; }
   .stock-highlights > div { min-height: 92px; gap: 10px; padding: 16px 13px; }
   .stock-highlights svg { width: 23px; height: 23px; }
@@ -330,13 +450,15 @@ img, video { max-width: 100%; }
   .search-box, .filter-field select { min-height: 46px; }
   .segments { min-height: 47px; }
   .segments button { min-height: 39px; padding-inline: 6px; }
-  .vehicle-grid { display: flex; gap: 12px; overflow-x: auto; padding: 2px 17px 24px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
-  .vehicle-card { width: min(78vw, 300px); flex: 0 0 auto; scroll-snap-align: start; }
+  .vehicle-result-count { margin-inline: 17px; }
+  .vehicle-grid { display: grid; grid-template-columns: 1fr; gap: 14px; overflow: visible; padding: 2px 17px 24px; }
+  .vehicle-card { width: 100%; }
   .about-showcase-image { min-height: 285px; }
   .about-showcase-copy { padding: 45px 19px 52px; }
   .stories-heading, .story-rail.is-empty { width: calc(100% - 34px); }
   .story-rail { gap: 12px; padding-inline: 17px; }
   .story-card { width: min(72vw, 278px); }
+  .story-swipe-hint { width: calc(100% - 34px); margin-top: -17px; }
   .story-empty-card { align-items: flex-start; flex-direction: column; padding: 25px; }
   .knowledge-heading > p { align-self: auto; }
   .article-grid { gap: 12px; padding-inline: 17px; }
@@ -352,10 +474,39 @@ img, video { max-width: 100%; }
   .site-footer { grid-template-columns: 1fr; gap: 30px; padding: 43px 19px; }
   .footer-brand { grid-column: auto; }
   .gallery { grid-template-columns: 1fr; }
-  .gallery-image:first-child { grid-column: auto; aspect-ratio: 4 / 3; }
+  .gallery-image-primary { grid-column: auto; aspect-ratio: 4 / 3; }
+  .gallery-more > summary { min-height: 48px; display: flex; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid #cbd6e3; border-radius: 6px; color: var(--blue); background: #fff; font-weight: 900; cursor: pointer; list-style: none; }
+  .gallery-more > summary::-webkit-details-marker { display: none; }
+  .gallery-more:not([open]) .gallery-more-grid { display: none !important; }
+  .gallery-more[open] .gallery-more-grid { display: grid !important; grid-template-columns: 1fr; margin-top: 10px; }
   .vehicle-summary { padding: 18px; }
   .spec-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .monthly { max-width: 50%; }
+  .detail-page { padding-bottom: 102px; }
+  .mobile-sticky-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; position: fixed; right: 0; bottom: 0; left: 0; z-index: 150; padding: 9px 12px max(9px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(255, 255, 255, .2); background: rgba(5, 18, 35, .97); box-shadow: 0 -10px 30px rgba(5, 18, 35, .22); backdrop-filter: blur(12px); }
+  .mobile-sticky-actions a { min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 7px; border-radius: 5px; color: #fff; background: var(--blue); font-size: 11px; font-weight: 900; }
+  .mobile-sticky-actions a:last-child:not(:only-child) { background: var(--green); }
+  .mobile-sticky-actions a:only-child { grid-column: 1 / -1; }
+  .sell-page { padding-bottom: 72px; }
+  .sell-page-hero-inner { width: calc(100% - 34px); padding: 35px 0 48px; }
+  .sell-page-hero-grid { gap: 28px; }
+  .sell-page-hero h1 { font-size: clamp(38px, 11.3vw, 52px); }
+  .sell-page-hero-grid > div > p:not(.hero-kicker) { font-size: 13px; line-height: 1.65; }
+  .sell-hero-actions { align-items: stretch; flex-direction: column; }
+  .sell-hero-actions a { width: 100%; }
+  .sell-quick-card { padding: 23px 20px; }
+  .sell-process-section, .sell-faq-section { padding: 56px 17px; }
+  .sell-section-heading h2 { font-size: 34px; }
+  .sell-process-grid { grid-template-columns: 1fr; }
+  .sell-process-grid article { padding: 23px 20px; }
+  .sell-prepare-section { padding: 56px 17px; }
+  .sell-prepare-card, .sell-privacy-card { padding: 28px 22px; }
+  .sell-prepare-card h2 { font-size: 33px; }
+  .sell-checklist { grid-template-columns: 1fr; }
+  .sell-faq-list summary { min-height: 74px; font-size: 14px; }
+  .sell-final-cta { gap: 28px; padding: 48px 17px; }
+  .sell-final-cta > div:last-child { width: 100%; flex-direction: column; }
+  .sell-final-cta a { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {

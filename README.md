@@ -21,3 +21,9 @@
 5. รัน `npm install` และ `npm run dev`
 
 อ่านบริบทระบบทั้งหมดที่ [`.ai/SYSTEM_CONTEXT.md`](.ai/SYSTEM_CONTEXT.md) และ [`docs/ERP-HANDOFF.md`](docs/ERP-HANDOFF.md)
+
+## บทความ AI และการอนุมัติผ่าน LINE
+
+ระบบแยกส่วนพร้อม Cron 19:00 เวลาไทย, ร่างที่ต้องอนุมัติก่อนเผยแพร่, LIFF สำหรับผู้ดูแล และหน้า `/articles` พร้อม SEO เปิดใช้งานหลังตั้งค่าตาม [`docs/ARTICLE-APPROVAL.md`](docs/ARTICLE-APPROVAL.md) เท่านั้น ค่าเริ่มต้นปิดระบบและไม่เปลี่ยน Webhook เดิม ใช้บัญชีฐานข้อมูลเฉพาะบทความ ไม่มี service role key ของ ERP
+
+ทดสอบทั้งหมด: `npm test` ตามด้วย `npm run typecheck`, `npm run lint`, `npm run build`
