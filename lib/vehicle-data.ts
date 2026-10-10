@@ -13,9 +13,9 @@ function optionalNumber(value: unknown) {
   return Number.isFinite(number) ? number : undefined;
 }
 
-function photos(value: unknown): PublicVehiclePhoto[] {
+function photos(value: unknown, erpOrigin?: string): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
-  const erpUrl = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
+  const erpUrl = (erpOrigin || process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
@@ -40,8 +40,8 @@ function verticalVideo(value: unknown) {
   };
 }
 
-function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
-  const vehiclePhotos = photos(row.photos);
+function mapVehicle(row: PublicVehicleRow, erpOrigin?: string): PublicVehicleListing {
+  const vehiclePhotos = photos(row.photos, erpOrigin);
   const video = verticalVideo(row.vertical_video);
   const brand = text(row.brand);
   const model = text(row.model);
@@ -74,9 +74,9 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
   };
 }
 
-export async function getPublicVehicles(): Promise<VehicleDataResult> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export async function getPublicVehicles(env: Record<string, string | undefined> = process.env): Promise<VehicleDataResult> {
+  const url = env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
     return {
       vehicles: [],
@@ -100,7 +100,7 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  return { vehicles: (data ?? []).map(mapVehicle), source: "supabase" };
+  return { vehicles: (data ?? []).map((row) => mapVehicle(row, env.NEXT_PUBLIC_ERP_URL)), source: "supabase" };
 }
 
 export async function getPublicVehicle(identifier: string) {

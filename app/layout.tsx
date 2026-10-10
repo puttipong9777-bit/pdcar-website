@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pdcar-website.vercel.app"),
+  metadataBase: new URL("https://www.pdcarcenter.com"),
   other: {
     "facebook-domain-verification": "1h2omtxmsu0vgdm1ustg0x9zokcgl9",
   },
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="th">
-      <body><SiteHeader />{children}</body>
+      <body><SiteHeader phone={process.env.NEXT_PUBLIC_SHOP_PHONE} lineUrl={process.env.NEXT_PUBLIC_LINE_URL} />{children}</body>
     </html>
   );
 }

@@ -14,9 +14,7 @@ const navigation = [
   ["ติดต่อ", "/#contact"]
 ] as const;
 
-export function SiteHeader() {
-  const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+export function SiteHeader({ phone = "0840079122", lineUrl }: { phone?: string; lineUrl?: string }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

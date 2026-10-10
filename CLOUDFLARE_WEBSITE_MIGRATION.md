@@ -36,3 +36,9 @@ Official sources checked 2026-10-10:
 
 1. Audit recorded; dependency installation running. All runtime/build/browser/live checks pending.
 2–8. Pending. No preview URL exists.
+
+## Phase 2 — native Pages implementation
+
+Implemented Pages advanced-mode Functions with bundled React SSR, retaining original Next entry points for rollback verification. Home/detail JSX extracted without CSS changes; Next Link/Image replaced only in Pages bundle by small native wrappers. Added request-time metadata, canonical URLs, sitemap, preview noindex, real 404 for absent vehicles and 503 for unavailable data. No static car list generated. Navigation is full-document navigation so each click/refresh reads current data; back-forward cache restores reload.
+
+Actual checks: dependency installation PASS using writable `/tmp/pdcar-npm-cache` (initial default-cache install failed due sandbox path). `npm run lint`, `npm run typecheck`, `npm run build` PASS after fixing initial lint/type errors. Built handler smoke test: health 200, preview robots 200, unconfigured home/detail 503; all dynamic responses no-store. Live data, CPU quota, browser and deployment checks pending.
