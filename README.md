@@ -11,6 +11,11 @@ cutover. No real pages.dev preview has been deployed; see
 
 ## Cloud development
 
+Use Node **22.23.3** as pinned in `.node-version`. The Pages build compiles the
+fixed homepage and card/video markup from the same React JSX into escaped
+templates; each request still fetches fresh public inventory and fills them.
+Browser hydration, detail SSR and the original Next fallback remain React.
+
 ```sh
 npm ci
 npm run verify

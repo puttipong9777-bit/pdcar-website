@@ -19,8 +19,10 @@ import Image from "next/image";
 import { VehicleBrowser } from "@/components/vehicle-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import type { VehicleDataResult } from "@/lib/types";
+import type { ReactNode } from "react";
 
-export default function HomeContent({ result, phone, lineUrl }: { result: VehicleDataResult; phone: string; lineUrl?: string }) {
+export type HomeSlots = { count: ReactNode; inventory: ReactNode; stories: ReactNode; notice: ReactNode };
+export default function HomeContent({ result, phone, lineUrl, slots }: { result: VehicleDataResult; phone: string; lineUrl?: string; slots?: HomeSlots }) {
 
   return (
     <main>
@@ -44,7 +46,7 @@ export default function HomeContent({ result, phone, lineUrl }: { result: Vehicl
       </section>
 
       <section className="stock-highlights" aria-label="ข้อมูลเด่นของ PD Car Center">
-        <div><CarFront /><p><strong>{result.vehicles.length}</strong><span>คันพร้อมเลือกบนเว็บไซต์</span></p></div>
+        <div><CarFront /><p><strong>{slots ? slots.count : result.vehicles.length}</strong><span>คันพร้อมเลือกบนเว็บไซต์</span></p></div>
         <div><Clock3 /><p><strong>อัปเดตจริง</strong><span>สถานะพร้อมขายและติดจอง</span></p></div>
         <div><Smartphone /><p><strong>ดูง่ายทุกจอ</strong><span>คอมพิวเตอร์ ไอแพด และมือถือ</span></p></div>
         <div><WalletCards /><p><strong>ช่วยจัดไฟแนนซ์</strong><span>สอบถามแผนที่เหมาะกับคุณ</span></p></div>
@@ -57,10 +59,10 @@ export default function HomeContent({ result, phone, lineUrl }: { result: Vehicl
             <h2>รถสวยแนะนำจากหน้าร้าน</h2>
             <p>ค้นหาตามยี่ห้อ ปี และสถานะ แล้วกดดูภาพและรายละเอียดของรถแต่ละคันได้เลย</p>
           </div>
-          <span>{result.vehicles.length} คันในเว็บไซต์</span>
+          <span>{slots ? slots.count : result.vehicles.length} คันในเว็บไซต์</span>
         </div>
-        {result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
-        <VehicleBrowser vehicles={result.vehicles} />
+        {slots ? slots.notice : result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
+        {slots ? slots.inventory : <VehicleBrowser vehicles={result.vehicles} />}
       </section>
 
       <section className="about-showcase" id="about">
@@ -87,7 +89,7 @@ export default function HomeContent({ result, phone, lineUrl }: { result: Vehicl
           </div>
           <p>วิดีโอของรถแต่ละคันแสดงในสัดส่วน 9:16 เหมาะกับการรับชมบนโทรศัพท์ และเลื่อนชมคันถัดไปได้อย่างเป็นธรรมชาติ</p>
         </div>
-        <VehicleStories vehicles={result.vehicles} />
+        {slots ? slots.stories : <VehicleStories vehicles={result.vehicles} />}
       </section>
 
       <section className="knowledge-section" id="articles">

@@ -1,7 +1,7 @@
 {
   "config": {
     "argv": [
-      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/tmp/pdcar-node22/bin/node",
       "/workspace/pdcar-website/node_modules/.bin/playwright",
       "test"
     ],
@@ -173,12 +173,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2235,
+                  "duration": 2240,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-10T08:16:55.786Z",
+                  "startTime": "2026-10-10T08:38:09.696Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -207,12 +207,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1604,
+                  "duration": 1540,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-10T08:16:58.732Z",
+                  "startTime": "2026-10-10T08:38:12.933Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -241,12 +241,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2570,
+                  "duration": 2848,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-10T08:17:00.919Z",
+                  "startTime": "2026-10-10T08:38:15.958Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -275,12 +275,12 @@
                   "workerIndex": 1,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1833,
+                  "duration": 1893,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-10T08:17:04.189Z",
+                  "startTime": "2026-10-10T08:38:19.497Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -293,14 +293,92 @@
           "line": 60,
           "column": 5
         }
+      ],
+      "suites": [
+        {
+          "title": "server HTML without JavaScript",
+          "file": "website.spec.ts",
+          "line": 76,
+          "column": 6,
+          "specs": [
+            {
+              "title": "inventory, vehicle links and metadata are available before hydration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "desktop",
+                  "projectName": "desktop",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 851,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-10T08:38:14.494Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ac69d5138567e2fe8f3-982c0d9fff4bf1fedc65",
+              "file": "website.spec.ts",
+              "line": 78,
+              "column": 7
+            },
+            {
+              "title": "inventory, vehicle links and metadata are available before hydration",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "mobile",
+                  "projectName": "mobile",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1123,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-10T08:38:21.425Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ac69d5138567e2fe8f3-724c15a2a20727b0226c",
+              "file": "website.spec.ts",
+              "line": 78,
+              "column": 7
+            }
+          ]
+        }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-10T08:16:53.209Z",
-    "duration": 12952.262,
-    "expected": 4,
+    "startTime": "2026-10-10T08:38:06.702Z",
+    "duration": 15982.833999999999,
+    "expected": 6,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

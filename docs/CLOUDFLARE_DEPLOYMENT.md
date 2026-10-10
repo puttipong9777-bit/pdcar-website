@@ -27,7 +27,7 @@ must be reconciled with the actual chosen name; no project currently exists here
 
 - Framework preset: **None** (custom native Functions build, not Next static export).
 - Root: repository root.
-- Node: 22, latest supported patch (local validation used Node 24.19.0).
+- Node: **22.23.3**, pinned in `.node-version` and tested in Codex Cloud using the official checksum-verified Node archive. Do not override it with a different NODE_VERSION setting.
 - Build: `npm ci && npm run verify && npm test` (verify includes build).
 - Output: `out`.
 - Pages Functions compatibility date: `2026-10-10`.

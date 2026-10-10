@@ -1,0 +1,149 @@
+{
+  "note": "Paired Node process CPU, alternating order, 10 warmups + 100 measured pairs per case. Includes mock JSON/fetch/Response text consumption; not Cloudflare metering. Synthetic inventory sizes; actual live stock count unknown.",
+  "node": "v22.23.3",
+  "beforeBundleSha256": "d60969b339313856c8a5160e34f8b03b69a1e2b91b26ba0105b4adc76c7a4e70",
+  "afterBundleSha256": "9e631e9a719a2ba0bfea839cdd708ee9cbb6ca13e6073db4d4d2ba363538cc91",
+  "fixtureSha256": "f31002de4e8941173aea4f8efc2dfab1fa26bae2d46c78d288d8d23210278fb8",
+  "results": [
+    {
+      "cars": 1,
+      "route": "home",
+      "before": {
+        "firstCpuMs": 50.519,
+        "medianCpuMs": 1.599,
+        "p95CpuMs": 6.251
+      },
+      "after": {
+        "firstCpuMs": 2.164,
+        "medianCpuMs": 0.589,
+        "p95CpuMs": 2.618
+      }
+    },
+    {
+      "cars": 1,
+      "route": "detail",
+      "before": {
+        "firstCpuMs": 1.623,
+        "medianCpuMs": 0.653,
+        "p95CpuMs": 4.528
+      },
+      "after": {
+        "firstCpuMs": 8.122,
+        "medianCpuMs": 0.747,
+        "p95CpuMs": 3.205
+      }
+    },
+    {
+      "cars": 10,
+      "route": "home",
+      "before": {
+        "firstCpuMs": 2.776,
+        "medianCpuMs": 2.092,
+        "p95CpuMs": 3.383
+      },
+      "after": {
+        "firstCpuMs": 1.485,
+        "medianCpuMs": 1.118,
+        "p95CpuMs": 2.497
+      }
+    },
+    {
+      "cars": 10,
+      "route": "detail",
+      "before": {
+        "firstCpuMs": 3.368,
+        "medianCpuMs": 0.593,
+        "p95CpuMs": 7.721
+      },
+      "after": {
+        "firstCpuMs": 1.205,
+        "medianCpuMs": 0.63,
+        "p95CpuMs": 4.403
+      }
+    },
+    {
+      "cars": 50,
+      "route": "home",
+      "before": {
+        "firstCpuMs": 5.41,
+        "medianCpuMs": 5.859,
+        "p95CpuMs": 11.507
+      },
+      "after": {
+        "firstCpuMs": 7.402,
+        "medianCpuMs": 4.033,
+        "p95CpuMs": 8.53
+      }
+    },
+    {
+      "cars": 50,
+      "route": "detail",
+      "before": {
+        "firstCpuMs": 0.742,
+        "medianCpuMs": 0.518,
+        "p95CpuMs": 3.878
+      },
+      "after": {
+        "firstCpuMs": 0.561,
+        "medianCpuMs": 0.576,
+        "p95CpuMs": 4.368
+      }
+    },
+    {
+      "cars": 100,
+      "route": "home",
+      "before": {
+        "firstCpuMs": 9.772,
+        "medianCpuMs": 10.409,
+        "p95CpuMs": 24.203
+      },
+      "after": {
+        "firstCpuMs": 8.304,
+        "medianCpuMs": 7.787,
+        "p95CpuMs": 13.49
+      }
+    },
+    {
+      "cars": 100,
+      "route": "detail",
+      "before": {
+        "firstCpuMs": 2.016,
+        "medianCpuMs": 0.415,
+        "p95CpuMs": 0.995
+      },
+      "after": {
+        "firstCpuMs": 0.594,
+        "medianCpuMs": 0.453,
+        "p95CpuMs": 2.396
+      }
+    },
+    {
+      "cars": 250,
+      "route": "home",
+      "before": {
+        "firstCpuMs": 21.068,
+        "medianCpuMs": 25.069,
+        "p95CpuMs": 48.81
+      },
+      "after": {
+        "firstCpuMs": 16.905,
+        "medianCpuMs": 18.383,
+        "p95CpuMs": 25.03
+      }
+    },
+    {
+      "cars": 250,
+      "route": "detail",
+      "before": {
+        "firstCpuMs": 1.144,
+        "medianCpuMs": 0.429,
+        "p95CpuMs": 2.319
+      },
+      "after": {
+        "firstCpuMs": 0.474,
+        "medianCpuMs": 0.454,
+        "p95CpuMs": 2.793
+      }
+    }
+  ]
+}

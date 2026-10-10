@@ -7,7 +7,20 @@ export function VehicleStories({ vehicles }: { vehicles: PublicVehicleListing[] 
   return (
     <div className={`story-rail${vehicles.length ? "" : " is-empty"}`}>
       {vehicles.length ? vehicles.map((vehicle, index) => (
-        <article className="story-card" key={vehicle.carId}>
+        <VehicleStory vehicle={vehicle} index={index} key={vehicle.carId} />
+      )) : (
+        <div className="story-empty-card">
+          <Video size={38} />
+          <div><strong>พื้นที่วิดีโอรถหน้าร้าน</strong><span>เมื่อเพิ่มคลิปให้รถแต่ละคัน ระบบจะเรียงคลิปแนวตั้งให้ลูกค้าปัดชมได้ทันที</span></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function VehicleStory({ vehicle, index, indexLabel }: { vehicle: PublicVehicleListing; index: number; indexLabel?: string }) {
+  return (
+        <article className="story-card">
           {vehicle.youtubeVideoId ? (
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(vehicle.youtubeVideoId)}?playsinline=1&rel=0`}
@@ -23,7 +36,7 @@ export function VehicleStories({ vehicles }: { vehicles: PublicVehicleListing[] 
           )}
           <div className="story-shade" />
           <div className="story-card-top">
-            <span>{index + 1 < 10 ? `0${index + 1}` : index + 1}</span>
+            <span>{indexLabel ?? (index + 1 < 10 ? `0${index + 1}` : index + 1)}</span>
             <span className={vehicle.youtubeVideoId ? "has-video" : ""}>{vehicle.youtubeVideoId ? <Play size={14} fill="currentColor" /> : <Video size={14} />}{vehicle.youtubeVideoId ? "เล่นคลิป" : "คลิปกำลังมา"}</span>
           </div>
           <div className="story-card-copy">
@@ -32,12 +45,5 @@ export function VehicleStories({ vehicles }: { vehicles: PublicVehicleListing[] 
             <Link href={`/cars/${encodeURIComponent(vehicle.slug)}`}>ดูรถคันนี้</Link>
           </div>
         </article>
-      )) : (
-        <div className="story-empty-card">
-          <Video size={38} />
-          <div><strong>พื้นที่วิดีโอรถหน้าร้าน</strong><span>เมื่อเพิ่มคลิปให้รถแต่ละคัน ระบบจะเรียงคลิปแนวตั้งให้ลูกค้าปัดชมได้ทันที</span></div>
-        </div>
-      )}
-    </div>
   );
 }

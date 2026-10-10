@@ -100,7 +100,7 @@ CPU risk: `artifacts/local-cpu.json` measures Node process CPU, not Cloudflare b
 | SEO/social tags, canonical, robots, sitemap | PASS initial HTML | NOT TESTED Google/Facebook fetch/cache |
 | ERP non-impact | PASS no writes, no ERP files changed | BLOCKED live ERP health read |
 | npm ci/lint/typecheck/Pages build | PASS | BLOCKED remote build |
-| Automated tests | PASS 11 unit + 4 browser | NOT TESTED remote |
+| Automated tests | PASS 15 unit + 6 browser (Node 22 follow-up) | NOT TESTED remote |
 | Retained Next build | PASS | NOT TESTED rollback deployment |
 | Free resource quotas | Local CPU RISK | BLOCKED actual metrics/account plan |
 | HTTPS/CDN/cache headers | PASS local no-store/routes | NOT TESTED remote TLS/CDN |
@@ -136,7 +136,7 @@ Read-only A/AAAA/CNAME/NS/MX/TXT/CAA queries for apex/www and DMARC TXT all fail
 | scripts/build-pages.mjs | Bundle static assets and native Pages _worker.js; route assets outside Functions |
 | next.config.ts | Disable legacy Next optimizer in fallback build |
 | package.json, package-lock.json | Reproducible esbuild/Wrangler/Playwright tools and explicit Pages/Next commands |
-| wrangler.jsonc, .node-version | Pages output/runtime date and proposed Node 22 build setting |
+| wrangler.jsonc, .node-version | Pages output/runtime date and tested Node 22.23.3 pin |
 | .gitignore, eslint.config.mjs | Ignore local secrets/build/test caches, lint source rather than bundles |
 | playwright.config.ts, tests/fixtures.mjs, tests/mock-server.mjs, tests/pages.test.mjs, tests/browser/website.spec.ts | Isolated no-write regression and workerd/browser tests |
 | artifacts/browser-results.json, browser-tests.log, unit-tests.log, verify.log, npm-ci.log, next-build.log | Actual command/test evidence |
@@ -149,14 +149,55 @@ No CSS, public images, public data contract, SQL migration or ERP repository fil
 
 ### Build / deployment / freshness
 
-Preset None, repository root, `npm ci && npm run verify && npm test`, output `out`, Pages Functions advanced mode. Node 22 proposed; local tests used 24.19.0. Five existing public variable names are listed in phase 1; values are neither logged nor committed. Use runtime bindings, not a static inventory export. JS/CSS static assets revalidate; dynamic HTML/sitemap/health use no-store. Changes appear on next navigation/refresh, with no intentional cache delay, subject to Supabase response latency (8-second timeout per upstream page). Open idle tabs are snapshots just as in baseline. No polling or paid services added. Social platforms can retain their own preview caches independently of site headers.
+Preset None, repository root, `npm ci && npm run verify && npm test`, output `out`, Pages Functions advanced mode. Node 22.23.3 pinned and locally tested; initial delivery used Node 24.19.0. See the follow-up below. Five existing public variable names are listed in phase 1; values are neither logged nor committed. Use runtime bindings, not a static inventory export. JS/CSS static assets revalidate; dynamic HTML/sitemap/health use no-store. Changes appear on next navigation/refresh, with no intentional cache delay, subject to Supabase response latency (8-second timeout per upstream page). Open idle tabs are snapshots just as in baseline. No polling or paid services added. Social platforms can retain their own preview caches independently of site headers.
 
 ### Free plan limits and remaining risks
 
 Official sources checked 2026-10-10: Pages Functions pricing, Pages platform limits, and https://developers.cloudflare.com/workers/platform/limits/ . Functions share the account-wide 100,000 requests/day Free allowance (UTC reset); static requests that bypass Functions are free/unlimited. Runtime Free CPU 10 ms/request, memory 128 MB, external subrequests 50/request. Pages Free allows 500 builds/month, one concurrent build, 20-minute build timeout, 20,000 files/site, 25 MiB/asset. These are limits, not measurements of this account or a cost guarantee. No paid plan/resources enabled.
 
-Actual Free CPU acceptance is NOT TESTED because deployment is blocked. Local CPU warning must be investigated with cold/warm real preview metrics; larger inventory may require build-time static-shell extraction and lighter dynamic rendering. Do not solve it by silently enabling Paid, switching hosting, caching unpublished data or dropping SEO. App caps list pagination at 40 requests (+ at most one legacy-video retry), failing visibly instead of truncating; realistic volume needs acceptance testing. Real API schema/grants and ERP photo availability remain unknown. Native original images may transfer more bytes; unavailable ERP photos cannot be repaired by this website move alone.
+Actual Free CPU acceptance is NOT TESTED because deployment is blocked. Local CPU warning must be investigated with cold/warm real preview metrics; the homepage now uses build-time presentation templates, but larger inventories still show local CPU risk and require real preview metrics. Do not solve it by silently enabling Paid, switching hosting, caching unpublished data or dropping SEO. App caps list pagination at 40 requests (+ at most one legacy-video retry), failing visibly instead of truncating; realistic volume needs acceptance testing. Real API schema/grants and ERP photo availability remain unknown. Native original images may transfer more bytes; unavailable ERP photos cannot be repaired by this website move alone.
 
 ### Remaining owner/platform actions
 
 Approve secure Cloudflare Pages access/Git integration (website only), provide existing public configuration via settings/secret UI, and restore allowed cloud network access listed in the access handoff. Then verify Free plan, deploy preview, record actual URL/commit, run live read-only data/media checks and remote browser/SEO/TLS/CPU QA. Live anon permission checks must avoid sensitive rows; zero-row success alone is inconclusive. DNS records/SSL/mail/redirect baseline require read-only access. Only after all gates pass should a separate explicit DNS/custom-domain cutover approval be sought. No raw tokens in chat. No merge, ERP changes, production write tests or Vercel deletion.
+
+
+## Follow-up — reduce request-time rendering and verify Node 22
+
+The initial phase 6 results above describe the first delivery. This section and updated artifact logs describe the current implementation. No deployment, new credentials, schema/data, ERP, DNS, paid resources or hosting-platform change occurred.
+
+### Change and tradeoffs
+
+`components/vehicle-card.tsx` extracts the existing card JSX, including image/mileage/monthly fragments. `components/vehicle-stories.tsx` exposes the existing single-story JSX. `lib/format.ts` shares the original Thai number/currency formatting. These are still the browser and Next presentation components, not a second handwritten HTML design.
+
+`pages-runtime/prerender.tsx` renders the fixed home/header and card/story/control fragments with synthetic markers **at build time**. `scripts/build-pages.mjs` bundles those strings into native Pages Functions. No live inventory or environment values are read at build time. `pages-runtime/render-home.ts` fills the templates from freshly fetched, allowlisted public data on every request. It escapes public leaf values and replaces markers in one pass, preserving React's javascript-URL blocking for attributes. The ordinary client React tree hydrates the same HTML. Detail and unavailable/error pages keep the simpler existing React SSR path; detail filtering and the HEAD rendering fast path remain.
+
+All cards, videos, new slugs, prices, statuses and publication checks stay dynamic. Nothing caches inventory or reduces the number of shown cars. CSS/public images and existing appearance are unchanged; the existing mock screenshots are byte-identical after the optimization. New code must keep template slots/formatting aligned with JSX; parity tests are part of that maintenance contract. This adds a small build-only compiler and about 11.3 KiB gzip to the Function bundle (73,975 → 85,519 gzip bytes), in exchange for less repeated React/icon rendering. Generated `.pages-build/` is ignored and never deployed; only `out/` is deployed.
+
+### Paired benchmark (same fixtures and Node 22.23.3)
+
+Baseline artifact built from the published `f84a6c0af425abb39eee0c4e13913f59971e4309` tree. `scripts/compare-local-cpu.mjs` alternates adjacent before/after requests, with 10 warmup pairs and 100 measured pairs per case. It uses the unchanged `tests/fixtures.mjs`, mocks GET responses only, and records bundle/fixture SHA-256 hashes. Synthetic inventories cover 1/10/50/100 cars plus a 250-car stress case; **the actual production stock count is unknown**. Measurements include Node mock-response JSON/encoding and response consumption, not just rendering. Profiling found substantial JSON/encoding/GC overhead; this limits how much a rendering change can improve total time.
+
+| Home inventory | Before median / p95 ms | After median / p95 ms | Median reduction |
+| --- | --- | --- | --- |
+| 1 | 1.599 / 6.251 | 0.589 / 2.618 | 63.2% |
+| 10 | 2.092 / 3.383 | 1.118 / 2.497 | 46.6% |
+| 50 | 5.859 / 11.507 | 4.033 / 8.530 | 31.2% |
+| 100 | 10.409 / 24.203 | 7.787 / 13.490 | 25.2% |
+| 250 (stress) | 25.069 / 48.810 | 18.383 / 25.030 | 26.7% |
+
+Evidence: `artifacts/cpu-paired-node22.json`; separate-run measurements in `cpu-before-node22.json` / `cpu-after-node22.json` show timing variability and are not used to claim cold-start improvement. `scripts/measure-local-cpu.mjs` reproduces standalone measurements, including HEAD/sitemap. Paired first requests share process initialization, so their first-request values are **not** an apples-to-apples cold-start metric. The original Node 24 `local-cpu.json` is historical evidence, not the comparison baseline for this optimization.
+
+**Actual Free acceptance remains BLOCKED / NOT TESTED.** The 100-car local p95 and 250-car stress results still exceed 10 ms, despite the improvement. These local numbers are not a Cloudflare quota pass or proven quota failure. Real cold/warm metrics with the actual stock and data size are required. No Paid plan, stale cache, reduced SEO or Workers hosting is introduced to hide that risk.
+
+Reproduce with Node 22.23.3: build the baseline commit in a separate checkout, build this branch, then run `node scripts/compare-local-cpu.mjs <baseline>/out/_worker.js out/_worker.js`. Do not benchmark against production or create production records.
+
+### Node version and final verification
+
+Downloaded Node **22.23.3** from official `nodejs.org` over normal permitted HTTPS and verified its archive against the official SHA-256 list. `.node-version` now pins that exact tested version; npm is 10.9.9. Runtime provenance is recorded in `artifacts/node22-runtime.json`. Cloudflare documents `.node-version` support at https://developers.cloudflare.com/pages/configuration/build-image/ . No network restriction was bypassed; denied Cloudflare/ERP destinations were not retried.
+
+Final Node 22 checks: clean npm ci PASS; lint PASS; typecheck PASS; Pages build PASS; **15/15 unit tests PASS**; **6/6 browser tests PASS** against local workerd with desktop/iPhone Chromium emulation; retained Next build **PASS**, recorded in `artifacts/next-build.log`. Browser tests include HTML inventory, deep links and metadata with JavaScript disabled, plus normal hydration/filtering, direct refresh, mock new slug/price/reserved/unpublish, media, phone/LINE and no console/page errors.
+
+Four added unit cases compare compiled markup with React SSR across 128 combinations of optional card fields/statuses, empty stock and LINE variants, hostile delimiters/template-shaped text, and javascript URL protection. Equality ignores only React's empty text-boundary comments. No new external package was needed. Current artifacts replace the initial test logs; the initial per-phase results remain in git history.
+
+Additional/updated implementation files: `.node-version`, `.gitignore`, `eslint.config.mjs`; home/browser/card/story components; `lib/format.ts`; `pages-runtime/app.tsx`, `worker.tsx`, `prerender.tsx`, `render-home.ts`; build/benchmark scripts; `tests/templates.test.mjs`, browser tests; README/deployment guidance and the evidence files above. Remaining setup blockers are unchanged and listed in the access handoff. The draft must remain unmerged until actual preview and Free runtime acceptance.

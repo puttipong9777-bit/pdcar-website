@@ -72,3 +72,17 @@ test("new slug, price, reserved and unpublish update without rebuilding", async 
   await expect(page.locator(".vehicle-card")).toHaveCount(1);
   await expect(page.locator(".vehicle-card")).not.toContainText("PD0001");
 });
+
+test.describe("server HTML without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("inventory, vehicle links and metadata are available before hydration", async ({ page }) => {
+    await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ body: "Mock video" }));
+    await page.goto("/");
+    await expect(page.locator(".vehicle-card")).toHaveCount(2);
+    await expect(page.locator(".vehicle-card").first()).toContainText("399,000");
+    await page.locator(".vehicle-card h3 a").first().click();
+    await expect(page.locator(".vehicle-summary h1")).toHaveText("Toyota Yaris 2022");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Toyota Yaris 2022 | PD Car Center");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
+  });
+});

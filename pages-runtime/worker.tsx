@@ -1,6 +1,7 @@
 import { renderToString } from "react-dom/server.browser";
 import { getPublicVehicles } from "@/lib/vehicle-data";
 import { App, type PageData } from "./app";
+import { renderHome } from "./render-home";
 
 export type Env = Record<string, string | undefined> & { ASSETS?: never };
 type Bindings = { ASSETS: { fetch(request: Request): Promise<Response> } };
@@ -49,11 +50,12 @@ export async function handleRequest(request: Request, env: Env, assets?: Binding
   const description = vehicle?.description || (vehicle ? `${vehicle.title} ${vehicle.carId} — ${shopDescription}` : shopDescription);
   const canonical = vehicle ? `${origin}/cars/${encodeURIComponent(vehicle.slug)}` : `${origin}/`;
   const socialImage = vehicle?.coverImageUrl || `${origin}/og.png`;
-  const markup = renderToString(<App data={data} />);
+  const markup = data.kind === "home" && !unavailable ? renderHome(data) : renderToString(<App data={data} />);
   // Escape script delimiters even though data came from the approved public view.
   const bootstrap = JSON.stringify(data).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
   return reply(`<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escape(title)}</title><meta name="description" content="${escape(description)}"><meta name="facebook-domain-verification" content="1h2omtxmsu0vgdm1ustg0x9zokcgl9">${status !== 200 || preview ? '<meta name="robots" content="noindex,nofollow">' : ""}<link rel="canonical" href="${escape(canonical)}"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${escape(canonical)}"><meta property="og:image" content="${escape(socialImage)}"><meta property="og:locale" content="th_TH"><meta property="og:type" content="website"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escape(title)}"><meta name="twitter:description" content="${escape(description)}"><meta name="twitter:image" content="${escape(socialImage)}"><link rel="stylesheet" href="/assets/site.css"></head><body><div id="app">${markup}</div><script id="page-data" type="application/json">${bootstrap}</script><script type="module" src="/assets/client.js"></script></body></html>`, "text/html; charset=utf-8", status);
 }
+
 
 const worker = { fetch(request: Request, env: Bindings & Record<string, unknown>) {
   return handleRequest(request, env as unknown as Env, env.ASSETS);
