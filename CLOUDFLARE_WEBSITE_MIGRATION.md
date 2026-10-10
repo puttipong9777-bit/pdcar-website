@@ -1,3 +1,17 @@
+# Current acceptance supersedes the historical report
+
+**2026-10-10:** Exact Vercel production source was recovered (78 hash matches; f9722f6). The isolated Free Pages preview is deployed at https://pdcar-website-preview.pages.dev/ and reads 12 public vehicles. Cloud migration QA passed 67 unit tests and 8 browser cases; live GET/HEAD QA passed 21 checks. **Media acceptance is BLOCKED by ERP HTTP 402; Free CPU is NOT MEASURED because dashboard charts have no data. Production migration/cutover is not complete.**
+
+Current source, deployment, test evidence and remaining gates: [docs/MIGRATION_CURRENT_STATUS.md](docs/MIGRATION_CURRENT_STATUS.md).
+Verified deployment and secure runtime configuration: [docs/CLOUDFLARE_DEPLOYMENT.md](docs/CLOUDFLARE_DEPLOYMENT.md).
+PR #1 remains draft/unmerged. ERP, data/schema, main, DNS/domain, Vercel and billing are unchanged.
+
+---
+
+## Historical record — superseded status and older candidate QA
+
+The following sections preserve previous investigative history. Their “source gap”, “no deployment”, local test counts and old access instructions are not the current state or current acceptance evidence. Use the current status above.
+
 # Cloudflare Pages website migration
 
 ## Status / boundaries
