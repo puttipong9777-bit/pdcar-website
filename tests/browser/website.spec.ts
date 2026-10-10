@@ -42,7 +42,7 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
   await page.locator("#inventory").scrollIntoViewIfNeeded();
   for (const img of await page.locator(".catalog-card img").all()) {
     await img.scrollIntoViewIfNeeded();
-    await expect.poll(() => img.evaluate((node) => node.complete && node.naturalWidth > 0), { message: "Each lazy catalog image loads when scrolled into view" }).toBe(true);
+    await expect.poll(() => img.evaluate((node) => node instanceof HTMLImageElement && node.complete && node.naturalWidth > 0), { message: "Each lazy catalog image loads when scrolled into view" }).toBe(true);
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
@@ -55,7 +55,7 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /mock-front/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
   for (const img of await page.locator(".gallery-image img").all()) await img.scrollIntoViewIfNeeded();
-  for (const img of await page.locator(".gallery-image img").all()) await expect.poll(() => img.evaluate((node) => node.complete && node.naturalWidth > 0), { message: "Gallery images load after disclosure and scrolling" }).toBe(true);
+  for (const img of await page.locator(".gallery-image img").all()) await expect.poll(() => img.evaluate((node) => node instanceof HTMLImageElement && node.complete && node.naturalWidth > 0), { message: "Gallery images load after disclosure and scrolling" }).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: `artifacts/${testInfo.project.name}-detail-mock.jpg`, fullPage: true, type: "jpeg", quality: 65, scale: "css" });
