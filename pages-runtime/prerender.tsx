@@ -1,5 +1,5 @@
 // Build only: fixtures are placeholders, never production data or credentials.
-import {renderToString} from "react-dom/server.browser";
+import {renderToString} from "react-dom/server";
 import {App, type PageData} from "./app";
 const markers = {count:"__PDCAR_STATIC_COUNT__",inventory:"__PDCAR_STATIC_INVENTORY__",stories:"__PDCAR_STATIC_STORIES__"};
 export function compileTemplates() {
