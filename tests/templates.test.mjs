@@ -18,7 +18,9 @@ async function compare(rows, settings = env) {
     const html = await response.text();
     const data = JSON.parse(html.match(/<script id="page-data" type="application\/json">(.*?)<\/script>/s)[1]);
     const markup = html.slice(html.indexOf('<div id="app">') + 14, html.indexOf('</div><script id="page-data"'));
-    assert.equal(normalize(markup), normalize(renderReference(data)));
+    const actual=normalize(markup),expected=normalize(renderReference(data));
+    let i=0;while(i<Math.min(actual.length,expected.length)&&actual[i]===expected[i])i++;
+    assert.ok(actual===expected,JSON.stringify({firstDifference:i,actual:actual.slice(Math.max(0,i-100),i+250),expected:expected.slice(Math.max(0,i-100),i+250),phone:data.phone,actualLength:actual.length,expectedLength:expected.length}));
     return html;
   } finally { globalThis.fetch = original; }
 }

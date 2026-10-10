@@ -37,8 +37,12 @@ jobs:
           fi
           echo "Verified SHA: $(git rev-parse HEAD)"
       - run: npm ci
-      - run: npm run verify
+      - id: verify
+        run: npm run verify
       - run: npm test
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser
-      - run: npm run build:next
+      - if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        run: npx playwright install --with-deps chromium
+      - if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        run: npm run test:browser
+      - if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        run: npm run build:next
