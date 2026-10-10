@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import HomeContent from "@/components/home-content";
 import VehicleContent from "@/components/vehicle-content";
@@ -23,6 +24,6 @@ export function App({data, homeSlots}: {data: PageData; homeSlots?: HomeSlots}) 
     data.kind === "articles" ? <ArticlesContent articles={data.articles || []} page={data.page || 1}/> :
     data.kind === "article" && data.article?.content ? <ArticleContent article={data.article as PublishedArticle & {content: NonNullable<PublishedArticle["content"]>}}/> :
     data.kind === "admin-disabled" ? <main className="pd-articles"><h1>ระบบอนุมัติบทความยังไม่เปิดใช้งาน</h1></main> :
-    <main className="detail-page"><h1>{data.kind === "unavailable" ? "ไม่สามารถเชื่อมต่อข้อมูลได้ชั่วคราว" : "ไม่พบหน้า"}</h1><a href="/#inventory">กลับไปดูรถทั้งหมด</a></main>}
+    <main className="detail-page"><h1>{data.kind === "unavailable" ? "ไม่สามารถเชื่อมต่อข้อมูลได้ชั่วคราว" : "ไม่พบหน้า"}</h1><Link href="/#inventory">กลับไปดูรถทั้งหมด</Link></main>}
   </>;
 }
