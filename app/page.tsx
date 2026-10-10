@@ -1,14 +1,15 @@
 import {
-  ArrowDown,
   ArrowRight,
-  BadgeCheck,
+  Banknote,
   Calculator,
+  Camera,
   CarFront,
   CheckCircle2,
   Clock3,
   FileCheck2,
-  Headphones,
+  FileText,
   MapPin,
+  MessageCircle,
   Phone,
   ShieldCheck,
   Smartphone,
@@ -16,9 +17,12 @@ import {
   WalletCards
 } from "lucide-react";
 import Image from "next/image";
-import { VehicleBrowser } from "@/components/vehicle-browser";
+import Link from "next/link";
+import { CatalogBrowser } from "@/components/catalog-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
+import { ShowroomHero } from "@/components/showroom-hero";
 import { getPublicVehicles } from "@/lib/vehicle-data";
+import "./showroom.css";
 
 export const dynamic = "force-dynamic";
 
@@ -28,44 +32,44 @@ export default async function HomePage() {
   const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
 
   return (
-    <main>
-      <section className="dealership-hero" id="showroom">
-        <Image className="dealership-hero-image" src="/images/storefront.jpg" alt="หน้าร้าน PD Car Center นครปฐม" fill priority sizes="100vw" />
-        <div className="dealership-hero-shade" aria-hidden="true" />
-        <div className="dealership-hero-inner">
-          <p className="hero-kicker"><span />PD CAR CENTER · NAKHON PATHOM</p>
-          <h1>รถสวย คุณภาพดี<br /><em>คัดพิเศษทุกคัน</em></h1>
-          <p className="hero-lead">เลือกรถมือสองจากสต็อกหน้าร้านจริง ดูราคาและรายละเอียดได้ชัดเจน พร้อมปรึกษาเรื่องรถและไฟแนนซ์กับทางร้านโดยตรง</p>
-          <div className="hero-actions">
-            <a className="primary-action" href="#inventory">ค้นหารถที่ใช่ <ArrowDown size={18} /></a>
-            <a className="outline-action" href={`tel:${phone}`}><Phone size={18} />โทรปรึกษาฟรี</a>
-          </div>
-          <div className="hero-assurances" aria-label="จุดเด่นของร้าน">
-            <div><BadgeCheck /><p><strong>รถคัดคุณภาพ</strong><span>ข้อมูลจากสต็อกจริง</span></p></div>
-            <div><ShieldCheck /><p><strong>ข้อมูลชัดเจน</strong><span>ดูราคาและรายละเอียดได้ทันที</span></p></div>
-            <div><Headphones /><p><strong>ดูแลทุกขั้นตอน</strong><span>ตั้งแต่เลือกรถจนถึงวันรับรถ</span></p></div>
-          </div>
-        </div>
-      </section>
+    <main className="showroom-page">
+      <ShowroomHero count={result.vehicles.length} />
 
       <section className="stock-highlights" aria-label="ข้อมูลเด่นของ PD Car Center">
         <div><CarFront /><p><strong>{result.vehicles.length}</strong><span>คันพร้อมเลือกบนเว็บไซต์</span></p></div>
         <div><Clock3 /><p><strong>อัปเดตจริง</strong><span>สถานะพร้อมขายและติดจอง</span></p></div>
         <div><Smartphone /><p><strong>ดูง่ายทุกจอ</strong><span>คอมพิวเตอร์ ไอแพด และมือถือ</span></p></div>
-        <div><WalletCards /><p><strong>ช่วยจัดไฟแนนซ์</strong><span>สอบถามแผนที่เหมาะกับคุณ</span></p></div>
+        <div><WalletCards /><p><strong>ซื้อและรับซื้อรถ</strong><span>คุยกับผู้ดูแลร้านได้โดยตรง</span></p></div>
       </section>
 
       <section className="inventory-section" id="inventory">
         <div className="section-heading wide-heading">
           <div>
-            <p className="eyebrow">SELECTED CARS</p>
-            <h2>รถสวยแนะนำจากหน้าร้าน</h2>
-            <p>ค้นหาตามยี่ห้อ ปี และสถานะ แล้วกดดูภาพและรายละเอียดของรถแต่ละคันได้เลย</p>
+            <p className="eyebrow">FIND YOUR NEXT DRIVE</p>
+            <h2>เลือกคันที่เป็นคุณ<span className="heading-dot">.</span></h2>
+            <p>เลือกยี่ห้อ ตั้งงบ แล้วทำความรู้จักคันที่ถูกใจ</p>
           </div>
           <span>{result.vehicles.length} คันในเว็บไซต์</span>
         </div>
         {result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
-        <VehicleBrowser vehicles={result.vehicles} />
+        <CatalogBrowser vehicles={result.vehicles} />
+      </section>
+
+      <section className="sell-acquisition-section" id="sell-car">
+        <div className="sell-acquisition-copy">
+          <p className="eyebrow">SELL YOUR CAR · NAKHON PATHOM</p>
+          <h2>อยากขายรถมือสอง<br />เริ่มคุยกับ PD Car Center</h2>
+          <p>หากคุณกำลังค้นหาที่รับซื้อรถมือสองในนครปฐม ส่งข้อมูลรถมาให้เราประเมินเบื้องต้นก่อนนัดดูรถจริงได้ ไม่ต้องกรอกข้อมูลลงเว็บไซต์</p>
+          <div className="sell-acquisition-actions">
+            <Link className="primary-action" href="/sell-car">ประเมินรถของคุณ <ArrowRight size={18} /></Link>
+            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={18} />ส่งรูปรถทาง LINE</a> : null}
+          </div>
+        </div>
+        <div className="sell-acquisition-steps" aria-label="ขั้นตอนเริ่มขายรถ">
+          <div><Camera /><p><strong>1. ส่งข้อมูลรถ</strong><span>ยี่ห้อ รุ่น ปี เลขไมล์ และรูปถ่าย</span></p></div>
+          <div><Banknote /><p><strong>2. ประเมินเบื้องต้น</strong><span>คุยรายละเอียดและช่วงราคากับร้าน</span></p></div>
+          <div><FileText /><p><strong>3. นัดดูรถและเอกสาร</strong><span>ตรวจสภาพจริงก่อนตกลงซื้อขาย</span></p></div>
+        </div>
       </section>
 
       <section className="about-showcase" id="about">
@@ -101,7 +105,7 @@ export default async function HomePage() {
             <p className="eyebrow">PDCAR KNOWLEDGE</p>
             <h2>บทความน่ารู้ก่อนซื้อรถ</h2>
           </div>
-          <p>คำแนะนำสั้น กระชับ และนำไปใช้ตัดสินใจเลือกรถได้จริง</p>
+          <div><p>คำแนะนำสั้น กระชับ และนำไปใช้ตัดสินใจเลือกรถได้จริง</p><Link href="/articles">อ่านบทความทั้งหมด →</Link></div>
         </div>
 
         <div className="article-grid">
@@ -161,7 +165,7 @@ export default async function HomePage() {
         <div className="confidence-list">
           <div><CheckCircle2 /><p><strong>ข้อมูลตรงกับหน้าร้าน</strong><span>แสดงเฉพาะรถที่ร้านอนุญาตให้เผยแพร่</span></p></div>
           <div><CheckCircle2 /><p><strong>ราคาและค่างวดอ่านง่าย</strong><span>ดูข้อมูลสำคัญก่อนติดต่อสอบถามเพิ่มเติม</span></p></div>
-          <div><CheckCircle2 /><p><strong>ติดต่อผู้ดูแลได้ทันที</strong><span>โทรหรือคุยผ่าน LINE เพื่อนัดดูรถ</span></p></div>
+          <div><CheckCircle2 /><p><strong>ติดต่อผู้ดูแลได้ทันที</strong><span>โทรหรือใช้ช่องทางติดต่อที่ร้านแสดง</span></p></div>
           <div><CheckCircle2 /><p><strong>ใช้งานได้ทุกอุปกรณ์</strong><span>จัดวางเหมาะกับคอมพิวเตอร์ ไอแพด และโทรศัพท์</span></p></div>
         </div>
       </section>
@@ -170,11 +174,12 @@ export default async function HomePage() {
         <Image src="/images/storefront.jpg" alt="" fill sizes="100vw" aria-hidden="true" />
         <div className="contact-band-shade" aria-hidden="true" />
         <div className="contact-band-copy">
-          <p>สนใจรถสวย คุยง่าย ออกรถได้จริง</p>
-          <h2>ปรึกษาฟรี ไม่มีค่าใช้จ่าย</h2>
+          <p>กำลังหารถ หรือมีรถที่อยากขาย</p>
+          <h2>คุยกับ PD Car Center ได้โดยตรง</h2>
           <div className="contact-actions">
             <a className="phone-action" href={`tel:${phone}`}><Phone size={19} />{phone}</a>
             {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer">คุยกับเราทาง LINE <ArrowRight size={18} /></a> : null}
+            <Link className="outline-action" href="/sell-car">ดูขั้นตอนขายรถ</Link>
           </div>
         </div>
       </section>
@@ -187,6 +192,7 @@ export default async function HomePage() {
         <div className="footer-links">
           <strong>เมนูหลัก</strong>
           <a href="#inventory">รถในร้าน</a>
+          <Link href="/sell-car">ขายรถให้เรา</Link>
           <a href="#videos">วิดีโอ 9:16</a>
           <a href="#articles">บทความ</a>
         </div>

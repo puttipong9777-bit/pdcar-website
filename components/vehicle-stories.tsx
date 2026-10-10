@@ -1,11 +1,13 @@
-import { CarFront, Play, Video } from "lucide-react";
+import { ArrowRight, CarFront, Play, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { PublicVehicleListing } from "@/lib/types";
 
 export function VehicleStories({ vehicles }: { vehicles: PublicVehicleListing[] }) {
   return (
-    <div className={`story-rail${vehicles.length ? "" : " is-empty"}`}>
+    <>
+      {vehicles.length ? <p className="story-swipe-hint">ปัดหรือเลื่อนเพื่อชมคันถัดไป <ArrowRight size={16} /></p> : null}
+      <div className={`story-rail${vehicles.length ? "" : " is-empty"}`}>
       {vehicles.length ? vehicles.map((vehicle, index) => (
         <article className="story-card" key={vehicle.carId}>
           {vehicle.youtubeVideoId ? (
@@ -38,6 +40,7 @@ export function VehicleStories({ vehicles }: { vehicles: PublicVehicleListing[] 
           <div><strong>พื้นที่วิดีโอรถหน้าร้าน</strong><span>เมื่อเพิ่มคลิปให้รถแต่ละคัน ระบบจะเรียงคลิปแนวตั้งให้ลูกค้าปัดชมได้ทันที</span></div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

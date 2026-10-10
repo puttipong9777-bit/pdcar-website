@@ -1,0 +1,332 @@
+{
+  "deploymentId": "dpl_DaSYLUKx3KHctLaCdNQ9ZMtxKzSV",
+  "deploymentSource": "cli",
+  "gitMetadataSha": "cca3ad4477c9b5c836dc16d0826ddaa27527bb30",
+  "gitMetadataRef": "codex/sell-car-seo",
+  "recoveredAt": "2026-10-10",
+  "method": "Read-only original website files verified against Vercel source content SHA-1 identifiers; original next.config.ts recovered directly from Vercel API.",
+  "sourceFiles": [
+    {
+      "path": ".ai/DATA_CONTRACT.md",
+      "sha1": "d408a289d6f3743ebf59315c402c0a0cf06a12c7"
+    },
+    {
+      "path": ".ai/NEXT_STEPS.md",
+      "sha1": "c407db6c8cf3cb759473ba07650b316cfb2b28ee"
+    },
+    {
+      "path": ".ai/README.md",
+      "sha1": "fe9fa0f7da31d021974b043ad4634662b66680fd"
+    },
+    {
+      "path": ".ai/SECURITY.md",
+      "sha1": "367e1ac7885f7b9de4cb7805f38aa9be78f81328"
+    },
+    {
+      "path": ".ai/SYSTEM_CONTEXT.md",
+      "sha1": "884526b623ae9f6324882bd765e8a5c958740348"
+    },
+    {
+      "path": ".ai/WORKFLOWS.md",
+      "sha1": "93d619f1bf7692b549fb1c11d398ed5d53b69a83"
+    },
+    {
+      "path": ".env.example",
+      "sha1": "83ec2d3df107a3480aed4678bf822128d0c7b9af"
+    },
+    {
+      "path": "app/api/article-approval/admin/route.ts",
+      "sha1": "6855a868a7bd2150fa030e854f0fa73cffcd42e6"
+    },
+    {
+      "path": "app/api/article-approval/line-callback/route.ts",
+      "sha1": "87071b34875bd03d6654b2694be171453a3342a4"
+    },
+    {
+      "path": "app/api/article-approval/operations/route.ts",
+      "sha1": "eb81009d570034a2ea9c70dcb97e7f18119fef93"
+    },
+    {
+      "path": "app/api/cron/article-drafts/route.ts",
+      "sha1": "68be7c25d8afd6fd5e1feb41e127579b219ddbfe"
+    },
+    {
+      "path": "app/api/health/route.ts",
+      "sha1": "394ae9d8e4004a7f8f6d78ddac60276ebc6e596d"
+    },
+    {
+      "path": "app/api/meta/catalog-feed/route.ts",
+      "sha1": "d984daede52d70f08756fca9cb8781a1aba21515"
+    },
+    {
+      "path": "app/article-admin/page.tsx",
+      "sha1": "cb93b691b747e7c56df6d6b6931640f4948839d7"
+    },
+    {
+      "path": "app/article-admin/review-client.tsx",
+      "sha1": "1ea48471643a46430acde9bdee87d04fe2f9796c"
+    },
+    {
+      "path": "app/articles/[slug]/page.tsx",
+      "sha1": "e1220460cdb926b2d88e2b8c1991dfe55b98ca6c"
+    },
+    {
+      "path": "app/articles/articles.css",
+      "sha1": "078eaa14a05f68150cfb3c813a48b62045bad761"
+    },
+    {
+      "path": "app/articles/page.tsx",
+      "sha1": "6002af7f23ee7421daf479479d6a27676b0ffbb0"
+    },
+    {
+      "path": "app/articles/sitemap.ts",
+      "sha1": "e3cb80227636b0e5a9449748d92cc742db1d3202"
+    },
+    {
+      "path": "app/cars/[identifier]/page.tsx",
+      "sha1": "0d2fdc2f5a40fb01b52bba27f6f34cfa0e72f53c"
+    },
+    {
+      "path": "app/globals.css",
+      "sha1": "cf4234869ab485df29f164e62309ee7509fa6910"
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha1": "8f60d5b2841502bd044034962e20a987de9f683a"
+    },
+    {
+      "path": "app/page.tsx",
+      "sha1": "0b6c97f8c3ddc5040f5b3ac4033733228cbb1518"
+    },
+    {
+      "path": "app/robots.ts",
+      "sha1": "15266a32629eaf966c05792db11adecbc1892ce1"
+    },
+    {
+      "path": "app/sell-car/page.tsx",
+      "sha1": "e37917000b4b85c6748cf17845a04a88b26e3e73"
+    },
+    {
+      "path": "app/showroom.css",
+      "sha1": "4744550380add541043af965db95aad138aecf45"
+    },
+    {
+      "path": "app/sitemap.ts",
+      "sha1": "4b24bd58579858ea3aed568b2f4fd42c0b9cc0ea"
+    },
+    {
+      "path": "components/article-content.tsx",
+      "sha1": "b7129f3d2235968189040b0bf81e4e25d317fc07"
+    },
+    {
+      "path": "components/catalog-browser.tsx",
+      "sha1": "fdf216094db482c15c4165e39cb395f4212afbdd"
+    },
+    {
+      "path": "components/meta-pixel.tsx",
+      "sha1": "6d5af86bf71a4c705f59e130e798b85df61eb93d"
+    },
+    {
+      "path": "components/meta-view-content.tsx",
+      "sha1": "78577e7d65dbadae2071bcc1873d4df257c09054"
+    },
+    {
+      "path": "components/showroom-hero.tsx",
+      "sha1": "314f26303ead1185dd8319f4c6545388bdc5babf"
+    },
+    {
+      "path": "components/site-header.tsx",
+      "sha1": "7a07d0bc6ac3c91d2ad6530bee4237c3ffa94c19"
+    },
+    {
+      "path": "components/vehicle-browser.tsx",
+      "sha1": "e977167ae42cb4316bf4cd5c9786ca133764bd46"
+    },
+    {
+      "path": "components/vehicle-stories.tsx",
+      "sha1": "d5b0f7a89adaa17e604a2ba4e24df1cf9e40ea9c"
+    },
+    {
+      "path": "docs/ARTICLE-APPROVAL-TEST-REPORT.md",
+      "sha1": "a28be2341069d9510623ff321e1b8f960c8825be"
+    },
+    {
+      "path": "docs/ARTICLE-APPROVAL.md",
+      "sha1": "205c28e4b6f9beab3f30c148c61ad331c07dd08d"
+    },
+    {
+      "path": "docs/ERP-HANDOFF.md",
+      "sha1": "72fc83c243ec0936af736a9ca88dd704e3cacb21"
+    },
+    {
+      "path": "docs/PUBLIC-DATA-CONTRACT.md",
+      "sha1": "81e82cd24da6090d315e39177bcd5f84ebc9af16"
+    },
+    {
+      "path": "docs/SHOWROOM-REDESIGN.md",
+      "sha1": "b0fbcfc8265d8eab89849c883df35120b29e0c0e"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "sha1": "cca07ea2a7ae16e49841349e364291fea28c80b0"
+    },
+    {
+      "path": "lib/article-approval/content.ts",
+      "sha1": "fd4ad1fa8c856cf7159a0e41b039004d5e6272a4"
+    },
+    {
+      "path": "lib/article-approval/database-tls.ts",
+      "sha1": "72cc7bad5b1fc3abe3bb31a154edbd7fb06b8b80"
+    },
+    {
+      "path": "lib/article-approval/db.ts",
+      "sha1": "67ef4f16e4ebc373a11b0ad0630babd488d3aa6b"
+    },
+    {
+      "path": "lib/article-approval/generator.ts",
+      "sha1": "7464817ae5e341d48adc349baced77ab8b48532c"
+    },
+    {
+      "path": "lib/article-approval/line.ts",
+      "sha1": "6e368bde39c389e5a8b7ac31355c0c7cca64e013"
+    },
+    {
+      "path": "lib/article-approval/public.ts",
+      "sha1": "1d8dbc2bc3d25bd05b5bc028f4dc851a84579c75"
+    },
+    {
+      "path": "lib/article-approval/security.ts",
+      "sha1": "e4742d50605ff23e4e7775f21d346b17d6df0f3a"
+    },
+    {
+      "path": "lib/article-approval/sources.ts",
+      "sha1": "986fbf391f3c72abfb027090fe17f65f06fa7abe"
+    },
+    {
+      "path": "lib/article-approval/types.ts",
+      "sha1": "5c35842bee8a93a229a591f33d355b4226d8efaf"
+    },
+    {
+      "path": "lib/article-approval/webhook.ts",
+      "sha1": "cdab4cb60ff3744e201b54ccd9b2712819cea252"
+    },
+    {
+      "path": "lib/article-approval/workflow.ts",
+      "sha1": "cb6eca074dc3404afa8d473bb484464d82dbdabd"
+    },
+    {
+      "path": "lib/meta-catalog.ts",
+      "sha1": "cf5e645423da6910c25975d60c649d3b71794ab2"
+    },
+    {
+      "path": "lib/types.ts",
+      "sha1": "2e49c75fffe80319b849d96be52b7e8b70ce4d09"
+    },
+    {
+      "path": "lib/vehicle-catalog.ts",
+      "sha1": "a727c8607cdbdb201e78c019beddef9d9fa669c4"
+    },
+    {
+      "path": "lib/vehicle-data.ts",
+      "sha1": "ebd77d8690fa7512a0d67f9ace5cb1375bc2b05f"
+    },
+    {
+      "path": "next-env.d.ts",
+      "sha1": "79ea33d5bd6bf5319667f287c6aec3a5e0ce256a"
+    },
+    {
+      "path": "next.config.ts",
+      "sha1": "626916096bd9763db62a7ba8976c30c831fcb64d"
+    },
+    {
+      "path": "package-lock.json",
+      "sha1": "1e95e3f490e1c263b538dd33cbaee2965eafe941"
+    },
+    {
+      "path": "package.json",
+      "sha1": "8b5ef3c69b8b9e25d71bbb2a9b6549837f9affb4"
+    },
+    {
+      "path": "postcss.config.mjs",
+      "sha1": "13882dca4a60e9518cef58ee69f7f33db02b56fe"
+    },
+    {
+      "path": "public/images/pd-logo.jpg",
+      "sha1": "2881d85d0595b016473f5f236190b714a8f5493f"
+    },
+    {
+      "path": "public/images/storefront.jpg",
+      "sha1": "1ec451940d77543ae80a1a6f21b489f6e246e300"
+    },
+    {
+      "path": "public/og-sell-car.png",
+      "sha1": "8ab10965c4e72b9e4ab51e16e502b8aeb58945b3"
+    },
+    {
+      "path": "public/og.png",
+      "sha1": "7bb5d16fec80968b437700e230a60929a9296bb0"
+    },
+    {
+      "path": "README.md",
+      "sha1": "0d88c643203bc5d0b11be42c1063c16090485129"
+    },
+    {
+      "path": "supabase/migrations/0001_public_website_contract.sql",
+      "sha1": "72f9f950a829d24e79ce999c070cbfc2ee26a4ca"
+    },
+    {
+      "path": "supabase/migrations/0002_article_approval.sql",
+      "sha1": "618c97f99da2fb4e5d21cc1a655cae72de22727d"
+    },
+    {
+      "path": "tests/article-database-tls.test.mjs",
+      "sha1": "86cca1a15f35ae6baacd671156c4c137c97b2556"
+    },
+    {
+      "path": "tests/article-database.test.mjs",
+      "sha1": "ab54caa46fa247e3f31ad761163d19df9234ba0b"
+    },
+    {
+      "path": "tests/article-generation.test.mjs",
+      "sha1": "8369c50674d5c21c16382788fbccfa34b69dd3bc"
+    },
+    {
+      "path": "tests/article-public.test.mjs",
+      "sha1": "d0562a542097b00ee0f847a5ee5a3b9f16ad7f96"
+    },
+    {
+      "path": "tests/article-security.test.mjs",
+      "sha1": "54898e6fcea2dd7cedc6c109017ec330107692a4"
+    },
+    {
+      "path": "tests/catalog.test.mjs",
+      "sha1": "5bb92093aa858a3065d8da78b6e443ad4ba57b57"
+    },
+    {
+      "path": "tests/helpers/load-ts.mjs",
+      "sha1": "2de8b7ece27600c9a5c248934d42dedf0181ca77"
+    },
+    {
+      "path": "tests/meta-catalog.test.mjs",
+      "sha1": "3f6faaf68f82bb15abcf3ae11030837585806ad5"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha1": "6aa003d3483d9832e738cbf60db0d359ff39907e"
+    },
+    {
+      "path": "vercel.json",
+      "sha1": "653f677ee5a631b9d3b32492202e69b61a4a3957"
+    }
+  ],
+  "exclusions": [
+    "supabase/.temp/**",
+    "tsconfig.tsbuildinfo",
+    "empty .agents directory"
+  ],
+  "notes": [
+    "Vercel CLI deployment contains source files not present in the metadata Git commit. This snapshot recovers deployed source, not the metadata commit tree.",
+    "No local code edits/builds/tests, ERP edits, production data/schema writes, domain changes, deployment or paid service activation were performed.",
+    "Snapshot metadata, verification script, workflow and safe .gitignore are recovery additions, not deployed source."
+  ]
+}

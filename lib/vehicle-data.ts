@@ -1,4 +1,3 @@
-import { createClient } from "@supabase/supabase-js";
 import type { PublicVehicleListing, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
 
 type PublicVehicleRow = Record<string, unknown>;
@@ -13,9 +12,17 @@ function optionalNumber(value: unknown) {
   return Number.isFinite(number) ? number : undefined;
 }
 
-function photos(value: unknown): PublicVehiclePhoto[] {
+function cleanVehicleText(value: string) {
+  const corrected = value.replace(/fortunner/gi, "Fortuner").replace(/\s+/g, " ").trim();
+  return corrected
+    .split(" ")
+    .filter((token, index, tokens) => index === 0 || token.toLocaleLowerCase("en-US") !== tokens[index - 1].toLocaleLowerCase("en-US"))
+    .join(" ");
+}
+
+function photos(value: unknown, erpOrigin?: string): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
-  const erpUrl = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
+  const erpUrl = (erpOrigin || process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
@@ -40,11 +47,11 @@ function verticalVideo(value: unknown) {
   };
 }
 
-function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
-  const vehiclePhotos = photos(row.photos);
+function mapVehicle(row: PublicVehicleRow, erpOrigin?: string): PublicVehicleListing {
+  const vehiclePhotos = photos(row.photos, erpOrigin);
   const video = verticalVideo(row.vertical_video);
-  const brand = text(row.brand);
-  const model = text(row.model);
+  const brand = cleanVehicleText(text(row.brand));
+  const model = cleanVehicleText(text(row.model));
   const carId = text(row.car_id);
   return {
     carId,
@@ -64,7 +71,7 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
     financeAmount: optionalNumber(row.listing_finance_amount),
     installment: optionalNumber(row.listing_installment),
     monthlyPayment: optionalNumber(row.listing_monthly_payment),
-    title: text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" "),
+    title: cleanVehicleText(text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" ")),
     description: text(row.public_description) || undefined,
     featured: Boolean(row.website_featured),
     coverImageUrl: vehiclePhotos[0]?.url,
@@ -74,9 +81,9 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
   };
 }
 
-export async function getPublicVehicles(): Promise<VehicleDataResult> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export async function getPublicVehicles(env: Record<string, string | undefined> = process.env, identifier?: string): Promise<VehicleDataResult> {
+  const url = env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) {
     return {
       vehicles: [],
@@ -85,25 +92,71 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const { data, error } = await supabase
-    .from("public_vehicle_listings")
-    .select("*")
-    .order("website_featured", { ascending: false })
-    .order("updated_at", { ascending: false });
-
-  if (error) {
-    return {
-      vehicles: [],
-      source: "view_not_ready",
-      message: "ไม่สามารถเชื่อมต่อข้อมูลรถได้ชั่วคราว กรุณาลองใหม่อีกครั้ง"
-    };
+  try {
+    if (!isPublicKey(key)) throw new Error("Only an anonymous/public key is permitted");
+    const endpoint = new URL("/rest/v1/public_vehicle_listings", url);
+    endpoint.searchParams.set("select", PUBLIC_COLUMNS.join(","));
+    endpoint.searchParams.set("status", "in.(available,reserved)");
+    if (identifier !== undefined) {
+      // PostgREST quoted literals prevent slugs containing punctuation from
+      // changing the filter grammar. URLSearchParams handles URL encoding.
+      const literal = `"${identifier.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+      endpoint.searchParams.set("or", `(car_id.eq.${literal},website_slug.eq.${literal})`);
+    }
+    endpoint.searchParams.set("order", "website_featured.desc,updated_at.desc,car_id.asc");
+    const rows: PublicVehicleRow[] = [];
+    // Explicit paging avoids silently truncating stock at the PostgREST row cap.
+    const pageSize = 100;
+    for (let page = 0; page < 40; page++) {
+      endpoint.searchParams.set("limit", String(pageSize));
+      endpoint.searchParams.set("offset", String(page * pageSize));
+      const read = () => fetch(endpoint, {
+        method: "GET", cache: "no-store", signal: AbortSignal.timeout(8000),
+        headers: { apikey: key, ...(key.startsWith("sb_publishable_") ? {} : { Authorization: `Bearer ${key}` }) }
+      });
+      let response = await read();
+      if (!response.ok && page === 0 && response.status === 400) {
+        const error = await response.clone().json().catch(() => null);
+        // Older approved views predate the optional YouTube field. Only this
+        // precise missing-column error may drop it; never widen to select(*).
+        if (error?.code === "42703" && /\bvertical_video\b/.test(String(error.message))) {
+          endpoint.searchParams.set("select", PUBLIC_COLUMNS.filter((column) => column !== "vertical_video").join(","));
+          response = await read();
+        }
+      }
+      if (!response.ok) throw new Error("Public view unavailable");
+      const data: unknown = await response.json();
+      if (!Array.isArray(data)) throw new Error("Invalid public view response");
+      rows.push(...data);
+      if (data.length < pageSize) {
+        return { vehicles: rows.filter((row) => row.status === "available" || row.status === "reserved")
+          .map((row) => mapVehicle(row, env.NEXT_PUBLIC_ERP_URL)), source: "supabase" };
+      }
+    }
+    // Fail visibly rather than publishing a silently incomplete inventory/sitemap.
+    throw new Error("Inventory exceeds request budget");
+  } catch {
+    return { vehicles: [], source: "view_not_ready", message: "ไม่สามารถเชื่อมต่อข้อมูลรถได้ชั่วคราว กรุณาลองใหม่อีกครั้ง" };
   }
+}
 
-  return { vehicles: (data ?? []).map(mapVehicle), source: "supabase" };
+export const PUBLIC_COLUMNS = [
+  "car_id", "status", "brand", "model", "variant", "year", "color", "mileage", "fuel_type",
+  "transmission", "condition_summary", "sale_price", "listing_down_payment", "listing_finance_amount",
+  "listing_installment", "listing_monthly_payment", "public_description", "website_title", "website_slug",
+  "website_featured", "photos", "vertical_video", "updated_at"
+];
+
+export function isPublicKey(key: string) {
+  if (key.startsWith("sb_publishable_")) return true;
+  try {
+    const payload = key.split(".")[1];
+    const claims = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return claims.role === "anon";
+  } catch { return false; }
 }
 
 export async function getPublicVehicle(identifier: string) {
-  const result = await getPublicVehicles();
+  const result = await getPublicVehicles(process.env, identifier);
   return result.vehicles.find((vehicle) => vehicle.carId === identifier || vehicle.slug === identifier) ?? null;
 }

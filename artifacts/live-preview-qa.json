@@ -1,0 +1,116 @@
+{
+  "origin": "https://pdcar-website-preview.pages.dev",
+  "checkedAt": "2026-10-10T12:35:50.930Z",
+  "methods": [
+    "GET",
+    "HEAD"
+  ],
+  "productionWrites": false,
+  "checks": [
+    {
+      "name": "Live home 200 and public view connected",
+      "pass": true
+    },
+    {
+      "name": "Fresh dynamic HTML",
+      "pass": true
+    },
+    {
+      "name": "Preview blocked from indexing",
+      "pass": true
+    },
+    {
+      "name": "No real Meta pixel on preview",
+      "pass": true
+    },
+    {
+      "name": "No API key serialized",
+      "pass": true
+    },
+    {
+      "name": "Only public available/reserved listings",
+      "pass": true
+    },
+    {
+      "name": "No Vercel image optimizer",
+      "pass": true
+    },
+    {
+      "name": "Health identifies Pages",
+      "pass": true
+    },
+    {
+      "name": "Robots disallow preview",
+      "pass": true
+    },
+    {
+      "name": "/sell-car 200",
+      "pass": true
+    },
+    {
+      "name": "/articles 200",
+      "pass": true
+    },
+    {
+      "name": "/sitemap.xml 200",
+      "pass": true
+    },
+    {
+      "name": "/articles/sitemap.xml 200",
+      "pass": true
+    },
+    {
+      "name": "/api/meta/catalog-feed 200",
+      "pass": true
+    },
+    {
+      "name": "Catalog quantity field preserved",
+      "pass": true
+    },
+    {
+      "name": "Live slug detail and Car ID match",
+      "pass": true
+    },
+    {
+      "name": "Product metadata retains Car ID",
+      "pass": true
+    },
+    {
+      "name": "Car ID detail route",
+      "pass": true
+    },
+    {
+      "name": "Photos retain order",
+      "pass": true
+    },
+    {
+      "name": "HEAD home",
+      "pass": true
+    },
+    {
+      "name": "Unknown page 404",
+      "pass": true
+    }
+  ],
+  "media": [
+    {
+      "origin": "https://pdcar-platform.vercel.app",
+      "status": 402,
+      "image": false
+    },
+    {
+      "origin": "https://pdcar-platform.vercel.app",
+      "status": 402,
+      "image": false
+    }
+  ],
+  "limits": "Cloudflare CPU must be read from dashboard; HTTP latency is not CPU",
+  "publicVehicleCount": 12,
+  "result": "PASS",
+  "mediaAcceptance": "BLOCKED",
+  "testedCommit": "d9c32d8cc1a9a85ba803b16736a603cefedfe1e1",
+  "workflowUrl": "https://github.com/puttipong9777-bit/pdcar-website/actions/runs/38052534305",
+  "cpuAcceptance": "NOT_MEASURED",
+  "cpuEvidence": "Production dashboard Last 24 hours: No data is available for this time range. Zero placeholders are not measured usage.",
+  "overallMigrationAcceptance": "BLOCKED"
+}

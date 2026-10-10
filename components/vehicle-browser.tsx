@@ -1,6 +1,6 @@
 "use client";
 
-import { CarFront, Gauge, Search, WalletCards } from "lucide-react";
+import { ArrowRight, CarFront, Gauge, Search, WalletCards } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -57,7 +57,9 @@ export function VehicleBrowser({ vehicles }: { vehicles: PublicVehicleListing[] 
       </div>
 
       {filtered.length ? (
-        <div className="vehicle-grid">
+        <>
+          <p className="vehicle-result-count" aria-live="polite">พบรถ {number.format(filtered.length)} คัน เลื่อนลงเพื่อเปรียบเทียบรายละเอียด</p>
+          <div className="vehicle-grid">
           {filtered.map((vehicle) => (
             <article className="vehicle-card" key={vehicle.carId}>
               <Link className="vehicle-image" href={`/cars/${encodeURIComponent(vehicle.slug)}`}>
@@ -80,10 +82,12 @@ export function VehicleBrowser({ vehicles }: { vehicles: PublicVehicleListing[] 
                   <div><small>ราคาขาย</small><strong>{vehicle.salePrice !== undefined ? price.format(vehicle.salePrice) : "สอบถามราคา"}</strong></div>
                   {vehicle.monthlyPayment !== undefined ? <div className="monthly"><WalletCards size={18} /><span>ผ่อน {price.format(vehicle.monthlyPayment)}/เดือน</span></div> : null}
                 </div>
+                <Link className="card-detail-link" href={`/cars/${encodeURIComponent(vehicle.slug)}`}>ดูรายละเอียดรถคันนี้ <ArrowRight size={16} /></Link>
               </div>
             </article>
           ))}
-        </div>
+          </div>
+        </>
       ) : (
         <div className="empty-state"><CarFront aria-hidden="true" size={48} /><h3>ยังไม่พบรถตามที่ค้นหา</h3><p>ลองเปลี่ยนคำค้นหาหรือเลือกดูรถทั้งหมด</p></div>
       )}

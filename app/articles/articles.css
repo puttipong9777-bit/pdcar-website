@@ -1,0 +1,20 @@
+.pd-articles { max-width: 1100px; margin: 0 auto; padding: 70px 24px 90px; min-height: 65vh; }
+.pd-articles h1 { color: #102640; font-size: clamp(28px, 4vw, 46px); line-height: 1.35; }
+.pd-articles a { color: #1459a6; text-underline-offset: 4px; }
+.pd-article-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 24px; margin: 36px 0; }
+.pd-article-card { border: 1px solid #d8e1ed; border-radius: 14px; padding: 24px; }
+.pd-article-card h2 { font-size: 23px; line-height: 1.5; }
+.pd-article-card p, .pd-article-lead { color: #46566b; line-height: 1.8; }
+.pd-article-date { display: block; color: #526176; font-size: 14px; }
+.pd-article-detail { max-width: 780px; }
+.pd-article-detail section { margin-top: 36px; }
+.pd-article-detail h2 { font-size: 25px; line-height: 1.5; }
+.pd-article-detail p { line-height: 1.95; overflow-wrap: anywhere; }
+.pd-article-sources { border-top: 1px solid #d8e1ed; padding-top: 20px; font-size: 14px; }
+.pd-article-nav, .pd-admin-actions { display: flex; flex-wrap: wrap; gap: 14px; margin: 26px 0; align-items: center; }
+.pd-admin-actions button, .pd-admin-load { padding: 12px 20px; border: 1px solid #1459a6; border-radius: 8px; background: #1459a6; color: #fff; cursor: pointer; font: inherit; }
+.pd-admin-actions .danger { background: #a82b35; border-color: #a82b35; }
+.pd-admin-actions button:disabled { opacity: .5; cursor: wait; }
+.pd-admin-status { background: #eef4fb; padding: 14px; border-radius: 8px; }
+.pd-admin-note { line-height: 1.7; }
+.pd-admin-confirm { padding: 20px; border: 2px solid #1459a6; border-radius: 12px; }
