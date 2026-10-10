@@ -39,10 +39,31 @@ jobs:
       - run: npm ci
       - id: verify
         run: npm run verify
-      - run: npm test
+      - id: unit
+        run: |
+          set -o pipefail
+          npm test | tee /tmp/pdcar-unit.log
       - if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
         run: npx playwright install --with-deps chromium
-      - if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+      - id: browser
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
         run: npm run test:browser
-      - if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+      - id: next
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
         run: npm run build:next
+      - name: Record dependency audit without changing packages
+        if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
+        run: |
+          npm audit --json > /tmp/pdcar-audit.json || true
+          node -e 'const a=require("/tmp/pdcar-audit.json"); for(const [name,v] of Object.entries(a.vulnerabilities||{})) console.log(JSON.stringify({name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable,via:v.via.filter(x=>typeof x==="object").map(x=>({title:x.title,url:x.url,range:x.range}))}));'
+      - name: Preserve mock QA evidence in migration branch
+        if: ${{ success() }}
+        run: |
+          node -e 'const fs=require("node:fs"); const b=JSON.parse(fs.readFileSync("artifacts/browser-results.json","utf8")); const u=fs.readFileSync("/tmp/pdcar-unit.log","utf8"); fs.writeFileSync("artifacts/cloud-qa-summary.json",JSON.stringify({testedCommit:process.env.GITHUB_SHA,runUrl:"https://github.com/"+process.env.GITHUB_REPOSITORY+"/actions/runs/"+process.env.GITHUB_RUN_ID,node:process.version,unit:u.match(/# tests (\\d+)/)?.[1],unitFailures:u.match(/# fail (\\d+)/)?.[1],browser:b.stats,productionWrites:false,fixturesOnly:true},null,2));'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f artifacts/cloud-qa-summary.json artifacts/desktop-home-mock.jpg artifacts/mobile-home-mock.jpg artifacts/desktop-detail-mock.jpg artifacts/mobile-detail-mock.jpg
+          if ! git diff --cached --quiet; then
+            git commit -m "Record Cloud QA screenshots and verification evidence [skip ci]"
+            git push origin HEAD:migration/cloudflare-pages
+          fi

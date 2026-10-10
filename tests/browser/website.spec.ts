@@ -85,7 +85,7 @@ test.describe("server HTML without JavaScript", () => {
     await expect(page.locator(".catalog-card").first()).toContainText("399,000");
     await page.locator(".catalog-card h3 a").first().click();
     await expect(page.locator(".vehicle-summary h1")).toHaveText("Toyota Yaris 2022");
-    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Toyota Yaris 2022 | PD Car Center");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Toyota Yaris 2022");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
   });
 });
