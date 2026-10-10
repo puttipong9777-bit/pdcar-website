@@ -13,22 +13,24 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
   // YouTube availability is external; this fixture only verifies embedding/layout.
   await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ contentType: "text/html", body: "<html><body>Mock YouTube player</body></html>" }));
   await page.goto("/");
-  await expect(page.locator(".vehicle-card")).toHaveCount(2);
-  await expect(page.locator(".vehicle-card").first()).toContainText("399,000");
-  await expect(page.locator(".vehicle-card").first()).toContainText("6,900");
-  await expect(page.locator(".vehicle-card .status-badge.reserved")).toHaveCount(1);
-  await page.getByPlaceholder("ค้นหายี่ห้อ รุ่น ปี หรือ Car ID").fill("Yaris");
-  await expect(page.locator(".vehicle-card")).toHaveCount(1);
-  await page.getByPlaceholder("ค้นหายี่ห้อ รุ่น ปี หรือ Car ID").fill("");
-  await page.locator("select").first().selectOption("Honda");
-  await expect(page.locator(".vehicle-card")).toHaveCount(1);
-  await page.locator("select").first().selectOption("all");
+  await expect(page.locator(".catalog-card")).toHaveCount(2);
+  await expect(page.locator(".catalog-card").first()).toContainText("399,000");
+  await expect(page.locator(".catalog-card").first()).toContainText("6,900");
+  await expect(page.locator(".catalog-card .catalog-status.reserved")).toHaveCount(1);
+  await page.locator(".catalog-photo-controls").first().getByRole("button",{name:/ภาพถัดไป/}).click();
+  await expect(page.locator(".catalog-card img").first()).toHaveAttribute("src",/mock-side/);
+  await page.getByPlaceholder("ค้นหารุ่น ปี หรือรหัสรถ").fill("Yaris");
+  await expect(page.locator(".catalog-card")).toHaveCount(1);
+  await page.getByPlaceholder("ค้นหารุ่น ปี หรือรหัสรถ").fill("");
+  await page.locator(".catalog-brands").getByRole("button", {name:"Honda", exact:false}).click();
+  await expect(page.locator(".catalog-card")).toHaveCount(1);
+  await page.locator(".catalog-brands").getByRole("button", {name:"ทุกยี่ห้อ", exact:false}).click();
   await page.locator("select").nth(1).selectOption("2022");
-  await expect(page.locator(".vehicle-card")).toHaveCount(1);
+  await expect(page.locator(".catalog-card")).toHaveCount(1);
   await page.locator("select").nth(1).selectOption("all");
-  await page.locator(".segments").getByRole("button", { name: "ติดจอง", exact: true }).click();
-  await expect(page.locator(".vehicle-card")).toHaveCount(1);
-  await page.locator(".segments").getByRole("button", { name: "ทั้งหมด", exact: true }).click();
+  await page.locator(".catalog-filters select").nth(2).selectOption("reserved");
+  await expect(page.locator(".catalog-card")).toHaveCount(1);
+  await page.locator(".catalog-filters select").nth(2).selectOption("all");
   await expect(page.locator('a[href="tel:0840079122"]').first()).toHaveAttribute("href", "tel:0840079122");
   await expect(page.locator('a[href="https://line.me/ti/p/mock"]').first()).toHaveAttribute("target", "_blank");
   await expect(page.locator("iframe")).toHaveCount(1);
@@ -38,13 +40,14 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
     await page.locator(".menu-toggle").click();
   }
   await page.locator("#inventory").scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>(".vehicle-card img")].every((img) => img.complete && img.naturalWidth > 0));
+  await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>(".catalog-card img")].every((img) => img.complete && img.naturalWidth > 0));
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: `artifacts/${testInfo.project.name}-home-mock.jpg`, fullPage: true, type: "jpeg", quality: 65, scale: "css" });
-  await page.locator(".vehicle-card h3 a").first().click();
+  await page.locator(".catalog-card h3 a").first().click();
   await expect(page.locator(".vehicle-summary h1")).toHaveText("Toyota Yaris 2022");
   await page.reload();
+  await page.locator(".gallery-more summary").click();
   await expect(page.locator(".gallery-image img")).toHaveCount(2);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /mock-front/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
@@ -69,8 +72,8 @@ test("new slug, price, reserved and unpublish update without rebuilding", async 
   await request.get("http://127.0.0.1:8789/__state?value=unpublished");
   expect((await page.reload())?.status()).toBe(404);
   await page.goto("/");
-  await expect(page.locator(".vehicle-card")).toHaveCount(1);
-  await expect(page.locator(".vehicle-card")).not.toContainText("PD0001");
+  await expect(page.locator(".catalog-card")).toHaveCount(1);
+  await expect(page.locator(".catalog-card")).not.toContainText("PD0001");
 });
 
 test.describe("server HTML without JavaScript", () => {
@@ -78,11 +81,28 @@ test.describe("server HTML without JavaScript", () => {
   test("inventory, vehicle links and metadata are available before hydration", async ({ page }) => {
     await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ body: "Mock video" }));
     await page.goto("/");
-    await expect(page.locator(".vehicle-card")).toHaveCount(2);
-    await expect(page.locator(".vehicle-card").first()).toContainText("399,000");
-    await page.locator(".vehicle-card h3 a").first().click();
+    await expect(page.locator(".catalog-card")).toHaveCount(2);
+    await expect(page.locator(".catalog-card").first()).toContainText("399,000");
+    await page.locator(".catalog-card h3 a").first().click();
     await expect(page.locator(".vehicle-summary h1")).toHaveText("Toyota Yaris 2022");
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Toyota Yaris 2022 | PD Car Center");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
   });
+});
+
+test("sell-car, articles, published detail, sitemap and disabled admin preserve public routes", async ({page,request})=>{
+ const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+ await page.goto("/sell-car");
+ await expect(page.locator("main.sell-page")).toBeVisible();
+ await expect(page.locator('script[type="application/ld+json"]').last()).toContainText("บริการรับซื้อรถมือสอง");
+ await page.goto("/articles");
+ await expect(page.locator(".pd-article-card")).toHaveCount(1);
+ await page.locator(".pd-article-card h2 a").click();
+ await expect(page.locator("h1")).toHaveText("บทความทดสอบสาธารณะ");
+ expect((await page.reload())?.status()).toBe(200);
+ await page.goto("/article-admin");
+ await expect(page.locator("h1")).toHaveText("ระบบอนุมัติบทความยังไม่เปิดใช้งาน");
+ expect((await request.get("/articles/sitemap.xml")).status()).toBe(200);
+ expect((await request.get("/api/meta/catalog-feed")).status()).toBe(200);
+ expect(errors).toEqual([]);
 });

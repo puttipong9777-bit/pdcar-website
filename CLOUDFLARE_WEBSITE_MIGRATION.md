@@ -213,3 +213,10 @@ Read-only audit confirms screenshot commit `6b82915` is in the supplied baseline
 First unblock: obtain the current Production deployment's Source/commit hyperlink identifying its actual repository and full SHA, plus deployment URL/ID if necessary to establish the association. If Git source is unavailable, recover an authorized exact-revision source archive through cloud access without secrets. Full details and limitations are in `docs/PRODUCTION_SOURCE_GAP.md`.
 
 Existing code, tests and measurements are retained as work against the supplied baseline. No new runtime tests were necessary for this documentation-only provenance update. Do not deploy until source recovery, comparison and reconciliation are complete; missing Cloudflare access/config/network and actual Free CPU acceptance remain separate later gates. Existing Vercel production must remain intact; the retained older Next build is not a verified production-equivalent rollback artifact.
+
+## 2026-10-10 Source recovery and current migration
+The prior provenance blocker is resolved by source snapshot f9722f6. It is the exact 78-file Vercel CLI deployment tree, excluding generated/local metadata. Cloud CI source verification passed 46 tests, lint/typecheck/Next build.
+The migration now includes original showroom/catalog carousel filters, sell-car acquisition/SEO, Facebook inventory CSV and product events, public article list/detail/sitemap, and disabled admin state.
+No original article generation or messaging is active: Production approval/cron/postback flags were verified false without exposing secrets. The retained Node implementation/tests provide rollback and future review; Pages activation is fail-closed.
+Cloud-only edits/build/test workflow: .github/workflows/verify-pages-migration.yml. Lockfile updates are generated on GitHub's standard hosted Linux runner, with no paid runner/cache/artifact storage.
+Real deployment acceptance is pending. Historical local CPU/browser evidence above covers the old baseline and does not certify the reconciled runtime.

@@ -1,8 +1,0 @@
-{
-  "beforeCommit": "f84a6c0af425abb39eee0c4e13913f59971e4309",
-  "beforeBytes": 255429,
-  "afterBytes": 334994,
-  "beforeGzipBytes": 73975,
-  "afterGzipBytes": 85519,
-  "afterSha256": "9e631e9a719a2ba0bfea839cdd708ee9cbb6ca13e6073db4d4d2ba363538cc91"
-}

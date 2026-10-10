@@ -14,6 +14,9 @@ http.createServer(async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     const rows = state === "unpublished" ? [base[1]] : state === "changed" ? [car({ sale_price: 299000, status: "reserved", website_slug: "new-slug" }), base[1]] : base;
     res.end(JSON.stringify(rows));
+  } else if (url.pathname === "/rest/v1/public_approved_articles") {
+    res.setHeader("Content-Type","application/json");
+    res.end(JSON.stringify([{id:"mock-article",slug:"car-knowledge-2026-10-10",content:{title:"บทความทดสอบสาธารณะ",description:"บทความจำลองสำหรับทดสอบ",sections:[{heading:"ดูแลรถ",paragraphs:["ตรวจสอบก่อนเดินทาง"]}]},sources:[],published_at:"2026-10-10T00:00:00Z",updated_at:"2026-10-10T00:00:00Z"}]));
   } else if (url.pathname.startsWith("/api/public/vehicle-images/")) {
     res.setHeader("Content-Type", "image/jpeg");
     res.end(await readFile(new URL("../public/images/storefront.jpg", import.meta.url)));

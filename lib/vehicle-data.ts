@@ -12,6 +12,14 @@ function optionalNumber(value: unknown) {
   return Number.isFinite(number) ? number : undefined;
 }
 
+function cleanVehicleText(value: string) {
+  const corrected = value.replace(/fortunner/gi, "Fortuner").replace(/\s+/g, " ").trim();
+  return corrected
+    .split(" ")
+    .filter((token, index, tokens) => index === 0 || token.toLocaleLowerCase("en-US") !== tokens[index - 1].toLocaleLowerCase("en-US"))
+    .join(" ");
+}
+
 function photos(value: unknown, erpOrigin?: string): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
   const erpUrl = (erpOrigin || process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
@@ -42,8 +50,8 @@ function verticalVideo(value: unknown) {
 function mapVehicle(row: PublicVehicleRow, erpOrigin?: string): PublicVehicleListing {
   const vehiclePhotos = photos(row.photos, erpOrigin);
   const video = verticalVideo(row.vertical_video);
-  const brand = text(row.brand);
-  const model = text(row.model);
+  const brand = cleanVehicleText(text(row.brand));
+  const model = cleanVehicleText(text(row.model));
   const carId = text(row.car_id);
   return {
     carId,
@@ -63,7 +71,7 @@ function mapVehicle(row: PublicVehicleRow, erpOrigin?: string): PublicVehicleLis
     financeAmount: optionalNumber(row.listing_finance_amount),
     installment: optionalNumber(row.listing_installment),
     monthlyPayment: optionalNumber(row.listing_monthly_payment),
-    title: text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" "),
+    title: cleanVehicleText(text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" ")),
     description: text(row.public_description) || undefined,
     featured: Boolean(row.website_featured),
     coverImageUrl: vehiclePhotos[0]?.url,

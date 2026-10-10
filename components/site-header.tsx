@@ -9,12 +9,11 @@ const navigation = [
   ["หน้าแรก", "/#showroom"],
   ["รถในร้าน", "/#inventory"],
   ["วิดีโอ", "/#videos"],
-  ["บทความ", "/#articles"],
-  ["เกี่ยวกับเรา", "/#about"],
-  ["ติดต่อ", "/#contact"]
+  ["บทความ", "/articles"],
+  ["เกี่ยวกับเรา", "/#about"]
 ] as const;
 
-export function SiteHeader({ phone = "0840079122", lineUrl }: { phone?: string; lineUrl?: string }) {
+export function SiteHeader({ phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122", lineUrl = process.env.NEXT_PUBLIC_LINE_URL }: { phone?: string; lineUrl?: string } = {}) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -26,6 +25,7 @@ export function SiteHeader({ phone = "0840079122", lineUrl }: { phone?: string; 
 
       <nav className="desktop-nav" aria-label="เมนูหลัก">
         {navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
+        <Link className="sell-nav-link" href="/sell-car">ขายรถให้เรา</Link>
         <a className="call-button" href={`tel:${phone}`}><Phone size={17} />{phone}</a>
         {lineUrl ? <a className="header-line-button" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} />แชทไลน์</a> : null}
       </nav>
@@ -47,6 +47,7 @@ export function SiteHeader({ phone = "0840079122", lineUrl }: { phone?: string; 
 
       <nav id="mobile-navigation" className={`mobile-navigation${menuOpen ? " is-open" : ""}`} aria-label="เมนูมือถือ">
         {navigation.map(([label, href]) => <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}
+        <Link className="mobile-menu-sell" href="/sell-car" onClick={() => setMenuOpen(false)}>ขายรถให้ PD Car Center</Link>
         <a className="mobile-menu-call" href={`tel:${phone}`} onClick={() => setMenuOpen(false)}><Phone size={18} />โทร {phone}</a>
       </nav>
     </header>
