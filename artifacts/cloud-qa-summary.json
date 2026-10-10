@@ -1,12 +1,12 @@
 {
-  "testedCommit": "d943a6f683e5316a45a57a0425b420414daee2a0",
-  "runUrl": "https://github.com/puttipong9777-bit/pdcar-website/actions/runs/38051677808",
+  "testedCommit": "d9c32d8cc1a9a85ba803b16736a603cefedfe1e1",
+  "runUrl": "https://github.com/puttipong9777-bit/pdcar-website/actions/runs/38052534190",
   "node": "v22.23.3",
   "unit": "67",
   "unitFailures": "0",
   "browser": {
-    "startTime": "2026-10-10T12:22:50.498Z",
-    "duration": 11040.496,
+    "startTime": "2026-10-10T12:36:51.545Z",
+    "duration": 11743.414,
     "expected": 8,
     "skipped": 0,
     "unexpected": 0,
