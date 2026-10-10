@@ -40,7 +40,10 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
     await page.locator(".menu-toggle").click();
   }
   await page.locator("#inventory").scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>(".catalog-card img")].every((img) => img.complete && img.naturalWidth > 0));
+  for (const img of await page.locator(".catalog-card img").all()) {
+    await img.scrollIntoViewIfNeeded();
+    await expect.poll(() => img.evaluate((node) => node.complete && node.naturalWidth > 0), { message: "Each lazy catalog image loads when scrolled into view" }).toBe(true);
+  }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: `artifacts/${testInfo.project.name}-home-mock.jpg`, fullPage: true, type: "jpeg", quality: 65, scale: "css" });
@@ -52,7 +55,7 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /mock-front/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
   for (const img of await page.locator(".gallery-image img").all()) await img.scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>(".gallery-image img")].every((img) => img.complete && img.naturalWidth > 0));
+  for (const img of await page.locator(".gallery-image img").all()) await expect.poll(() => img.evaluate((node) => node.complete && node.naturalWidth > 0), { message: "Gallery images load after disclosure and scrolling" }).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await page.screenshot({ path: `artifacts/${testInfo.project.name}-detail-mock.jpg`, fullPage: true, type: "jpeg", quality: 65, scale: "css" });
@@ -94,7 +97,7 @@ test("sell-car, articles, published detail, sitemap and disabled admin preserve 
  const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
  await page.goto("/sell-car");
  await expect(page.locator("main.sell-page")).toBeVisible();
- await expect(page.locator('script[type="application/ld+json"]').last()).toContainText("บริการรับซื้อรถมือสอง");
+ await expect(page.locator('script[type="application/ld+json"]').last()).toContainText("บริการรับซื้อรถมือสอง", {useInnerText:false});
  await page.goto("/articles");
  await expect(page.locator(".pd-article-card")).toHaveCount(1);
  await page.locator(".pd-article-card h2 a").click();

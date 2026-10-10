@@ -48,6 +48,10 @@ jobs:
       - id: browser
         if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
         run: npm run test:browser
+      - name: Print bounded browser failure context
+        if: ${{ !cancelled() && steps.browser.outcome == 'failure' }}
+        run: |
+          node -e 'const fs=require("node:fs");const b=JSON.parse(fs.readFileSync("artifacts/browser-results.json","utf8"));function walk(s){for(const x of s.specs||[])for(const t of x.tests||[])for(const r of t.results||[])if(r.status!=="passed")console.log(JSON.stringify({title:x.title,project:t.projectId,error:r.error,errors:r.errors}).slice(0,6000));for(const q of s.suites||[])walk(q);}walk(b);'
       - id: next
         if: ${{ !cancelled() && steps.verify.outcome == 'success' }}
         run: npm run build:next
@@ -59,7 +63,7 @@ jobs:
       - name: Preserve mock QA evidence in migration branch
         if: ${{ success() }}
         run: |
-          node -e 'const fs=require("node:fs"); const b=JSON.parse(fs.readFileSync("artifacts/browser-results.json","utf8")); const u=fs.readFileSync("/tmp/pdcar-unit.log","utf8"); fs.writeFileSync("artifacts/cloud-qa-summary.json",JSON.stringify({testedCommit:process.env.GITHUB_SHA,runUrl:"https://github.com/"+process.env.GITHUB_REPOSITORY+"/actions/runs/"+process.env.GITHUB_RUN_ID,node:process.version,unit:u.match(/# tests (\\d+)/)?.[1],unitFailures:u.match(/# fail (\\d+)/)?.[1],browser:b.stats,productionWrites:false,fixturesOnly:true},null,2));'
+          node -e 'const fs=require("node:fs"); const b=JSON.parse(fs.readFileSync("artifacts/browser-results.json","utf8")); const u=fs.readFileSync("/tmp/pdcar-unit.log","utf8"); fs.writeFileSync("artifacts/cloud-qa-summary.json",JSON.stringify({testedCommit:process.env.GITHUB_SHA,runUrl:"https://github.com/"+process.env.GITHUB_REPOSITORY+"/actions/runs/"+process.env.GITHUB_RUN_ID,node:process.version,unit:u.match(/# tests (\d+)/)?.[1],unitFailures:u.match(/# fail (\d+)/)?.[1],browser:b.stats,productionWrites:false,fixturesOnly:true},null,2));'
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f artifacts/cloud-qa-summary.json artifacts/desktop-home-mock.jpg artifacts/mobile-home-mock.jpg artifacts/desktop-detail-mock.jpg artifacts/mobile-detail-mock.jpg
