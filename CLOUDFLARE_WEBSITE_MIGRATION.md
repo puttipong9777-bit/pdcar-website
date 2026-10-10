@@ -58,3 +58,11 @@ Pages aliases next/image to native img: eager/high-priority shop hero/logo, lazy
 PASS (automated fixture): initial HTML has direct ERP-origin image src, lazy loading, correct cover before gallery side image, video embed, no /_next/image. Real cover/gallery image bytes remain BLOCKED (no public file ID and outbound origin access denied). Do not interpret fixture images as live availability.
 
 Bandwidth: browser downloads original ERP image bytes; no Cloudflare paid resizing enabled. Static shop images use Pages CDN. ERP image requests and Google Drive/storage retrieval remain on Vercel and may increase original-byte transfer compared with optimized thumbnails. No new image cache/mirror introduced because it could continue exposing unpublished car media. A future thumbnail service must honor ERP publication checks and is outside this migration; no private documents/files copied. An unavailable/paused ERP still prevents live photos.
+
+## Phase 5 — deployment preparation
+
+Prepared `wrangler.jsonc` with pages_build_output_dir=out, native Functions compatibility date, `.node-version` and `docs/CLOUDFLARE_DEPLOYMENT.md`. Preset None; build npm ci && npm run verify && npm test. No account IDs/credentials/bindings/resources created. Preview only, no main branch merge or custom domain.
+
+PASS: actual local Wrangler 4.149.0/workerd compiled artifact; `/api/health` returned 200 JSON at localhost:8788. Wrangler's generated CF_PAGES_URL binding is a local placeholder, NOT an actual deployment URL. Remote request.cf lookup failed due restricted network and emulator used its documented local default.
+
+BLOCKED: actual pages.dev deployment. No existing Cloudflare account ID/API token/OAuth session found; Cloudflare API CONNECT blocked by outbound proxy (403). No attempt to create credentials, login/OAuth, Git integration or paid resources. No real preview URL exists. Owner approval needed for connection/access and secure existing public configuration; cloud network access also needs restoration. Continue mock/local QA while blocked.
