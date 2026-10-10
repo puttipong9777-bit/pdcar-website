@@ -1,0 +1,6 @@
+/* Keep the recovered desktop gallery visible with modern native details.
+   Chromium's ::details-content now hides closed content independently of
+   the original child display:grid override. Mobile keeps native disclosure. */
+@media (min-width: 901px) {
+  .gallery-more::details-content { content-visibility: visible; }
+}

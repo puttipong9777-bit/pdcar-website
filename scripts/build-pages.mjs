@@ -5,7 +5,7 @@ import { createRequire } from "node:module";
 await rm("out", { recursive: true, force: true });
 await mkdir("out/assets", { recursive: true });
 await cp("public", "out", { recursive: true });
-await writeFile("out/assets/site.css", (await Promise.all(["app/globals.css","app/showroom.css","app/articles/articles.css"].map(p=>readFile(p,"utf8")))).join("\n"));
+await writeFile("out/assets/site.css", (await Promise.all(["app/globals.css","app/showroom.css","app/articles/articles.css","pages-runtime/compatibility.css"].map(p=>readFile(p,"utf8")))).join("\n"));
 const common = {
   bundle: true, minify: true, format: "esm", jsx: "automatic", target: "es2022",
   alias: { "next/image": path.resolve("pages-runtime/image.tsx"), "next/link": path.resolve("pages-runtime/link.tsx") },

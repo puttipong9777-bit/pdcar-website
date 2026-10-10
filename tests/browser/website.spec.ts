@@ -57,7 +57,10 @@ test("inventory, filtering, contact links, images, videos and layout", async ({ 
   console.log("browser stage: detail loaded");
   await page.reload();
   console.log("browser stage: detail reloaded");
-  if (testInfo.project.name === "mobile") await page.locator(".gallery-more summary").click();
+  if (testInfo.project.name === "mobile") {
+    await expect(page.locator(".gallery-image img").nth(1)).toBeHidden();
+    await page.locator(".gallery-more summary").click();
+  }
   else await expect(page.locator(".gallery-more summary")).toBeHidden();
   await expect(page.locator(".gallery-image img")).toHaveCount(2);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /mock-front/);
@@ -100,6 +103,7 @@ test.describe("server HTML without JavaScript", () => {
     await expect(page.locator(".catalog-card").first()).toContainText("399,000");
     await page.locator(".catalog-card h3 a").first().click();
     await expect(page.locator(".vehicle-summary h1")).toHaveText("Toyota Yaris 2022");
+    if (test.info().project.name === "desktop") await expect(page.locator(".gallery-image img").nth(1)).toBeVisible();
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Toyota Yaris 2022");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://www.pdcarcenter.com/cars/toyota-yaris-2022");
   });
