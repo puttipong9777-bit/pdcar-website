@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowDownUp, ArrowUpRight, CarFront, ChevronLeft, ChevronRight, Gauge, Images, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowDownUp, ArrowUpRight, CarFront, ChevronLeft, ChevronRight, Gauge, Images, MoveHorizontal, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { type PointerEvent as ReactPointerEvent, useMemo, useRef, useState } from "react";
 import { defaultCatalogFilters, filterCatalog, getCatalogPhotos, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
 import type { PublicVehicleListing } from "@/lib/types";
 
@@ -12,16 +12,49 @@ const number = new Intl.NumberFormat("th-TH");
 function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   const photos = useMemo(() => getCatalogPhotos(vehicle), [vehicle]);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [galleryUsed, setGalleryUsed] = useState(false);
+  const pointerStart = useRef<{ id: number; x: number; y: number } | null>(null);
+  const suppressPhotoLink = useRef(false);
   const activeIndex = photoIndex < photos.length ? photoIndex : 0;
   const href = `/cars/${encodeURIComponent(vehicle.slug)}`;
-  const changePhoto = (direction: number) => setPhotoIndex((activeIndex + direction + photos.length) % photos.length);
+  const changePhoto = (direction: number) => {
+    setGalleryUsed(true);
+    setPhotoIndex((current) => {
+      const safeIndex = current < photos.length ? current : 0;
+      return (safeIndex + direction + photos.length) % photos.length;
+    });
+  };
+  const handlePointerDown = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    pointerStart.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  };
+  const handlePointerUp = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+    const start = pointerStart.current;
+    pointerStart.current = null;
+    if (!start || start.id !== event.pointerId || photos.length < 2) return;
+
+    const horizontalDistance = event.clientX - start.x;
+    const verticalDistance = event.clientY - start.y;
+    const isHorizontalSwipe = Math.abs(horizontalDistance) >= 42 && Math.abs(horizontalDistance) > Math.abs(verticalDistance) * 1.2;
+    if (!isHorizontalSwipe) return;
+
+    event.preventDefault();
+    suppressPhotoLink.current = true;
+    changePhoto(horizontalDistance < 0 ? 1 : -1);
+    window.setTimeout(() => { suppressPhotoLink.current = false; }, 400);
+  };
 
   return (
     <article className="catalog-card" aria-label={vehicle.title}>
       <div className="catalog-photo">
-        <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`}>
-          {photos[activeIndex] ? <Image key={photos[activeIndex]} src={photos[activeIndex]} alt={`${vehicle.title} ภาพที่ ${activeIndex + 1}`} fill sizes="(max-width: 620px) 100vw, (max-width: 1100px) 46vw, 410px" /> : <div className="image-placeholder"><CarFront size={46} /><span>กำลังเพิ่มรูปภาพ</span></div>}
+        <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { pointerStart.current = null; }} onClick={(event) => {
+          if (!suppressPhotoLink.current) return;
+          event.preventDefault();
+          suppressPhotoLink.current = false;
+        }}>
+          {photos[activeIndex] ? <Image key={photos[activeIndex]} src={photos[activeIndex]} alt={`${vehicle.title} ภาพที่ ${activeIndex + 1}`} fill sizes="(max-width: 620px) 100vw, (max-width: 1100px) 46vw, 410px" draggable={false} /> : <div className="image-placeholder"><CarFront size={46} /><span>กำลังเพิ่มรูปภาพ</span></div>}
         </Link>
+        {photos.length > 1 && !galleryUsed ? <span className="catalog-swipe-hint" aria-hidden="true"><MoveHorizontal size={16} />ปัดซ้าย–ขวาดูรูป</span> : null}
         <span className={`catalog-status ${vehicle.status}`}><span />{vehicle.status === "reserved" ? "ติดจอง" : "พร้อมขาย"}</span>
         {photos.length > 1 ? <div className="catalog-photo-controls" role="group" aria-label={`รูปภาพ ${vehicle.title}`}>
           <button type="button" onClick={() => changePhoto(-1)} aria-label={`ภาพก่อนหน้าของ ${vehicle.title}`}><ChevronLeft size={18} /></button>
