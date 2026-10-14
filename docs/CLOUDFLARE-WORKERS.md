@@ -32,10 +32,18 @@ Approval/daily cron/postback ยังคงปิดตามสถานะเ
 
 Porkbun ยังคงเป็น registrar. Cloudflare nameservers ที่ได้รับคือ `corey.ns.cloudflare.com` และ `jewel.ns.cloudflare.com`. สำรอง DNS เดิมทั้ง 8 records และ nameservers ใน `artifacts/dns-before-cloudflare.json`. ต้องรักษา MX สองรายการและ SPF สำหรับ email forwarding
 
+เปลี่ยน nameservers ที่ Porkbun และผูก Workers custom domains ทั้ง `www.pdcarcenter.com` และ `pdcarcenter.com` แล้วเมื่อ 14 ตุลาคม 2026. `wrangler.jsonc` บันทึก custom domains เพื่อให้ Git deployment ครั้งต่อไปใช้การตั้งค่าเดียวกัน. Free Universal SSL แสดง Active; HTTPS ผ่านการตรวจใบรับรองตามปกติ. MX/SPF เดิมยังอยู่. โดเมนหลักส่งต่อไป `www` ด้วย 301 พร้อมรักษา path/query
+
+DNS สาธารณะ 1.1.1.1 และ 8.8.8.8 ชี้ Cloudflare แล้ว แต่ resolver ของบางเครือข่ายยัง cache Vercel เก่าที่ตอบ 402. ระหว่าง propagation หากเห็น Deployment Paused ให้รอ cache หมดอายุ; ห้ามปิดการตรวจ certificate เพื่อหลบอาการนี้
+
 หากต้อง rollback ให้ใช้ Cloudflare deployment version ที่ผ่านการตรวจ หรือคืน nameservers/DNS จากไฟล์สำรอง. ERP Vercel ยังถูกพักและส่งรูปไม่ได้ จึงไม่ควรย้อน media origin กลับ Vercelโดยไม่ตรวจ HTTP ก่อน. ไม่ rollback ด้วยการลบฐานข้อมูลหรือรูปต้นฉบับ
 
 ## Verification limits
 
 49 unit/in-memory tests ผ่าน, lint/typecheck/Next build/OpenNext build และ Wrangler dry-run ผ่าน. HTTPS Workers ตรวจ health, stock/detail, sell-car, articles, catalog CSV, sitemaps และ unknown-page 404. Browser ตรวจภาพจริง, search, carousel, mobile menu, gallery และ overflow. Cloudflare aggregate metrics แสดง No data ระหว่างตรวจ จึงยังไม่มีค่ารับรอง CPU percentile; HTTP response สำเร็จไม่ใช่การวัด CPU. Dependency audit เหลือ 6 high advisories ใน eslint/glob-pattern tooling; ไม่มีการ force downgrade framework
+
+ผลตรวจโดเมนจริงอยู่ใน `artifacts/production-http-acceptance.json`: หน้าแรก/API/feed/sell-car/articles/sitemaps/robots และหน้ารถที่เผยแพร่ล่าสุด 11 คันผ่าน HTTP 200; หน้าที่ไม่มีอยู่ตอบ 404. จำนวนรถเปลี่ยนจาก 12 เป็น 11 ระหว่างตรวจและตรงกับ public view ปัจจุบัน (180 ภาพ). ภาพชุดเดิมทั้งหมด 191 ภาพผ่านก่อน cutover. Browser บนโดเมนจริงยืนยันภาพโหลดได้ ค้นหา PD0025 พบ 1 คัน แกลเลอรีมือถือเปิดได้ และไม่มี horizontal overflow
+
+CI ของ release `6dab2c1` ผ่านบน Linux: https://github.com/puttipong9777-bit/pdcar-website/actions/runs/38523048542
 
 อ้างอิง: [OpenNext setup](https://opennext.js.org/cloudflare/get-started), [Cloudflare custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/), [Chromium details styling](https://developer.chrome.com/blog/styling-details/)

@@ -1,0 +1,166 @@
+{
+  "checkedAt": "2026-10-14T07:28:32.820Z",
+  "base": "https://www.pdcarcenter.com",
+  "dnsResolver": "1.1.1.1 (system resolver retains old Vercel DNS)",
+  "tlsValidation": "default Node certificate verification enabled",
+  "vehicleCount": 11,
+  "homepageUsesRenderMedia": true,
+  "facebookDomainVerification": true,
+  "apexRedirect": {
+    "status": 301,
+    "location": "https://www.pdcarcenter.com/cars/pd0025?utm_source=verification"
+  },
+  "preview": {
+    "status": 200,
+    "noindex": "noindex, nofollow",
+    "disallowsAll": true
+  },
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "noindex": null,
+      "type": "text/html; charset=utf-8",
+      "bytes": 208131,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "noindex": null,
+      "type": "application/json",
+      "bytes": 80,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/api/meta/catalog-feed",
+      "status": 200,
+      "noindex": null,
+      "type": "text/csv; charset=utf-8",
+      "bytes": 40279,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/sell-car",
+      "status": 200,
+      "noindex": null,
+      "type": "text/html; charset=utf-8",
+      "bytes": 65792,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/articles",
+      "status": 200,
+      "noindex": null,
+      "type": "text/html; charset=utf-8",
+      "bytes": 17629,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "noindex": null,
+      "type": "application/xml",
+      "bytes": 4078,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/articles/sitemap.xml",
+      "status": 200,
+      "noindex": null,
+      "type": "application/xml",
+      "bytes": 110,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/robots.txt",
+      "status": 200,
+      "noindex": null,
+      "type": "text/plain",
+      "bytes": 165,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/cars/missing-vehicle",
+      "status": 404,
+      "noindex": null,
+      "type": "text/html; charset=utf-8",
+      "bytes": 12993,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/articles/missing-article",
+      "status": 404,
+      "noindex": null,
+      "type": "text/html; charset=utf-8",
+      "bytes": 13245,
+      "server": "cloudflare"
+    },
+    {
+      "path": "/cars/pd0026",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0023",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0002",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0025",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0001",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0028",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0018",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0012",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0021",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0016",
+      "status": 200,
+      "media": true,
+      "product": true
+    },
+    {
+      "path": "/cars/pd0007",
+      "status": 200,
+      "media": true,
+      "product": true
+    }
+  ]
+}

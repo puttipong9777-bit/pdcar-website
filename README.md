@@ -2,6 +2,12 @@
 
 เว็บไซต์สาธารณะของ PD Car Center แยกจากระบบ ERP แต่ใช้ Supabase Project และ `Car ID` ชุดเดียวกัน
 
+## Production บน Cloudflare Workers
+
+เว็บจริง: https://www.pdcarcenter.com/ — deploy อัตโนมัติจาก branch `codex/cloudflare-workers` ด้วย OpenNext และ Cloudflare Git Builds. โดเมนหลักส่งต่อไป `www` ด้วย HTTPS; Porkbun ยังคงเป็น registrar และ Cloudflare ดูแล DNS
+
+Build: `npm run build:cloudflare`; deploy: `npx wrangler deploy`. รูปรถใช้ public image API ของ ERP บน Render. อ่านขั้นตอนตั้งค่า ผลตรวจ และวิธี rollback ใน [`docs/CLOUDFLARE-WORKERS.md`](docs/CLOUDFLARE-WORKERS.md)
+
 ## สถานะเริ่มต้น
 
 - หน้าแรกเป็นรายการรถพร้อมขายและติดจอง
