@@ -22,8 +22,8 @@
   "observability": { "enabled": true },
   "vars": {
     "SITE_ENV": "production",
-    "SITE_ANALYTICS_ENABLED": "false",
-    "SITE_ADMIN_ENABLED": "false",
+    "SITE_ANALYTICS_ENABLED": "true",
+    "SITE_ADMIN_ENABLED": "true",
     "ADMIN_SITE_URL": "https://www.pdcarcenter.com",
     "ARTICLE_APPROVAL_ENABLED": "false",
     "ARTICLE_DAILY_CRON_ENABLED": "false",
