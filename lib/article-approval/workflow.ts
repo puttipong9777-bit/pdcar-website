@@ -8,7 +8,7 @@ import type { Article, Decision } from "./types";
 import type { ArticleContent } from "./types";
 
 export async function sendDeliveries(articleId?: string) {
-  const sql = articleDb();
+  const sql = await articleDb();
   const pending = await sql`select d.id from article_approval.deliveries d join article_approval.drafts a on a.id = d.article_id
     where d.sent_at is null and a.status = 'pending' and (${articleId ?? null}::uuid is null or a.id = ${articleId ?? null}::uuid)
     order by a.article_date desc limit 20`;
@@ -34,7 +34,7 @@ export async function sendDeliveries(articleId?: string) {
 }
 export async function runDaily() {
   const admins = generationConfig();
-  const sql = articleDb(); const day = bangkokDay(); const token = randomUUID();
+  const sql = await articleDb(); const day = bangkokDay(); const token = randomUUID();
   const [row] = await sql<Article[]>`select * from article_approval.claim_day(${day}::date, ${token})`;
   let generation = "already_exists";
   if (row) {
@@ -63,12 +63,12 @@ export async function runDaily() {
   return { day, generation, delivery };
 }
 export async function decide(id: string, actor: string, action: Decision, version: number, eventId: string) {
-  const sql = articleDb();
+  const sql = await articleDb();
   const [row] = await sql`select article_approval.decide(${id}, ${actor}, ${action}, ${version}, ${eventId}) as decision`;
   return row.decision as { result: "applied" | "duplicate" | "conflict" | "not_found"; status?: string; version?: number };
 }
 export async function listAdminArticles(id?: string, page = 1) {
-  const sql = articleDb();
+  const sql = await articleDb();
   const articles = await sql<Article[]>`select id, article_date::text, slug, status, content, sources, version,
     published_at::text, updated_at::text, created_at::text from article_approval.drafts
     where (${id ?? null}::uuid is null or id = ${id ?? null}::uuid)
@@ -85,7 +85,7 @@ export async function saveManualArticle(input: {
   version: number;
   eventId: string;
 }) {
-  const sql = articleDb();
+  const sql = await articleDb();
   const [row] = await sql`select article_approval.save_manual(
     ${input.id ?? null}::uuid,
     ${input.actor},

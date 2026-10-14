@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   try {
     requireCron(request);
     if (!enabled()) return json({ status: "disabled" });
-    const sql = articleDb();
+    const sql = await articleDb();
     const drafts = await sql`select id, article_date::text, status, attempts, error_code, updated_at::text
       from article_approval.drafts order by article_date desc limit 30`;
     const deliveries = await sql`select article_id, count(*)::int as recipients,

@@ -12,7 +12,7 @@ export function analyticsEnabled() {
 }
 
 export async function recordAnalyticsEvent(event: AnalyticsEventInput) {
-  const sql = articleDb();
+  const sql = await articleDb();
   const [row] = await sql`select site_admin.record_event(
     ${event.eventId}::uuid,
     ${event.sessionId}::uuid,
@@ -24,7 +24,7 @@ export async function recordAnalyticsEvent(event: AnalyticsEventInput) {
 }
 
 export async function getDashboardMetrics(): Promise<DashboardMetrics> {
-  const sql = articleDb();
+  const sql = await articleDb();
   const [summary, dailyRows, vehicleRows, pageRows] = await Promise.all([
     sql`with boundaries as (
       select (now() at time zone 'Asia/Bangkok')::date as today
