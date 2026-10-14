@@ -3,13 +3,16 @@ import { runArticleSchedule } from "./scheduled.mjs";
 
 const worker = {
   async fetch(request, env, ctx) {
-    if (env.SITE_ENV === "preview" && new URL(request.url).pathname === "/robots.txt") {
+    const url = new URL(request.url);
+    const previewHost = url.hostname !== "www.pdcarcenter.com" && url.hostname !== "pdcarcenter.com";
+    const isPreview = env.SITE_ENV === "preview" || previewHost;
+    if (isPreview && url.pathname === "/robots.txt") {
       return new Response("User-agent: *\nDisallow: /\n", {
         headers: { "Content-Type": "text/plain; charset=utf-8", "X-Robots-Tag": "noindex, nofollow" }
       });
     }
     const response = await handler.fetch(request, env, ctx);
-    if (env.SITE_ENV !== "preview") return response;
+    if (!isPreview) return response;
     const preview = new Response(response.body, response);
     preview.headers.set("X-Robots-Tag", "noindex, nofollow");
     return preview;

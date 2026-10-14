@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { MetaPixel } from "@/components/meta-pixel";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.pdcarcenter.com"),
+  other: { "facebook-domain-verification": "1h2omtxmsu0vgdm1ustg0x9zokcgl9" },
   title: { default: "PD Car Center | รถมือสองและรับซื้อรถนครปฐม", template: "%s | PD Car Center" },
   description: "PD Car Center รถมือสองคัดคุณภาพในนครปฐม พร้อมบริการรับซื้อรถมือสอง ติดต่อดูรถหรือส่งข้อมูลรถเพื่อประเมินเบื้องต้นกับร้านได้โดยตรง",
   alternates: { canonical: "/" },
@@ -28,7 +30,9 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const host = (await headers()).get("host")?.split(":")[0];
+  const trackVisits = process.env.SITE_ENV !== "preview" && (host === "www.pdcarcenter.com" || host === "pdcarcenter.com");
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "690571535487780";
   const businessJsonLd = {
@@ -70,7 +74,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="th">
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd).replace(/</g, "\\u003c") }} />
-        {process.env.SITE_ENV !== "preview" ? <MetaPixel pixelId={metaPixelId} /> : null}
+        {trackVisits ? <MetaPixel pixelId={metaPixelId} /> : null}
         <SiteHeader />
         {children}
       </body>
