@@ -3,7 +3,7 @@
 import { ArrowDownUp, ArrowUpRight, CarFront, ChevronLeft, ChevronRight, Gauge, Images, MoveHorizontal, RotateCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { type PointerEvent as ReactPointerEvent, useMemo, useRef, useState } from "react";
+import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { defaultCatalogFilters, filterCatalog, getCatalogPhotos, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
 import type { PublicVehicleListing } from "@/lib/types";
 
@@ -13,10 +13,46 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   const photos = useMemo(() => getCatalogPhotos(vehicle), [vehicle]);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [galleryUsed, setGalleryUsed] = useState(false);
+  const [shouldPreloadNeighbors, setShouldPreloadNeighbors] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
   const pointerStart = useRef<{ id: number; x: number; y: number } | null>(null);
   const suppressPhotoLink = useRef(false);
   const activeIndex = photoIndex < photos.length ? photoIndex : 0;
   const href = `/cars/${encodeURIComponent(vehicle.slug)}`;
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || !("IntersectionObserver" in window)) {
+      setShouldPreloadNeighbors(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setShouldPreloadNeighbors(true);
+      observer.disconnect();
+    }, { rootMargin: "240px 0px" });
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldPreloadNeighbors || photos.length < 2) return;
+
+    const neighborIndexes = new Set([
+      (activeIndex + 1) % photos.length,
+      (activeIndex - 1 + photos.length) % photos.length
+    ]);
+
+    neighborIndexes.forEach((index) => {
+      const preload = new window.Image();
+      preload.decoding = "async";
+      preload.fetchPriority = "low";
+      preload.src = photos[index];
+    });
+  }, [activeIndex, photos, shouldPreloadNeighbors]);
+
   const changePhoto = (direction: number) => {
     setGalleryUsed(true);
     setPhotoIndex((current) => {
@@ -45,7 +81,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   };
 
   return (
-    <article className="catalog-card" aria-label={vehicle.title}>
+    <article ref={cardRef} className="catalog-card" aria-label={vehicle.title}>
       <div className="catalog-photo">
         <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`} draggable={false} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { pointerStart.current = null; }} onClick={(event) => {
           if (!suppressPhotoLink.current) return;
