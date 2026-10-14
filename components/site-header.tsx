@@ -50,6 +50,7 @@ export function SiteHeader() {
       <nav id="mobile-navigation" className={`mobile-navigation${menuOpen ? " is-open" : ""}`} aria-label="เมนูมือถือ">
         {navigation.map(([label, href]) => <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}
         <Link className="mobile-menu-sell" href="/sell-car" onClick={() => setMenuOpen(false)}>ขายรถให้ PD Car Center</Link>
+        <Link className="mobile-menu-admin" href="/admin" onClick={() => setMenuOpen(false)}>ผู้ดูแลเว็บไซต์</Link>
         <a className="mobile-menu-call" href={`tel:${phone}`} onClick={() => setMenuOpen(false)} data-analytics="phone_click"><Phone size={18} />โทร {phone}</a>
       </nav>
     </header>

@@ -195,6 +195,7 @@ export default async function HomePage() {
           <Link href="/sell-car">ขายรถให้เรา</Link>
           <a href="#videos">วิดีโอ 9:16</a>
           <a href="#articles">บทความ</a>
+          <Link href="/admin">ผู้ดูแลเว็บไซต์</Link>
         </div>
         <div className="footer-contact">
           <strong>ติดต่อเรา</strong>
