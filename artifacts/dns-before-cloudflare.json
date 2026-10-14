@@ -1,0 +1,17 @@
+{
+  "domain": "pdcarcenter.com",
+  "registrar": "Porkbun",
+  "nameservers": ["curitiba.ns.porkbun.com", "fortaleza.ns.porkbun.com", "maceio.ns.porkbun.com", "salvador.ns.porkbun.com"],
+  "records": [
+    {"type":"A","name":"@","value":"216.198.79.1","ttl":600},
+    {"type":"CNAME","name":"*","value":"uixie.porkbun.com","ttl":600},
+    {"type":"CNAME","name":"www","value":"71496f2ca39a74ce.vercel-dns-017.com.","ttl":600},
+    {"type":"MX","name":"@","value":"fwd1.porkbun.com","priority":10,"ttl":600},
+    {"type":"MX","name":"@","value":"fwd2.porkbun.com","priority":20,"ttl":600},
+    {"type":"TXT","name":"@","value":"v=spf1 include:_spf.porkbun.com ~all","ttl":600},
+    {"type":"TXT","name":"_acme-challenge","value":"3ozMeC0ZLrNbxn8SjF1EzqQNdR_MtVKE4nSwrrMGBj0","ttl":600},
+    {"type":"TXT","name":"_acme-challenge","value":"OJ3Kg8WiwIMvslDAbP1r1-coO8CIu2zciDZGhFxZNzA","ttl":600}
+  ],
+  "cloudflareNameservers": ["corey.ns.cloudflare.com", "jewel.ns.cloudflare.com"],
+  "registryDnssec": "No existing DS record shown in Porkbun DNSSEC page"
+}

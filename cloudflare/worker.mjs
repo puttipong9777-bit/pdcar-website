@@ -4,6 +4,12 @@ import { runArticleSchedule } from "./scheduled.mjs";
 const worker = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.hostname === "pdcarcenter.com" || (url.hostname === "www.pdcarcenter.com" && url.protocol !== "https:")) {
+      url.hostname = "www.pdcarcenter.com";
+      url.protocol = "https:";
+      url.port = "";
+      return Response.redirect(url.toString(), 301);
+    }
     const previewHost = url.hostname !== "www.pdcarcenter.com" && url.hostname !== "pdcarcenter.com";
     const isPreview = env.SITE_ENV === "preview" || previewHost;
     if (isPreview && url.pathname === "/robots.txt") {

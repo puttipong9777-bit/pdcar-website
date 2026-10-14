@@ -10,7 +10,7 @@
   },
   "observability": { "enabled": true },
   "vars": {
-    "SITE_ENV": "preview",
+    "SITE_ENV": "production",
     "ARTICLE_APPROVAL_ENABLED": "false",
     "ARTICLE_DAILY_CRON_ENABLED": "false",
     "ARTICLE_LINE_POSTBACK_ENABLED": "false"
