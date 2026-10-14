@@ -20,7 +20,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
     <article className="catalog-card" aria-label={vehicle.title}>
       <div className="catalog-photo">
         <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`}>
-          {photos[activeIndex] ? <Image key={photos[activeIndex]} src={photos[activeIndex]} alt={`${vehicle.title} ภาพที่ ${activeIndex + 1}`} fill sizes="(max-width: 620px) calc(100vw - 36px), (max-width: 1100px) 46vw, 410px" /> : <div className="image-placeholder"><CarFront size={46} /><span>กำลังเพิ่มรูปภาพ</span></div>}
+          {photos[activeIndex] ? <Image key={photos[activeIndex]} src={photos[activeIndex]} alt={`${vehicle.title} ภาพที่ ${activeIndex + 1}`} fill sizes="(max-width: 620px) 100vw, (max-width: 1100px) 46vw, 410px" /> : <div className="image-placeholder"><CarFront size={46} /><span>กำลังเพิ่มรูปภาพ</span></div>}
         </Link>
         <span className={`catalog-status ${vehicle.status}`}><span />{vehicle.status === "reserved" ? "ติดจอง" : "พร้อมขาย"}</span>
         {photos.length > 1 ? <div className="catalog-photo-controls" role="group" aria-label={`รูปภาพ ${vehicle.title}`}>
@@ -33,16 +33,16 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
         <div className="catalog-card-topline"><span>{vehicle.carId}</span>{vehicle.featured ? <span className="catalog-featured">ร้านแนะนำ</span> : null}</div>
         <h3><Link href={href}>{vehicle.title}</Link></h3>
         <div className="catalog-specs">
-          <span>ปี {vehicle.year}</span>
-          {vehicle.mileage !== undefined ? <span><Gauge size={15} />{number.format(vehicle.mileage)} กม.</span> : null}
-          {vehicle.transmission ? <span>{vehicle.transmission}</span> : null}
-          {vehicle.fuelType ? <span>{vehicle.fuelType}</span> : null}
+          <span className="catalog-spec-year">ปี {vehicle.year}</span>
+          {vehicle.mileage !== undefined ? <span className="catalog-spec-mileage"><Gauge size={15} />{number.format(vehicle.mileage)} กม.</span> : null}
+          {vehicle.transmission ? <span className="catalog-spec-secondary">{vehicle.transmission}</span> : null}
+          {vehicle.fuelType ? <span className="catalog-spec-secondary">{vehicle.fuelType}</span> : null}
         </div>
         <div className="catalog-price">
           <div><small>ราคาขาย</small><strong>{vehicle.salePrice !== undefined ? <>{number.format(vehicle.salePrice)} <span>บาท</span></> : "สอบถามราคา"}</strong></div>
           <Link href={href} className="catalog-open" aria-label={`ดูรายละเอียด ${vehicle.title}`}><ArrowUpRight size={23} /></Link>
         </div>
-        <p className="catalog-installment">{vehicle.monthlyPayment !== undefined ? `ค่างวดที่ร้านระบุ ${number.format(vehicle.monthlyPayment)} บาท/เดือน` : "สอบถามเงื่อนไขการผ่อนกับร้าน"}</p>
+        <p className="catalog-installment">{vehicle.monthlyPayment !== undefined ? `ผ่อน ${number.format(vehicle.monthlyPayment)} บ./เดือน` : "สอบถามเงื่อนไขผ่อนกับร้าน"}</p>
       </div>
     </article>
   );
