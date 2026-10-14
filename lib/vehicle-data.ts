@@ -23,7 +23,7 @@ function cleanVehicleText(value: string) {
 
 function photos(value: unknown): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
-  const erpUrl = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-platform.vercel.app").replace(/\/$/, "");
+  const erpUrl = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-erp-history.onrender.com").replace(/\/$/, "");
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
