@@ -47,7 +47,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   return (
     <article className="catalog-card" aria-label={vehicle.title}>
       <div className="catalog-photo">
-        <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { pointerStart.current = null; }} onClick={(event) => {
+        <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`} draggable={false} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { pointerStart.current = null; }} onClick={(event) => {
           if (!suppressPhotoLink.current) return;
           event.preventDefault();
           suppressPhotoLink.current = false;
