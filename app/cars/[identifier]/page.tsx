@@ -1,9 +1,9 @@
 import { ArrowLeft, Fuel, Gauge, Phone, Settings2 } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublicVehicle } from "@/lib/vehicle-data";
+import { VehicleImageGallery } from "@/components/vehicle-image-gallery";
 
 export const dynamic = "force-dynamic";
 
@@ -21,14 +21,14 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
   const vehicle = await getPublicVehicle(decodeURIComponent(identifier));
   if (!vehicle) notFound();
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const gallery = vehicle.photos.length ? vehicle.photos : vehicle.coverImageUrl ? [{ fileId: "cover", url: vehicle.coverImageUrl, isPrimary: true, sortOrder: 0 }] : [];
+  const gallery = vehicle.photos.length ? vehicle.photos : vehicle.coverImageUrl ? [{ fileId: "cover", fullUrl: vehicle.coverImageUrl, thumbnailUrl: vehicle.coverImageUrl, isPrimary: true, sortOrder: 0 }] : [];
   return (
     <main className="detail-page">
       <Link className="back-link" href="/#inventory"><ArrowLeft size={18} />กลับไปดูรถทั้งหมด</Link>
       <div className="detail-layout">
         <section className="gallery">
           {vehicle.youtubeVideoId ? <div className="vehicle-video"><iframe src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(vehicle.youtubeVideoId)}?playsinline=1&rel=0`} title={`วิดีโอ ${vehicle.title}`} loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div> : null}
-          {gallery.length ? gallery.map((photo) => <div className="gallery-image" key={photo.fileId}><Image src={photo.url} alt={vehicle.title} fill sizes="(max-width: 900px) 100vw, 60vw" /></div>) : <div className="gallery-empty">กำลังเพิ่มรูปรถ</div>}
+          <VehicleImageGallery photos={gallery} title={vehicle.title} />
         </section>
         <aside className="vehicle-summary">
           <span className={`status-badge ${vehicle.status}`}>{vehicle.status === "reserved" ? "ติดจอง" : "พร้อมขาย"}</span>

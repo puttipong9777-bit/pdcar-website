@@ -2,9 +2,16 @@ export type PublicVehicleStatus = "available" | "reserved";
 
 export type PublicVehiclePhoto = {
   fileId: string;
-  url: string;
+  fullUrl: string;
+  thumbnailUrl: string;
+  fullObjectKey?: string;
+  thumbnailObjectKey?: string;
   isPrimary: boolean;
   sortOrder: number;
+  width?: number;
+  height?: number;
+  thumbnailWidth?: number;
+  thumbnailHeight?: number;
 };
 
 export type PublicVehicleListing = {
