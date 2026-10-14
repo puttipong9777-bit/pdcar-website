@@ -22,7 +22,8 @@
   "hyperdrive": [
     {
       "binding": "ARTICLE_DATABASE_HYPERDRIVE",
-      "id": "d8d38836e2d24f82b8da06eee2f956c2"
+      "id": "d8d38836e2d24f82b8da06eee2f956c2",
+      "localConnectionString": "postgresql://local:local@127.0.0.1:5432/postgres"
     }
   ],
   "observability": { "enabled": true },
