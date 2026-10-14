@@ -23,7 +23,7 @@ export async function getArticles(page = 1, pageSize = 12): Promise<PublishedArt
   } catch { return []; }
 }
 export async function getArticle(slug: string): Promise<PublishedArticle | null> {
-  if (!/^car-knowledge-\d{4}-\d{2}-\d{2}$/.test(slug)) return null;
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length < 3 || slug.length > 100) return null;
   const db = publicClient(); if (!db) return null;
   try {
     const { data, error } = await db.from("public_approved_articles").select(columns).eq("slug", slug).maybeSingle();

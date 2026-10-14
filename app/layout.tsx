@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { MetaPixel } from "@/components/meta-pixel";
+import { SiteAnalytics } from "@/components/site-analytics";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const host = (await headers()).get("host")?.split(":")[0];
   const trackVisits = process.env.SITE_ENV !== "preview" && (host === "www.pdcarcenter.com" || host === "pdcarcenter.com");
+  const trackSiteAnalytics = trackVisits && process.env.SITE_ANALYTICS_ENABLED === "true";
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || "690571535487780";
   const businessJsonLd = {
@@ -44,8 +46,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         name: "PD Car Center",
         alternateName: "พีดี คาร์เซ็นเตอร์",
         url: "https://www.pdcarcenter.com/",
-        logo: "https://www.pdcarcenter.com/images/pd-logo.jpg",
-        image: "https://www.pdcarcenter.com/images/storefront.jpg",
+        logo: "https://www.pdcarcenter.com/media/site/logo",
+        image: "https://www.pdcarcenter.com/media/site/storefront",
         telephone: phone,
         description: "ร้านรถมือสองและรับซื้อรถมือสองในจังหวัดนครปฐม",
         address: {
@@ -71,10 +73,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   };
 
   return (
-    <html lang="th">
+    <html lang="th" data-site-analytics={trackSiteAnalytics ? "enabled" : undefined}>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd).replace(/</g, "\\u003c") }} />
         {trackVisits ? <MetaPixel pixelId={metaPixelId} /> : null}
+        <SiteAnalytics enabled={trackSiteAnalytics} />
         <SiteHeader />
         {children}
       </body>

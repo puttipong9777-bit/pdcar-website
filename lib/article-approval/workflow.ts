@@ -5,6 +5,7 @@ import { generateArticle } from "./generator";
 import { generationConfig, lineDraftPayload, pushDraft } from "./line";
 import { ArticleError, bangkokDay, requireAdmin } from "./security";
 import type { Article, Decision } from "./types";
+import type { ArticleContent } from "./types";
 
 export async function sendDeliveries(articleId?: string) {
   const sql = articleDb();
@@ -73,4 +74,26 @@ export async function listAdminArticles(id?: string, page = 1) {
     where (${id ?? null}::uuid is null or id = ${id ?? null}::uuid)
     order by article_date desc limit 30 offset ${(page - 1) * 30}`;
   return articles;
+}
+
+export async function saveManualArticle(input: {
+  id?: string;
+  actor: string;
+  articleDate: string;
+  slug: string;
+  content: ArticleContent;
+  version: number;
+  eventId: string;
+}) {
+  const sql = articleDb();
+  const [row] = await sql`select article_approval.save_manual(
+    ${input.id ?? null}::uuid,
+    ${input.actor},
+    ${input.articleDate}::date,
+    ${input.slug},
+    ${sql.json(input.content)},
+    ${input.version},
+    ${input.eventId}
+  ) as article`;
+  return row.article as { result: "created" | "updated" | "duplicate" | "conflict" | "invalid" | "not_found"; id?: string; status?: string; version?: number };
 }

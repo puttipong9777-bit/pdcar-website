@@ -40,7 +40,9 @@ export function uuid(value: unknown): string {
   return value;
 }
 export function articleOrigin() {
-  const url = new URL(required("ARTICLE_SITE_URL"));
+  const configured = process.env.ARTICLE_SITE_URL?.trim() || process.env.ADMIN_SITE_URL?.trim();
+  if (!configured) throw new ArticleError("missing_site_url", 503);
+  const url = new URL(configured);
   if (url.pathname !== "/" || url.search || url.hash || url.username || url.password || (url.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && url.hostname === "localhost"))) {
     throw new ArticleError("invalid_site_url", 503);
   }

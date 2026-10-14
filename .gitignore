@@ -12,6 +12,7 @@ npm-debug.log*
 *.tsbuildinfo
 Thumbs.db
 .DS_Store
+artifacts/r2-vehicle-images/
 
 .vercel
 .env*

@@ -75,7 +75,7 @@ export default function SellCarPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd).replace(/</g, "\\u003c") }} />
 
       <section className="sell-page-hero">
-        <Image src="/images/storefront.jpg" alt="PD Car Center รับซื้อรถมือสองนครปฐม" fill priority sizes="100vw" />
+        <Image src="/media/site/storefront" alt="PD Car Center รับซื้อรถมือสองนครปฐม" fill priority sizes="100vw" />
         <div className="sell-page-hero-shade" aria-hidden="true" />
         <div className="sell-page-hero-inner">
           <Link className="sell-back-link" href="/"><ArrowLeft size={18} />กลับหน้าแรก</Link>
@@ -85,8 +85,8 @@ export default function SellCarPage() {
               <h1>อยากขายรถมือสอง?<br /><em>เริ่มประเมินกับเรา</em></h1>
               <p>สำหรับเจ้าของรถที่กำลังค้นหาที่รับซื้อรถมือสองในนครปฐม ส่งข้อมูลเบื้องต้นและคุยกับผู้ดูแลร้านโดยตรง ก่อนนัดตรวจรถจริงเมื่อคุณพร้อม</p>
               <div className="sell-hero-actions">
-                {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={19} />ส่งข้อมูลรถทาง LINE</a> : null}
-                <a className="outline-action" href={`tel:${phone}`}><Phone size={19} />โทร {phone}</a>
+                {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={19} />ส่งข้อมูลรถทาง LINE</a> : null}
+                <a className="outline-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={19} />โทร {phone}</a>
               </div>
             </div>
             <aside className="sell-quick-card">
@@ -165,14 +165,14 @@ export default function SellCarPage() {
           <span>ส่งข้อมูลเบื้องต้น หรือโทรสอบถามก่อนนัดตรวจรถจริง</span>
         </div>
         <div>
-          {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={19} />ส่งข้อมูลทาง LINE</a> : null}
-          <a className="phone-action" href={`tel:${phone}`}><Phone size={19} />{phone}</a>
+          {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={19} />ส่งข้อมูลทาง LINE</a> : null}
+          <a className="phone-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={19} />{phone}</a>
         </div>
       </section>
 
       <div className="mobile-sticky-actions" aria-label="ติดต่อขายรถ">
-        <a href={`tel:${phone}`}><Phone size={18} />โทรหาร้าน</a>
-        {lineUrl ? <a href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={18} />ส่งข้อมูลทาง LINE</a> : null}
+        <a href={`tel:${phone}`} data-analytics="phone_click"><Phone size={18} />โทรหาร้าน</a>
+        {lineUrl ? <a href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={18} />ส่งข้อมูลทาง LINE</a> : null}
       </div>
     </main>
   );

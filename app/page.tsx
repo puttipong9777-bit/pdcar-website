@@ -62,7 +62,7 @@ export default async function HomePage() {
           <p>หากคุณกำลังค้นหาที่รับซื้อรถมือสองในนครปฐม ส่งข้อมูลรถมาให้เราประเมินเบื้องต้นก่อนนัดดูรถจริงได้ ไม่ต้องกรอกข้อมูลลงเว็บไซต์</p>
           <div className="sell-acquisition-actions">
             <Link className="primary-action" href="/sell-car">ประเมินรถของคุณ <ArrowRight size={18} /></Link>
-            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={18} />ส่งรูปรถทาง LINE</a> : null}
+            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={18} />ส่งรูปรถทาง LINE</a> : null}
           </div>
         </div>
         <div className="sell-acquisition-steps" aria-label="ขั้นตอนเริ่มขายรถ">
@@ -74,7 +74,7 @@ export default async function HomePage() {
 
       <section className="about-showcase" id="about">
         <div className="about-showcase-image">
-          <Image src="/images/storefront.jpg" alt="รถภายในร้าน PD Car Center" fill sizes="(max-width: 820px) 100vw, 52vw" />
+          <Image src="/media/site/storefront" alt="รถภายในร้าน PD Car Center" fill sizes="(max-width: 820px) 100vw, 52vw" />
         </div>
         <div className="about-showcase-copy">
           <p className="eyebrow light">WELCOME TO PD CAR CENTER</p>
@@ -171,14 +171,14 @@ export default async function HomePage() {
       </section>
 
       <section className="contact-band" id="contact">
-        <Image src="/images/storefront.jpg" alt="" fill sizes="100vw" aria-hidden="true" />
+        <Image src="/media/site/storefront" alt="" fill sizes="100vw" aria-hidden="true" />
         <div className="contact-band-shade" aria-hidden="true" />
         <div className="contact-band-copy">
           <p>กำลังหารถ หรือมีรถที่อยากขาย</p>
           <h2>คุยกับ PD Car Center ได้โดยตรง</h2>
           <div className="contact-actions">
-            <a className="phone-action" href={`tel:${phone}`}><Phone size={19} />{phone}</a>
-            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer">คุยกับเราทาง LINE <ArrowRight size={18} /></a> : null}
+            <a className="phone-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={19} />{phone}</a>
+            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click">คุยกับเราทาง LINE <ArrowRight size={18} /></a> : null}
             <Link className="outline-action" href="/sell-car">ดูขั้นตอนขายรถ</Link>
           </div>
         </div>
@@ -198,7 +198,7 @@ export default async function HomePage() {
         </div>
         <div className="footer-contact">
           <strong>ติดต่อเรา</strong>
-          <a href={`tel:${phone}`}><Phone size={16} />{phone}</a>
+          <a href={`tel:${phone}`} data-analytics="phone_click"><Phone size={16} />{phone}</a>
           <p><MapPin size={16} />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</p>
         </div>
       </footer>

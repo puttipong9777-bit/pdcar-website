@@ -30,7 +30,7 @@ export function ShowroomHero({ count }: { count: number }) {
           photo.current?.style.setProperty("--spot-y", `${event.clientY - bounds.top}px`);
         }}
       >
-        <Image className="discovery-photo-base" src="/images/storefront.jpg" alt="รถที่หน้าร้าน PD Car Center นครปฐม" fill priority sizes="(max-width: 760px) 100vw, 56vw" />
+        <Image className="discovery-photo-base" src="/media/site/storefront" alt="รถที่หน้าร้าน PD Car Center นครปฐม" fill priority sizes="(max-width: 760px) 100vw, 56vw" />
         <div className="discovery-spotlight" aria-hidden="true" />
         <div className="discovery-photo-shade" aria-hidden="true" />
         <span className="discovery-location"><MapPin size={15} /> นครปฐม</span>

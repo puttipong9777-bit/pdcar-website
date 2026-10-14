@@ -6,6 +6,7 @@ import Link from "next/link";
 import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { defaultCatalogFilters, filterCatalog, getCatalogPhotos, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
 import type { PublicVehicleListing } from "@/lib/types";
+import { trackSiteEvent } from "@/components/site-analytics";
 
 const number = new Intl.NumberFormat("th-TH");
 
@@ -55,6 +56,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
 
   const changePhoto = (direction: number) => {
     setGalleryUsed(true);
+    trackSiteEvent("gallery_swipe", vehicle.carId);
     setPhotoIndex((current) => {
       const safeIndex = current < photos.length ? current : 0;
       return (safeIndex + direction + photos.length) % photos.length;

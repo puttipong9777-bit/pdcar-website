@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import { trackSiteEvent } from "@/components/site-analytics";
 
 export function MetaViewContent({ carId, title, value }: { carId: string; title: string; value?: number }) {
   useEffect(() => {
+    trackSiteEvent("vehicle_view", carId);
     let attempts = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const send = () => {

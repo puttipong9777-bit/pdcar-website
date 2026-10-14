@@ -21,19 +21,19 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <Link className="brand" href="/" onClick={() => setMenuOpen(false)}>
-        <Image src="/images/pd-logo.jpg" alt="PD Car Center" width={68} height={52} priority />
+        <Image src="/media/site/logo" alt="PD Car Center" width={68} height={52} priority />
         <span><strong>PD Car Center</strong><small>PREMIUM USED CAR · NAKHON PATHOM</small></span>
       </Link>
 
       <nav className="desktop-nav" aria-label="เมนูหลัก">
         {navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
         <Link className="sell-nav-link" href="/sell-car">ขายรถให้เรา</Link>
-        <a className="call-button" href={`tel:${phone}`}><Phone size={17} />{phone}</a>
+        <a className="call-button" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={17} />{phone}</a>
         {lineUrl ? <a className="header-line-button" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={17} />แชทไลน์</a> : null}
       </nav>
 
       <div className="mobile-header-actions">
-        <a className="mobile-call" href={`tel:${phone}`} aria-label={`โทร ${phone}`}><Phone size={19} /></a>
+        <a className="mobile-call" href={`tel:${phone}`} aria-label={`โทร ${phone}`} data-analytics="phone_click"><Phone size={19} /></a>
         {lineUrl ? <a className="mobile-line" href={lineUrl} target="_blank" rel="noreferrer" aria-label="คุยกับร้านทาง LINE"><MessageCircle size={19} /></a> : null}
         <button
           className="menu-toggle"
@@ -50,7 +50,7 @@ export function SiteHeader() {
       <nav id="mobile-navigation" className={`mobile-navigation${menuOpen ? " is-open" : ""}`} aria-label="เมนูมือถือ">
         {navigation.map(([label, href]) => <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}
         <Link className="mobile-menu-sell" href="/sell-car" onClick={() => setMenuOpen(false)}>ขายรถให้ PD Car Center</Link>
-        <a className="mobile-menu-call" href={`tel:${phone}`} onClick={() => setMenuOpen(false)}><Phone size={18} />โทร {phone}</a>
+        <a className="mobile-menu-call" href={`tel:${phone}`} onClick={() => setMenuOpen(false)} data-analytics="phone_click"><Phone size={18} />โทร {phone}</a>
       </nav>
     </header>
   );

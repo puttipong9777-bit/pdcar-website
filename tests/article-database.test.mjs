@@ -7,6 +7,7 @@ import { PGlite } from "@electric-sql/pglite";
 const db = new PGlite();
 await db.exec("create role anon; create role authenticated; create table public.erp_private_fixture(secret text); insert into public.erp_private_fixture values ('untouched');");
 await db.exec(readFileSync(new URL("../supabase/migrations/0002_article_approval.sql", import.meta.url), "utf8"));
+await db.exec(readFileSync(new URL("../supabase/migrations/20261014104736_admin_dashboard.sql", import.meta.url), "utf8"));
 after(() => db.close());
 const query = async (sql, params = []) => (await db.query(sql, params)).rows;
 const claim = async (day, token = randomUUID()) => ({ token, row: (await query("select * from article_approval.claim_day($1::date,$2)", [day, token]))[0] });
@@ -106,5 +107,35 @@ test("dedicated worker has scoped read and function access, no table writes or E
     await assert.rejects(() => query("update article_approval.drafts set status='published'"));
     await assert.rejects(() => query("select * from public.erp_private_fixture"));
     await assert.rejects(() => query("select * from auth.users"));
+  } finally { await db.exec("reset role"); }
+});
+
+test("manual articles can share a date, require approval, and support safe edits", async () => {
+  const content = JSON.stringify({ title: "วิธีเลือกรถมือสอง", description: "คำแนะนำสำหรับลูกค้าที่กำลังเลือกรถมือสอง", sections: [{ heading: "เริ่มต้นตรวจรถ", paragraphs: ["ตรวจสภาพรถและเอกสารให้ครบก่อนตัดสินใจซื้อ"], factIds: [] }] });
+  const eventA = `liff:${randomUUID()}`;
+  const eventB = `liff:${randomUUID()}`;
+  const create = async (slug, event) => (await query("select article_approval.save_manual(null,'admin','2026-09-12',$1,$2::jsonb,0,$3) as result", [slug, content, event]))[0].result;
+  const first = await create("used-car-guide-one", eventA);
+  const second = await create("used-car-guide-two", eventB);
+  assert.equal(first.result, "created"); assert.equal(second.result, "created");
+  assert.equal((await query("select * from public.public_approved_articles where id=$1", [first.id])).length, 0);
+  const edited = (await query("select article_approval.save_manual($1,'admin','2026-09-12','used-car-guide-one',$2::jsonb,1,$3) as result", [first.id, content, `liff:${randomUUID()}`]))[0].result;
+  assert.equal(edited.result, "updated"); assert.equal(edited.version, 2);
+  assert.equal((await decide(first.id, "approve", 2)).status, "published");
+});
+
+test("analytics stores only the approved compact contract and stays private", async () => {
+  const eventId = randomUUID(); const sessionId = randomUUID();
+  await db.exec("set role pdcar_article_worker");
+  try {
+    assert.equal((await query("select site_admin.record_event($1,$2,'vehicle_view','/cars/test','PD0002') as ok", [eventId, sessionId]))[0].ok, true);
+    assert.equal((await query("select site_admin.record_event($1,$2,'vehicle_view','/cars/test','PD0002') as ok", [eventId, sessionId]))[0].ok, true);
+    assert.equal((await query("select count(*)::int as n from site_admin.analytics_events where event_id=$1", [eventId]))[0].n, 1);
+    assert.equal((await query("select site_admin.record_event($1,$2,'email','/','PD0002') as ok", [randomUUID(), sessionId]))[0].ok, false);
+  } finally { await db.exec("reset role"); }
+  await db.exec("set role anon");
+  try {
+    await assert.rejects(() => query("select * from site_admin.analytics_events"));
+    await assert.rejects(() => query("select site_admin.record_event(gen_random_uuid(),gen_random_uuid(),'page_view','/',null)"));
   } finally { await db.exec("reset role"); }
 });

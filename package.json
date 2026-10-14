@@ -9,6 +9,7 @@
     "preview:cloudflare": "opennextjs-cloudflare preview",
     "deploy:cloudflare": "opennextjs-cloudflare deploy",
     "check:cloudflare": "wrangler deploy --dry-run",
+    "prepare:vehicle-images": "node scripts/prepare-vehicle-images.mjs",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

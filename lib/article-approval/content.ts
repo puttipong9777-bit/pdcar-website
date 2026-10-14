@@ -24,3 +24,31 @@ export function validateContent(value: unknown, sources: ArticleSource[]): Artic
   if (text.length > 6500 || /[<>]|https?:|www\.|การันตี|รับประกัน.{0,20}(ผ่าน|กำไร|ผลตอบแทน)|อนุมัติแน่นอน|ปลอดภัย\s*100|ดีที่สุด|ถูกที่สุด|งานวิจัย|จากสถิติ|\d+\s*%/.test(text)) throw new ArticleError("unsafe_content");
   return c;
 }
+
+export function validateManualContent(value: unknown): ArticleContent {
+  if (!value || typeof value !== "object") throw new ArticleError("invalid_content");
+  const content = value as ArticleContent;
+  const validText = (text: unknown, min: number, max: number) => typeof text === "string" && text.trim().length >= min && text.length <= max;
+  if (!validText(content.title, 5, 140) || !validText(content.description, 20, 250)
+    || !Array.isArray(content.sections) || content.sections.length < 1 || content.sections.length > 8) {
+    throw new ArticleError("invalid_content");
+  }
+  for (const section of content.sections) {
+    if (!section || !validText(section.heading, 3, 100) || !Array.isArray(section.paragraphs)
+      || section.paragraphs.length < 1 || section.paragraphs.length > 6
+      || section.paragraphs.some((paragraph) => !validText(paragraph, 10, 1_200))) {
+      throw new ArticleError("invalid_content");
+    }
+  }
+  const text = [content.title, content.description, ...content.sections.flatMap((section) => [section.heading, ...section.paragraphs])].join("\n");
+  if (text.length > 12_000 || /[<>]/.test(text)) throw new ArticleError("unsafe_content");
+  return {
+    title: content.title.trim(),
+    description: content.description.trim(),
+    sections: content.sections.map((section) => ({
+      heading: section.heading.trim(),
+      paragraphs: section.paragraphs.map((paragraph) => paragraph.trim()),
+      factIds: []
+    }))
+  };
+}

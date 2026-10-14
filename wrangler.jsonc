@@ -13,9 +13,18 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "r2_buckets": [
+    {
+      "binding": "VEHICLE_IMAGES",
+      "bucket_name": "pdcar-vehicle-images"
+    }
+  ],
   "observability": { "enabled": true },
   "vars": {
     "SITE_ENV": "production",
+    "SITE_ANALYTICS_ENABLED": "false",
+    "SITE_ADMIN_ENABLED": "false",
+    "ADMIN_SITE_URL": "https://www.pdcarcenter.com",
     "ARTICLE_APPROVAL_ENABLED": "false",
     "ARTICLE_DAILY_CRON_ENABLED": "false",
     "ARTICLE_LINE_POSTBACK_ENABLED": "false"

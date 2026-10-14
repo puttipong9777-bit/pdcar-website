@@ -94,14 +94,14 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
           {vehicle.description ? <p className="description">{vehicle.description}</p> : null}
           {vehicle.monthlyPayment !== undefined ? <div className="finance-box"><span>ผ่อนประมาณ</span><strong>{price.format(vehicle.monthlyPayment)}/เดือน</strong>{vehicle.installment ? <small>{vehicle.installment} งวด</small> : null}</div> : null}
           <div className="detail-actions">
-            <a className="primary-action full" href={`tel:${phone}`}><Phone size={19} />สอบถามรถคันนี้ {phone}</a>
-            {lineUrl ? <a className="line-action full" href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={19} />สอบถามทาง LINE</a> : null}
+            <a className="primary-action full" href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={19} />สอบถามรถคันนี้ {phone}</a>
+            {lineUrl ? <a className="line-action full" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={19} />สอบถามทาง LINE</a> : null}
           </div>
         </aside>
       </div>
       <div className="mobile-sticky-actions" aria-label="ติดต่อสอบถามรถคันนี้">
-        <a href={`tel:${phone}`}><Phone size={18} />โทรหาร้าน</a>
-        {lineUrl ? <a href={lineUrl} target="_blank" rel="noreferrer"><MessageCircle size={18} />สอบถามทาง LINE</a> : null}
+        <a href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={18} />โทรหาร้าน</a>
+        {lineUrl ? <a href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={18} />สอบถามทาง LINE</a> : null}
       </div>
     </main>
   );

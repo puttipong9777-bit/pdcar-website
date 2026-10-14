@@ -23,7 +23,7 @@ function cleanVehicleText(value: string) {
 
 function photos(value: unknown): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
-  const erpUrl = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-erp-history.onrender.com").replace(/\/$/, "");
+  const mediaUrl = (process.env.NEXT_PUBLIC_VEHICLE_IMAGE_BASE_URL || "https://www.pdcarcenter.com/media/vehicle-images").replace(/\/$/, "");
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
@@ -31,7 +31,7 @@ function photos(value: unknown): PublicVehiclePhoto[] {
     if (!fileId) return [];
     return [{
       fileId,
-      url: `${erpUrl}/api/public/vehicle-images/${encodeURIComponent(fileId)}`,
+      url: `${mediaUrl}/${encodeURIComponent(fileId)}`,
       isPrimary: Boolean(row.isPrimary),
       sortOrder: Number(row.sortOrder ?? 0)
     }];
