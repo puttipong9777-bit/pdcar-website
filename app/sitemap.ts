@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPublicVehicles } from "@/lib/vehicle-data";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 function validDate(value?: string) {
   if (!value) return undefined;

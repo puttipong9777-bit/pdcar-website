@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pdcar-website",
+  "main": "cloudflare/worker.mjs",
+  "compatibility_date": "2026-10-13",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "vars": {
+    "SITE_ENV": "preview",
+    "ARTICLE_APPROVAL_ENABLED": "false",
+    "ARTICLE_DAILY_CRON_ENABLED": "false",
+    "ARTICLE_LINE_POSTBACK_ENABLED": "false"
+  },
+  // Add "0 12 * * *" only when article integrations have been verified.
+  "triggers": { "crons": [] }
+}

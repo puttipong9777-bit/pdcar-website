@@ -5,6 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cloudflare": "opennextjs-cloudflare build",
+    "preview:cloudflare": "opennextjs-cloudflare preview",
+    "deploy:cloudflare": "opennextjs-cloudflare deploy",
+    "check:cloudflare": "wrangler deploy --dry-run",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -12,9 +16,10 @@
     "verify": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "1.20.10",
     "@supabase/supabase-js": "^2.45.4",
     "lucide-react": "^0.468.0",
-    "next": "15.5.25",
+    "next": "15.5.27",
     "postgres": "^3.4.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -27,12 +32,16 @@
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
     "eslint": "^9.16.0",
-    "eslint-config-next": "15.5.25",
-    "typescript": "^5.7.2"
+    "eslint-config-next": "15.5.27",
+    "typescript": "^5.7.2",
+    "wrangler": "4.150.0"
   },
   "overrides": {
     "next": {
       "postcss": "^8.5.23"
-    }
+    },
+    "@node-minify/core": { "glob": "^10.5.0" },
+    "brace-expansion@^1.1.7": "1.1.21",
+    "source-map-js": "1.2.2"
   }
 }

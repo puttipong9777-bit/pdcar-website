@@ -3,6 +3,9 @@ import { MetaPixel } from "@/components/meta-pixel";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
+// Runtime configuration and preview tracking controls must apply to every page.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.pdcarcenter.com"),
   title: { default: "PD Car Center | รถมือสองและรับซื้อรถนครปฐม", template: "%s | PD Car Center" },
@@ -67,7 +70,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="th">
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(businessJsonLd).replace(/</g, "\\u003c") }} />
-        <MetaPixel pixelId={metaPixelId} />
+        {process.env.SITE_ENV !== "preview" ? <MetaPixel pixelId={metaPixelId} /> : null}
         <SiteHeader />
         {children}
       </body>
