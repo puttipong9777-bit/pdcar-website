@@ -21,13 +21,22 @@ function photos(value: unknown): PublicVehiclePhoto[] {
     const row = item as Record<string, unknown>;
     const fileId = text(row.fileId);
     if (!fileId) return [];
+    const fullUrl = `${erpUrl}/api/public/vehicle-images/${encodeURIComponent(fileId)}?variant=full`;
+    const hasThumbnail = Boolean(text(row.thumbnailObjectKey) || text(row.thumbnailUrl));
     return [{
       fileId,
-      url: `${erpUrl}/api/public/vehicle-images/${encodeURIComponent(fileId)}`,
+      fullUrl,
+      thumbnailUrl: hasThumbnail ? `${erpUrl}/api/public/vehicle-images/${encodeURIComponent(fileId)}?variant=thumb` : fullUrl,
+      fullObjectKey: text(row.fullObjectKey) || undefined,
+      thumbnailObjectKey: text(row.thumbnailObjectKey) || undefined,
       isPrimary: Boolean(row.isPrimary),
-      sortOrder: Number(row.sortOrder ?? 0)
+      sortOrder: Number(row.sortOrder ?? 0),
+      width: optionalNumber(row.width),
+      height: optionalNumber(row.height),
+      thumbnailWidth: optionalNumber(row.thumbnailWidth),
+      thumbnailHeight: optionalNumber(row.thumbnailHeight)
     }];
-  });
+  }).sort((left, right) => Number(right.isPrimary) - Number(left.isPrimary) || left.sortOrder - right.sortOrder);
 }
 
 function verticalVideo(value: unknown) {
@@ -67,7 +76,7 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
     title: text(row.website_title) || [brand, model, row.variant, row.year].filter(Boolean).join(" "),
     description: text(row.public_description) || undefined,
     featured: Boolean(row.website_featured),
-    coverImageUrl: vehiclePhotos[0]?.url,
+    coverImageUrl: vehiclePhotos[0]?.thumbnailUrl,
     ...video,
     photos: vehiclePhotos,
     updatedAt: text(row.updated_at)

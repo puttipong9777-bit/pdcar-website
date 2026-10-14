@@ -8,7 +8,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "drive.google.com" },
       { protocol: "https", hostname: "*.supabase.co" },
-      { protocol: "https", hostname: "pdcar-platform.vercel.app" }
+      { protocol: "https", hostname: "pdcar-platform.vercel.app" },
+      { protocol: "https", hostname: "pdcar-erp-history.onrender.com" }
     ]
   }
 };
