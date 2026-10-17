@@ -124,14 +124,14 @@ export default async function HomePage() {
             <div className="article-meta"><span>คู่มือเลือกรถ</span><span>อ่าน 4 นาที</span></div>
             <h3>7 จุดสำคัญที่ควรตรวจ ก่อนตัดสินใจซื้อรถมือสอง</h3>
             <p>เริ่มจากประวัติรถ สภาพตัวถัง ห้องเครื่อง ช่วงล่าง ไปจนถึงเอกสาร เพื่อให้คุณเห็นภาพรวมก่อนทดลองขับและวางเงินจอง</p>
-            <div className="article-tips">
-              <strong>สรุปคำแนะนำ</strong>
+            <details>
+              <summary>อ่านคำแนะนำ <ArrowRight size={17} /></summary>
               <ul>
                 <li>เทียบเลขตัวถังและเลขเครื่องกับเล่มทะเบียนทุกครั้ง</li>
                 <li>ทดลองขับทั้งความเร็วต่ำและถนนโล่ง ฟังเสียงช่วงล่างและเกียร์</li>
                 <li>ขอรายละเอียดเงื่อนไขรับประกันและค่าใช้จ่ายทั้งหมดเป็นลายลักษณ์อักษร</li>
               </ul>
-            </div>
+            </details>
           </article>
 
           <article className="article-card">
@@ -139,14 +139,14 @@ export default async function HomePage() {
             <div className="article-meta"><span>วางแผนการเงิน</span><span>อ่าน 3 นาที</span></div>
             <h3>ค่างวดรถควรอยู่ที่เท่าไร จึงผ่อนได้สบายทุกเดือน</h3>
             <p>อย่าดูเฉพาะค่างวด ควรรวมค่าน้ำมัน ประกัน ภาษี และค่าบำรุงรักษา เพื่อให้ค่าใช้รถไม่กระทบเงินสำรอง</p>
-            <div className="article-tips">
-              <strong>สรุปคำแนะนำ</strong>
+            <details>
+              <summary>อ่านคำแนะนำ <ArrowRight size={17} /></summary>
               <ul>
                 <li>ตั้งงบค่าใช้รถทั้งหมดให้เหมาะกับรายรับสุทธิของครอบครัว</li>
                 <li>เตรียมเงินสำรองอย่างน้อย 3–6 เดือนก่อนรับภาระระยะยาว</li>
                 <li>เปรียบเทียบยอดจัด ระยะเวลา และดอกเบี้ย ไม่ดูเพียงตัวเลขค่างวด</li>
               </ul>
-            </div>
+            </details>
           </article>
 
           <article className="article-card">
@@ -154,14 +154,14 @@ export default async function HomePage() {
             <div className="article-meta"><span>เตรียมไฟแนนซ์</span><span>อ่าน 2 นาที</span></div>
             <h3>เตรียมเอกสารอย่างไร ให้ยื่นไฟแนนซ์ได้คล่องขึ้น</h3>
             <p>เอกสารที่ครบและข้อมูลที่ตรงกันช่วยลดเวลาตรวจสอบ ทั้งผู้มีรายได้ประจำ เจ้าของกิจการ และอาชีพอิสระ</p>
-            <div className="article-tips">
-              <strong>สรุปคำแนะนำ</strong>
+            <details>
+              <summary>อ่านคำแนะนำ <ArrowRight size={17} /></summary>
               <ul>
                 <li>เตรียมบัตรประชาชน ทะเบียนบ้าน และเอกสารแสดงรายได้ฉบับล่าสุด</li>
                 <li>ตรวจชื่อ ที่อยู่ และเบอร์โทรในเอกสารให้เป็นปัจจุบัน</li>
                 <li>แจ้งรายได้และภาระผ่อนตามจริง เพื่อประเมินแผนที่เหมาะกับคุณ</li>
               </ul>
-            </div>
+            </details>
           </article>
         </div>
       </section>
