@@ -24,14 +24,19 @@ export async function generateMetadata({ params }: { params: Promise<{ identifie
       url: `/cars/${encodeURIComponent(vehicle.slug)}`,
       images: vehicle.coverImageUrl ? [{ url: vehicle.coverImageUrl, alt: vehicle.title }] : undefined
     },
+    twitter: {
+      card: "summary_large_image",
+      title: vehicle.title,
+      description: vehicle.description || `${vehicle.title} รถมือสองที่ PD Car Center นครปฐม`,
+      images: vehicle.coverImageUrl ? [vehicle.coverImageUrl] : ["/og.png"]
+    },
     other: {
       "product:retailer_item_id": vehicle.carId,
       "product:condition": "used",
       "product:availability": vehicle.status === "available" ? "in stock" : "out of stock",
-      "product:price:amount": String(vehicle.salePrice ?? 0),
-      "product:price:currency": "THB"
+      ...(vehicle.salePrice !== undefined ? { "product:price:amount": String(vehicle.salePrice), "product:price:currency": "THB" } : {})
     }
-  } : { title: "ไม่พบรถ" };
+  } : { title: "ไม่พบรถ", robots: { index: false, follow: true } };
 }
 
 export default async function VehiclePage({ params }: { params: Promise<{ identifier: string }> }) {
@@ -39,7 +44,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
   const vehicle = await getPublicVehicle(decodeURIComponent(identifier));
   if (!vehicle) notFound();
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || "https://line.me/R/ti/p/%40pdcar";
   const gallery = vehicle.photos.length ? vehicle.photos : vehicle.coverImageUrl ? [{ fileId: "cover", url: vehicle.coverImageUrl, isPrimary: true, sortOrder: 0 }] : [];
   const [primaryPhoto, ...extraPhotos] = gallery;
   const productJsonLd = {
@@ -60,7 +65,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
       "@type": "Offer",
       price: vehicle.salePrice,
       priceCurrency: "THB",
-      availability: vehicle.status === "available" ? "https://schema.org/InStock" : "https://schema.org/LimitedAvailability",
+      availability: vehicle.status === "available" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: `https://www.pdcarcenter.com/cars/${encodeURIComponent(vehicle.slug)}`,
       seller: { "@id": "https://www.pdcarcenter.com/#business" }
     } : undefined
@@ -93,6 +98,8 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
           </div>
           {vehicle.description ? <p className="description">{vehicle.description}</p> : null}
           {vehicle.monthlyPayment !== undefined ? <div className="finance-box"><span>ผ่อนประมาณ</span><strong>{price.format(vehicle.monthlyPayment)}/เดือน</strong>{vehicle.installment ? <small>{vehicle.installment} งวด</small> : null}</div> : null}
+          <p>ตรวจสอบสถานะล่าสุดและนัดชมรถก่อนเดินทางมาที่ร้านนครปฐม</p>
+          <p><Link href="/sell-car">มีรถอยากขาย? ดูขั้นตอนประเมินรถเบื้องต้น</Link></p>
           <div className="detail-actions">
             <a className="primary-action full" href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={19} />สอบถามรถคันนี้ {phone}</a>
             {lineUrl ? <a className="line-action full" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={19} />สอบถามทาง LINE</a> : null}

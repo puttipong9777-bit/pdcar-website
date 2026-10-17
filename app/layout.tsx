@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "PD Car Center | ซื้อรถดี ขายรถง่าย คุยกับร้านโดยตรง",
+    title: "PD Car Center | รถมือสองและรับซื้อรถนครปฐม",
     description: "ดูรถมือสองจากสต็อกจริง หรือส่งข้อมูลรถเพื่อประเมินเบื้องต้นกับ PD Car Center นครปฐม",
     url: "/",
     images: [{ url: "/og-sell-car.png", width: 1732, height: 908, alt: "PD Car Center รับซื้อรถมือสองนครปฐม" }],

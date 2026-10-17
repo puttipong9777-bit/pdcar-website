@@ -109,10 +109,11 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  return { vehicles: (data ?? []).map(mapVehicle), source: "supabase" };
+  return { vehicles: (data ?? []).filter((row) => row.status === "available" || row.status === "reserved").map(mapVehicle), source: "supabase" };
 }
 
 export async function getPublicVehicle(identifier: string) {
   const result = await getPublicVehicles();
+  if (result.source !== "supabase") throw new Error("Public vehicle data temporarily unavailable");
   return result.vehicles.find((vehicle) => vehicle.carId === identifier || vehicle.slug === identifier) ?? null;
 }

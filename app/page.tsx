@@ -29,7 +29,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const result = await getPublicVehicles();
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || "https://line.me/R/ti/p/%40pdcar";
 
   return (
     <main className="showroom-page">
@@ -46,13 +46,22 @@ export default async function HomePage() {
         <div className="section-heading wide-heading">
           <div>
             <p className="eyebrow">FIND YOUR NEXT DRIVE</p>
-            <h2>เลือกคันที่เป็นคุณ<span className="heading-dot">.</span></h2>
+            <h2>รถมือสองในร้าน PD Car Center</h2>
             <p>เลือกยี่ห้อ ตั้งงบ แล้วทำความรู้จักคันที่ถูกใจ</p>
           </div>
           <span>{result.vehicles.length} คันในเว็บไซต์</span>
         </div>
         {result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
         <CatalogBrowser vehicles={result.vehicles} />
+      </section>
+
+      <section className="sell-faq-section" aria-labelledby="buying-questions">
+        <div className="sell-section-heading"><h2 id="buying-questions">คำถามก่อนซื้อรถมือสองในนครปฐม</h2></div>
+        <div className="sell-faq-list">
+          <details><summary>ดูรถที่พร้อมขายได้ที่ไหน?<ArrowRight size={18} /></summary><p>ดู<a href="#inventory">รายการรถในร้าน</a> พร้อมราคา รูป และสถานะรายคัน รถที่มีป้าย “ติดจอง” ยังไม่พร้อมขาย ควรสอบถามสถานะล่าสุดและนัดหมายก่อนเดินทาง</p></details>
+          <details><summary>PD Car Center อยู่ที่ไหน และนัดชมรถอย่างไร?<ArrowRight size={18} /></summary><p>ร้านอยู่ที่ 23/2 หมู่ 13 ตำบลโพรงมะเดื่อ อำเภอเมืองนครปฐม จังหวัดนครปฐม 73000 โทร <a href={`tel:${phone}`} data-analytics="phone_click">{phone}</a> หรือ <a href={lineUrl} data-analytics="line_click">LINE @pdcar</a> เพื่อยืนยันเวลานัดชมรถ</p></details>
+          <details><summary>อยากขายรถให้ร้าน ต้องเริ่มอย่างไร?<ArrowRight size={18} /></summary><p>เตรียมยี่ห้อ รุ่น ปีจดทะเบียน เลขไมล์ และรูปถ่าย แล้วติดต่อร้านเพื่อประเมินเบื้องต้น ราคาสุดท้ายขึ้นอยู่กับการตรวจรถและเอกสาร <Link href="/sell-car">ดูขั้นตอนขายรถและข้อมูลที่ควรเตรียม</Link></p></details>
+        </div>
       </section>
 
       <section className="sell-acquisition-section" id="sell-car">

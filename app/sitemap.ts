@@ -12,6 +12,7 @@ function validDate(value?: string) {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.pdcarcenter.com";
   const result = await getPublicVehicles();
+  if (result.source !== "supabase") throw new Error("Public vehicle sitemap temporarily unavailable");
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, changeFrequency: "daily", priority: 1 },
     { url: `${baseUrl}/sell-car`, changeFrequency: "weekly", priority: 0.9 },
