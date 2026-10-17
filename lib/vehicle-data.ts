@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { PublicVehicleListing, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
+import { publicSupabaseConfig } from "@/lib/public-supabase-config";
 
 type PublicVehicleRow = Record<string, unknown>;
 
@@ -84,9 +85,8 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
 }
 
 export async function getPublicVehicles(): Promise<VehicleDataResult> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) {
+  const config = await publicSupabaseConfig();
+  if (!config) {
     return {
       vehicles: [],
       source: "not_configured",
@@ -94,7 +94,7 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const supabase = createClient(config.url, config.key, { auth: { persistSession: false } });
   const { data, error } = await supabase
     .from("public_vehicle_listings")
     .select("*")
@@ -109,10 +109,11 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  return { vehicles: (data ?? []).map(mapVehicle), source: "supabase" };
+  return { vehicles: (data ?? []).filter((row) => row.status === "available" || row.status === "reserved").map(mapVehicle), source: "supabase" };
 }
 
 export async function getPublicVehicle(identifier: string) {
   const result = await getPublicVehicles();
+  if (result.source !== "supabase") throw new Error("Public vehicle data temporarily unavailable");
   return result.vehicles.find((vehicle) => vehicle.carId === identifier || vehicle.slug === identifier) ?? null;
 }

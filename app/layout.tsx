@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { businessMapUrl, businessOpeningHours } from "@/lib/business-info";
 import { headers } from "next/headers";
 import { MetaPixel } from "@/components/meta-pixel";
 import { SiteAnalytics } from "@/components/site-analytics";
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
   openGraph: {
-    title: "PD Car Center | ซื้อรถดี ขายรถง่าย คุยกับร้านโดยตรง",
+    title: "PD Car Center | รถมือสองและรับซื้อรถนครปฐม",
     description: "ดูรถมือสองจากสต็อกจริง หรือส่งข้อมูลรถเพื่อประเมินเบื้องต้นกับ PD Car Center นครปฐม",
     url: "/",
     images: [{ url: "/og-sell-car.png", width: 1732, height: 908, alt: "PD Car Center รับซื้อรถมือสองนครปฐม" }],
@@ -49,6 +50,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         logo: "https://www.pdcarcenter.com/media/site/logo",
         image: "https://www.pdcarcenter.com/media/site/storefront",
         telephone: phone,
+        hasMap: businessMapUrl,
+        openingHoursSpecification: [businessOpeningHours],
         description: "ร้านรถมือสองและรับซื้อรถมือสองในจังหวัดนครปฐม",
         address: {
           "@type": "PostalAddress",

@@ -36,6 +36,18 @@
     "ARTICLE_DAILY_CRON_ENABLED": "false",
     "ARTICLE_LINE_POSTBACK_ENABLED": "false"
   },
+  // SEO review previews intentionally have no database or storage write bindings.
+  // Public inventory configuration, if approved, must be supplied separately.
+  "previews": {
+    "vars": {
+      "SITE_ENV": "preview",
+      "SITE_ADMIN_ENABLED": "false",
+      "SITE_ANALYTICS_ENABLED": "false",
+      "ARTICLE_APPROVAL_ENABLED": "false",
+      "ARTICLE_DAILY_CRON_ENABLED": "false",
+      "ARTICLE_LINE_POSTBACK_ENABLED": "false"
+    }
+  },
   // Add "0 12 * * *" only when article integrations have been verified.
   "triggers": { "crons": [] }
 }

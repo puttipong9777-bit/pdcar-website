@@ -15,7 +15,7 @@ const navigation = [
 
 export function SiteHeader() {
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || "https://line.me/R/ti/p/%40pdcar";
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
