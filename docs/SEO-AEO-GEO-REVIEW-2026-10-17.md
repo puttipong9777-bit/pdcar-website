@@ -18,11 +18,11 @@ The saved checkout initially contained old `main` (`e14a409`), which targets Ver
 
 ## Factual boundaries and unresolved content
 
-Parent public audit corroborates phone 0840079122 and the existing address: 23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000. It reported 12 current public cars and matching sitemap on 17 October; that count is an audit snapshot, not a hardcoded claim. No new address, map coordinate, hours, warranty or finance promise added.
+Parent public audit corroborates phone 0840079122 and the existing address: 23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000. It reported 12 current public cars and matching sitemap on 17 October; that count is an audit snapshot, not a hardcoded claim. No invented address, map coordinate, hours, warranty or finance promise added; the hours follow-up below uses direct owner confirmation.
 
 PD0027: title/name is “HONDA 1.8EL 2017” and model field is “1.8EL”, while description names Civic. This requires owner-approved correction of structured ERP fields/title. Code deliberately does not infer model from free text. Earlier PD0026 year/registration disagreement is historical; parent confirms it is now absent, and user reported Attrage sold. No stock correction was made.
 
-Opening hours and a verified map/business-profile URL remain missing. Obtain these from the owner before adding them. Public `/articles` browsing was not attempted due to the earlier denial; existing repository code and its tests remain in scope, with no article-content edits.
+Update: the owner confirmed daily opening hours 08:00–17:00 Thailand time, with viewing appointments possible until 19:00 only by prior arrangement. The owner supplied https://maps.app.goo.gl/nzqpjnq3GD5LNs5W6?g_st=ic. These facts are now reflected in visible contact/FAQ/detail content; AutoDealer openingHoursSpecification lists all seven days 08:00–17:00, with hasMap using the supplied URL. The 19:00 appointment option is not represented as regular opening hours. Public-map inspection failed: the web tool could not access the URL and the cloud proxy returned CONNECT 403. No further location facts, ratings or review counts were derived. Public `/articles` browsing was not attempted due to the earlier denial; existing repository code and its tests remain in scope, with no article-content edits.
 
 ## Verification
 
@@ -59,3 +59,9 @@ Before publication, retain the current deployed Worker version. If the approved 
 - [Sitemaps](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap): canonical URLs and meaningful modification dates.
 - [Canonical consolidation](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls): consistent canonical signals.
 - [HTTP status handling](https://developers.google.com/crawling/docs/troubleshooting/http-status-codes): distinguish removed content from service failure.
+
+## Owner-confirmed hours follow-up
+
+Resumed the cloud checkout successfully at clean commit `3695eb96ba349840603c042b13123f7f25a0f260`. Added shared business facts and accessible map link component to keep homepage FAQ/footer, sell-car contact information and vehicle details consistent. The AutoDealer graph uses the same confirmed hours and map destination. No production push/deployment or ERP/database change.
+
+Follow-up validation: `npm test` passed 68/68, including exact seven-day hours, no 19:00 regular closing time, no aggregateRating, labeled owner map destination, and consistent visible hours in home/sell-car/detail. `npm run verify` passed lint, typecheck and Next build. After the final contact-layout adjustment, `XDG_CONFIG_HOME=/tmp/pdcar-config WRANGLER_LOG_PATH=/tmp/pdcar-hours-wrangler.log NEXT_TELEMETRY_DISABLED=1 SITE_ENV=preview npm run build:cloudflare` passed again (including Next lint/type validation and build). `npm run check:cloudflare` with the same temporary config/log paths passed packaging dry-run. Nine Chromium fixture page/viewport checks passed for visible hours, appointment distinction, map labels and schema, alongside existing no-overflow/navigation/canonical checks. External requests were blocked and no map/chat/phone links activated. Real map resolution remains unverified due to the access failure above. Rollback for this follow-up alone is to revert its commit; rollback for the entire SEO package is the pre-review Worker version, following publication approval.

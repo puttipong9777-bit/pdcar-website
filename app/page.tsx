@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import { ShowroomHero } from "@/components/showroom-hero";
@@ -59,7 +60,7 @@ export default async function HomePage() {
         <div className="sell-section-heading"><h2 id="buying-questions">คำถามก่อนซื้อรถมือสองในนครปฐม</h2></div>
         <div className="sell-faq-list">
           <details><summary>ดูรถที่พร้อมขายได้ที่ไหน?<ArrowRight size={18} /></summary><p>ดู<a href="#inventory">รายการรถในร้าน</a> พร้อมราคา รูป และสถานะรายคัน รถที่มีป้าย “ติดจอง” ยังไม่พร้อมขาย ควรสอบถามสถานะล่าสุดและนัดหมายก่อนเดินทาง</p></details>
-          <details><summary>PD Car Center อยู่ที่ไหน และนัดชมรถอย่างไร?<ArrowRight size={18} /></summary><p>ร้านอยู่ที่ 23/2 หมู่ 13 ตำบลโพรงมะเดื่อ อำเภอเมืองนครปฐม จังหวัดนครปฐม 73000 โทร <a href={`tel:${phone}`} data-analytics="phone_click">{phone}</a> หรือ <a href={lineUrl} data-analytics="line_click">LINE @pdcar</a> เพื่อยืนยันเวลานัดชมรถ</p></details>
+          <details><summary>PD Car Center อยู่ที่ไหน และนัดชมรถอย่างไร?<ArrowRight size={18} /></summary><p>ร้านอยู่ที่ 23/2 หมู่ 13 ตำบลโพรงมะเดื่อ อำเภอเมืองนครปฐม จังหวัดนครปฐม 73000 โทร <a href={`tel:${phone}`} data-analytics="phone_click">{phone}</a> หรือ <a href={lineUrl} data-analytics="line_click">LINE @pdcar</a> เพื่อยืนยันเวลานัดชมรถ</p><BusinessVisitInfo /></details>
           <details><summary>อยากขายรถให้ร้าน ต้องเริ่มอย่างไร?<ArrowRight size={18} /></summary><p>เตรียมยี่ห้อ รุ่น ปีจดทะเบียน เลขไมล์ และรูปถ่าย แล้วติดต่อร้านเพื่อประเมินเบื้องต้น ราคาสุดท้ายขึ้นอยู่กับการตรวจรถและเอกสาร <Link href="/sell-car">ดูขั้นตอนขายรถและข้อมูลที่ควรเตรียม</Link></p></details>
         </div>
       </section>
@@ -208,6 +209,7 @@ export default async function HomePage() {
         </div>
         <div className="footer-contact">
           <strong>ติดต่อเรา</strong>
+          <BusinessVisitInfo />
           <a href={`tel:${phone}`} data-analytics="phone_click"><Phone size={16} />{phone}</a>
           <p><MapPin size={16} />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</p>
         </div>

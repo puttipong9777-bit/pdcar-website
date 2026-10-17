@@ -2,6 +2,7 @@ import { ArrowLeft, Fuel, Gauge, Images, MessageCircle, Phone, Settings2 } from 
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { notFound } from "next/navigation";
 import { MetaViewContent } from "@/components/meta-view-content";
 import { getPublicVehicle } from "@/lib/vehicle-data";
@@ -99,6 +100,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
           {vehicle.description ? <p className="description">{vehicle.description}</p> : null}
           {vehicle.monthlyPayment !== undefined ? <div className="finance-box"><span>ผ่อนประมาณ</span><strong>{price.format(vehicle.monthlyPayment)}/เดือน</strong>{vehicle.installment ? <small>{vehicle.installment} งวด</small> : null}</div> : null}
           <p>ตรวจสอบสถานะล่าสุดและนัดชมรถก่อนเดินทางมาที่ร้านนครปฐม</p>
+          <BusinessVisitInfo />
           <p><Link href="/sell-car">มีรถอยากขาย? ดูขั้นตอนประเมินรถเบื้องต้น</Link></p>
           <div className="detail-actions">
             <a className="primary-action full" href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={19} />สอบถามรถคันนี้ {phone}</a>

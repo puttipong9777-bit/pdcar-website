@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { businessMapUrl, businessOpeningHours } from "@/lib/business-info";
 import { headers } from "next/headers";
 import { MetaPixel } from "@/components/meta-pixel";
 import { SiteAnalytics } from "@/components/site-analytics";
@@ -49,6 +50,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         logo: "https://www.pdcarcenter.com/media/site/logo",
         image: "https://www.pdcarcenter.com/media/site/storefront",
         telephone: phone,
+        hasMap: businessMapUrl,
+        openingHoursSpecification: [businessOpeningHours],
         description: "ร้านรถมือสองและรับซื้อรถมือสองในจังหวัดนครปฐม",
         address: {
           "@type": "PostalAddress",

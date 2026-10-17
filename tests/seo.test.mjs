@@ -75,9 +75,43 @@ test("homepage renders local answers and crawlable car links without browser Jav
   assert(html.includes('id="buying-questions"'));
   assert(html.includes("รถมือสอง<br/><span>นครปฐม"));
   assert(html.includes("LINE @pdcar"));
+  assert(html.includes("เปิดทุกวัน 08:00–17:00"));
+  assert(html.includes("นัดชมรถล่วงหน้าได้ถึง 19:00"));
 });
 test("structured data safely escapes text containing HTML", async () => {
   const page = detail({ ...vehicle, description: '</script><script>alert("x")</script>' });
   const html = renderToStaticMarkup(await page.default(props()));
   assert.equal(schema(html)[0].description, '</script><script>alert("x")</script>');
+});
+
+test("owner-confirmed regular hours cover every day and exclude appointment-only time", async () => {
+  const layout = loadTs("app/layout.tsx", {
+    "next/headers": { headers: async () => new Headers({ host: "localhost" }) },
+    "@/components/site-header": { SiteHeader: () => null },
+    "@/components/site-analytics": { SiteAnalytics: () => null },
+    "@/components/meta-pixel": { MetaPixel: () => null },
+  });
+  const html = renderToStaticMarkup(await layout.default({ children: "test" }));
+  const dealer = schema(html)[0]["@graph"].find((item) => item["@type"] === "AutoDealer");
+  const [hours] = dealer.openingHoursSpecification;
+  assert.deepEqual(hours.dayOfWeek, ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => `https://schema.org/${day}`));
+  assert.equal(hours.opens, "08:00");
+  assert.equal(hours.closes, "17:00");
+  assert.equal(dealer.hasMap, "https://maps.app.goo.gl/nzqpjnq3GD5LNs5W6?g_st=ic");
+  assert.equal(dealer.aggregateRating, undefined);
+  assert(!JSON.stringify(dealer).includes("19:00"));
+});
+test("visible visit information distinguishes appointments and labels the owner map link", async () => {
+  const { BusinessVisitInfo } = loadTs("components/business-visit-info.tsx");
+  const html = renderToStaticMarkup(React.createElement(BusinessVisitInfo));
+  assert(html.includes("เปิดทุกวัน 08:00–17:00"));
+  assert(html.includes("เวลาประเทศไทย"));
+  assert(html.includes("นัดชมรถล่วงหน้าได้ถึง 19:00"));
+  assert(html.includes("เฉพาะเมื่อนัดหมายกับร้านแล้ว"));
+  assert(html.includes("ดูแผนที่ PD Car Center บน Google Maps (เปิดแท็บใหม่)"));
+  assert(html.includes('rel="noopener noreferrer"'));
+  const page = detail(vehicle);
+  assert(renderToStaticMarkup(await page.default(props())).includes(html));
+  const sell = loadTs("app/sell-car/page.tsx", { "next/link": link });
+  assert(renderToStaticMarkup(sell.default()).includes(html));
 });
