@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { PublicVehicleListing, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
+import { publicSupabaseConfig } from "@/lib/public-supabase-config";
 
 type PublicVehicleRow = Record<string, unknown>;
 
@@ -84,9 +85,8 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
 }
 
 export async function getPublicVehicles(): Promise<VehicleDataResult> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) {
+  const config = await publicSupabaseConfig();
+  if (!config) {
     return {
       vehicles: [],
       source: "not_configured",
@@ -94,7 +94,7 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
+  const supabase = createClient(config.url, config.key, { auth: { persistSession: false } });
   const { data, error } = await supabase
     .from("public_vehicle_listings")
     .select("*")

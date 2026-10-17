@@ -56,6 +56,20 @@ test("public reader rejects nonpublic statuses without deriving model from free 
   assert.equal(result.vehicles[0].model, "1.8EL");
   assert.equal(await reader.getPublicVehicle("sold"), null);
 });
+test("public data reads Cloudflare runtime variables without exposing them in source", async () => {
+  const configModule = loadTs("lib/public-supabase-config.ts", {
+    "@opennextjs/cloudflare": {
+      getCloudflareContext: async () => ({ env: {
+        NEXT_PUBLIC_SUPABASE_URL: "https://runtime.supabase.co",
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "runtime-publishable",
+      } }),
+    },
+  }, { process: { env: {} } });
+  assert.deepEqual(await configModule.publicSupabaseConfig(), {
+    url: "https://runtime.supabase.co",
+    key: "runtime-publishable",
+  });
+});
 test("data outage does not masquerade as a permanently missing vehicle", async () => {
   const reader = loadTs("lib/vehicle-data.ts", {}, { process: { env: {} } });
   await assert.rejects(() => reader.getPublicVehicle("TEST"), /temporarily unavailable/);

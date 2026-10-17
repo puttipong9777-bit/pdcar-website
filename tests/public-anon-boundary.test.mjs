@@ -75,7 +75,7 @@ const definitions = () => query(`select c.relname, pg_get_viewdef(c.oid) as defi
 const viewsBefore = await definitions();
 const policiesBefore = await query("select * from pg_policies order by policyname");
 const docs = readFileSync(new URL("../docs/PUBLIC-ANON-BOUNDARY.md", import.meta.url), "utf8");
-const rollbackGenerator = docs.match(/<!-- rollback-generator -->\s*```sql\n([\s\S]*?)\n```/)[1];
+const rollbackGenerator = docs.match(/<!-- rollback-generator -->\s*```sql\r?\n([\s\S]*?)\r?\n```/)[1];
 const rollback = (await query(rollbackGenerator))[0].rollback_sql;
 
 test("migration is idempotent and skips inaccessible platform-owner defaults", async () => {
