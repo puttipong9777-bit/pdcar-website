@@ -78,7 +78,7 @@ export default async function HomePage() {
         </div>
         <div className="about-showcase-copy">
           <p className="eyebrow light">WELCOME TO PD CAR CENTER</p>
-          <h2>ยินดีต้อนรับสู่<br /><em>PD Car Center</em></h2>
+          <h2>ยินดีต้อนรับสู่<br /><em>พีดีคาร์เซ็นเตอร์ (PD Car Center)</em></h2>
           <p>เราอยากให้การเลือกรถมือสองเป็นเรื่องง่าย คุณจึงดูสต็อก ราคา ภาพจริง และข้อมูลสำคัญได้ก่อนเดินทางมาที่ร้าน แล้วค่อยนัดชมรถคันที่สนใจแบบสบายใจ</p>
           <div className="about-points">
             <span><CheckCircle2 />เลือกรถจากหน้าร้านจริง</span>
@@ -186,7 +186,7 @@ export default async function HomePage() {
 
       <footer className="site-footer">
         <div className="footer-brand">
-          <div><Sparkles size={18} /><strong>PD Car Center</strong></div>
+          <div><Sparkles size={18} /><strong>พีดีคาร์เซ็นเตอร์ (PD Car Center)</strong></div>
           <p>รถมือสองคัดคุณภาพ ดูข้อมูลง่าย และติดต่อร้านได้โดยตรง</p>
         </div>
         <div className="footer-links">
