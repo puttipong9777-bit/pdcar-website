@@ -12,8 +12,8 @@ export function ShowroomHero({ count }: { count: number }) {
     <section className="discovery-hero" id="showroom" aria-labelledby="showroom-title">
       <div className="discovery-copy">
         <p className="discovery-kicker"><span /> PD CAR CENTER / NAKHON PATHOM</p>
-        <h1 id="showroom-title">คันที่ใช่<br /><span>ในจังหวะของคุณ</span></h1>
-        <p className="discovery-description">รถมือสองที่คุณเลือกได้อย่างมั่นใจ<br />ดูภาพจริง ราคา และรายละเอียดจากหน้าร้าน</p>
+        <h1 id="showroom-title">รถมือสอง<br /><span>นครปฐม</span></h1>
+        <p className="discovery-description">ซื้อรถหรือขายรถกับ PD Car Center<br />ดูราคา รูป และสถานะรถก่อนนัดชมที่ร้าน</p>
         <div className="discovery-actions">
           <a className="primary-action" href="#inventory">เลือกรถในร้าน <ArrowDown size={19} /></a>
           <Link className="discovery-sell" href="/sell-car">มีรถอยากขาย <ArrowUpRight size={18} /></Link>

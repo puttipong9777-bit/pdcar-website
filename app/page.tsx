@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import { ShowroomHero } from "@/components/showroom-hero";
@@ -29,7 +30,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const result = await getPublicVehicles();
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || "https://line.me/R/ti/p/%40pdcar";
 
   return (
     <main className="showroom-page">
@@ -46,13 +47,22 @@ export default async function HomePage() {
         <div className="section-heading wide-heading">
           <div>
             <p className="eyebrow">FIND YOUR NEXT DRIVE</p>
-            <h2>เลือกคันที่เป็นคุณ<span className="heading-dot">.</span></h2>
+            <h2>รถมือสองในร้าน PD Car Center</h2>
             <p>เลือกยี่ห้อ ตั้งงบ แล้วทำความรู้จักคันที่ถูกใจ</p>
           </div>
           <span>{result.vehicles.length} คันในเว็บไซต์</span>
         </div>
         {result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
         <CatalogBrowser vehicles={result.vehicles} />
+      </section>
+
+      <section className="sell-faq-section" aria-labelledby="buying-questions">
+        <div className="sell-section-heading"><h2 id="buying-questions">คำถามก่อนซื้อรถมือสองในนครปฐม</h2></div>
+        <div className="sell-faq-list">
+          <details><summary>ดูรถที่พร้อมขายได้ที่ไหน?<ArrowRight size={18} /></summary><p>ดู<a href="#inventory">รายการรถในร้าน</a> พร้อมราคา รูป และสถานะรายคัน รถที่มีป้าย “ติดจอง” ยังไม่พร้อมขาย ควรสอบถามสถานะล่าสุดและนัดหมายก่อนเดินทาง</p></details>
+          <details><summary>PD Car Center อยู่ที่ไหน และนัดชมรถอย่างไร?<ArrowRight size={18} /></summary><p>ร้านอยู่ที่ 23/2 หมู่ 13 ตำบลโพรงมะเดื่อ อำเภอเมืองนครปฐม จังหวัดนครปฐม 73000 โทร <a href={`tel:${phone}`} data-analytics="phone_click">{phone}</a> หรือ <a href={lineUrl} data-analytics="line_click">LINE @pdcar</a> เพื่อยืนยันเวลานัดชมรถ</p><BusinessVisitInfo /></details>
+          <details><summary>อยากขายรถให้ร้าน ต้องเริ่มอย่างไร?<ArrowRight size={18} /></summary><p>เตรียมยี่ห้อ รุ่น ปีจดทะเบียน เลขไมล์ และรูปถ่าย แล้วติดต่อร้านเพื่อประเมินเบื้องต้น ราคาสุดท้ายขึ้นอยู่กับการตรวจรถและเอกสาร <Link href="/sell-car">ดูขั้นตอนขายรถและข้อมูลที่ควรเตรียม</Link></p></details>
+        </div>
       </section>
 
       <section className="sell-acquisition-section" id="sell-car">
@@ -102,56 +112,32 @@ export default async function HomePage() {
       <section className="knowledge-section" id="articles">
         <div className="section-heading knowledge-heading">
           <div>
-            <p className="eyebrow">PDCAR KNOWLEDGE</p>
-            <h2>บทความน่ารู้ก่อนซื้อรถ</h2>
+            <p className="eyebrow">PDCAR QUICK GUIDE</p>
+            <h2>คำแนะนำก่อนซื้อรถมือสอง</h2>
           </div>
-          <div><p>คำแนะนำสั้น กระชับ และนำไปใช้ตัดสินใจเลือกรถได้จริง</p><Link href="/articles">อ่านบทความทั้งหมด →</Link></div>
+          <div><p>สรุปประเด็นสำคัญให้อ่านจบในหน้าเดียว โดยไม่ปะปนกับบทความที่ผ่านการอนุมัติ</p></div>
         </div>
 
         <div className="article-grid">
           <article className="article-card featured-article">
             <div className="article-icon"><ShieldCheck /></div>
             <div className="article-meta"><span>คู่มือเลือกรถ</span><span>อ่าน 4 นาที</span></div>
-            <h3>7 จุดสำคัญที่ควรตรวจ ก่อนตัดสินใจซื้อรถมือสอง</h3>
-            <p>เริ่มจากประวัติรถ สภาพตัวถัง ห้องเครื่อง ช่วงล่าง ไปจนถึงเอกสาร เพื่อให้คุณเห็นภาพรวมก่อนทดลองขับและวางเงินจอง</p>
-            <details>
-              <summary>อ่านคำแนะนำ <ArrowRight size={17} /></summary>
-              <ul>
-                <li>เทียบเลขตัวถังและเลขเครื่องกับเล่มทะเบียนทุกครั้ง</li>
-                <li>ทดลองขับทั้งความเร็วต่ำและถนนโล่ง ฟังเสียงช่วงล่างและเกียร์</li>
-                <li>ขอรายละเอียดเงื่อนไขรับประกันและค่าใช้จ่ายทั้งหมดเป็นลายลักษณ์อักษร</li>
-              </ul>
-            </details>
+            <h3>เช็กลิสต์สำคัญก่อนตัดสินใจซื้อรถมือสอง</h3>
+            <p>ตรวจประวัติรถ เลขตัวถัง เอกสาร สภาพตัวถัง ห้องเครื่อง และช่วงล่าง พร้อมทดลองขับก่อนวางเงินจอง</p>
           </article>
 
           <article className="article-card">
             <div className="article-icon"><Calculator /></div>
             <div className="article-meta"><span>วางแผนการเงิน</span><span>อ่าน 3 นาที</span></div>
             <h3>ค่างวดรถควรอยู่ที่เท่าไร จึงผ่อนได้สบายทุกเดือน</h3>
-            <p>อย่าดูเฉพาะค่างวด ควรรวมค่าน้ำมัน ประกัน ภาษี และค่าบำรุงรักษา เพื่อให้ค่าใช้รถไม่กระทบเงินสำรอง</p>
-            <details>
-              <summary>อ่านคำแนะนำ <ArrowRight size={17} /></summary>
-              <ul>
-                <li>ตั้งงบค่าใช้รถทั้งหมดให้เหมาะกับรายรับสุทธิของครอบครัว</li>
-                <li>เตรียมเงินสำรองอย่างน้อย 3–6 เดือนก่อนรับภาระระยะยาว</li>
-                <li>เปรียบเทียบยอดจัด ระยะเวลา และดอกเบี้ย ไม่ดูเพียงตัวเลขค่างวด</li>
-              </ul>
-            </details>
+            <p>รวมค่างวด น้ำมัน ประกัน ภาษี และค่าบำรุงรักษา แล้วเทียบกับรายรับและเงินสำรองก่อนเลือกแผนผ่อน</p>
           </article>
 
           <article className="article-card">
             <div className="article-icon"><FileCheck2 /></div>
             <div className="article-meta"><span>เตรียมไฟแนนซ์</span><span>อ่าน 2 นาที</span></div>
             <h3>เตรียมเอกสารอย่างไร ให้ยื่นไฟแนนซ์ได้คล่องขึ้น</h3>
-            <p>เอกสารที่ครบและข้อมูลที่ตรงกันช่วยลดเวลาตรวจสอบ ทั้งผู้มีรายได้ประจำ เจ้าของกิจการ และอาชีพอิสระ</p>
-            <details>
-              <summary>อ่านคำแนะนำ <ArrowRight size={17} /></summary>
-              <ul>
-                <li>เตรียมบัตรประชาชน ทะเบียนบ้าน และเอกสารแสดงรายได้ฉบับล่าสุด</li>
-                <li>ตรวจชื่อ ที่อยู่ และเบอร์โทรในเอกสารให้เป็นปัจจุบัน</li>
-                <li>แจ้งรายได้และภาระผ่อนตามจริง เพื่อประเมินแผนที่เหมาะกับคุณ</li>
-              </ul>
-            </details>
+            <p>เตรียมบัตรประชาชน ทะเบียนบ้าน เอกสารรายได้ และตรวจข้อมูลติดต่อให้เป็นปัจจุบันก่อนยื่นไฟแนนซ์</p>
           </article>
         </div>
       </section>
@@ -199,6 +185,7 @@ export default async function HomePage() {
         </div>
         <div className="footer-contact">
           <strong>ติดต่อเรา</strong>
+          <BusinessVisitInfo />
           <a href={`tel:${phone}`} data-analytics="phone_click"><Phone size={16} />{phone}</a>
           <p><MapPin size={16} />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</p>
         </div>

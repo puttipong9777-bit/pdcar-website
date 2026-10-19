@@ -17,6 +17,7 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 
 export const metadata: Metadata = {
   title: "รับซื้อรถมือสองนครปฐม | ขายรถให้เรา",
@@ -41,12 +42,12 @@ const faqs = [
   ["รถที่ยังผ่อนไม่หมดสอบถามได้ไหม?", "สอบถามได้ กรุณาแจ้งยอดคงเหลือโดยประมาณและชื่อไฟแนนซ์ เพื่อให้ร้านเข้าใจสถานะของรถก่อนแนะนำขั้นตอนที่เหมาะสม"],
   ["ประเมินผ่านรูปแล้วเป็นราคาสุดท้ายหรือไม่?", "การประเมินจากข้อมูลและรูปเป็นเพียงข้อมูลเบื้องต้น ราคาซื้อขายจริงต้องพิจารณาสภาพรถ เอกสาร และรายละเอียดอื่นหลังตรวจรถ"],
   ["ต้องนำรถมาที่ร้านทันทีหรือไม่?", "เริ่มจากส่งข้อมูลและคุยกับร้านก่อนได้ เมื่อต้องตรวจรถจริงจึงค่อยตกลงสถานที่และเวลานัดหมายกับผู้ดูแล"],
-  ["ติดต่อช่องทางไหนเร็วที่สุด?", "โทรหาร้านโดยตรง หรือใช้ช่องทางติดต่ออื่นที่แสดงในหน้านี้เมื่อมีให้บริการ"],
+  ["ส่งรูปและข้อมูลรถทางไหน?", "ส่งรูปและข้อมูลรถทาง LINE @pdcar ผ่านปุ่มในหน้านี้ หรือโทรหาร้านเพื่อนัดหมายก่อนตรวจรถ"],
 ] as const;
 
 export default function SellCarPage() {
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || "https://line.me/R/ti/p/%40pdcar";
   const serviceJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -82,7 +83,7 @@ export default function SellCarPage() {
           <div className="sell-page-hero-grid">
             <div>
               <p className="hero-kicker"><span />SELL YOUR CAR · PD CAR CENTER</p>
-              <h1>อยากขายรถมือสอง?<br /><em>เริ่มประเมินกับเรา</em></h1>
+              <h1>รับซื้อรถมือสองนครปฐม<br /><em>เริ่มประเมินกับเรา</em></h1>
               <p>สำหรับเจ้าของรถที่กำลังค้นหาที่รับซื้อรถมือสองในนครปฐม ส่งข้อมูลเบื้องต้นและคุยกับผู้ดูแลร้านโดยตรง ก่อนนัดตรวจรถจริงเมื่อคุณพร้อม</p>
               <div className="sell-hero-actions">
                 {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={19} />ส่งข้อมูลรถทาง LINE</a> : null}
@@ -140,6 +141,7 @@ export default function SellCarPage() {
           <h3>เริ่มต้นโดยไม่ส่งข้อมูลส่วนตัวสำคัญ</h3>
           <p>ขั้นตอนประเมินเบื้องต้นไม่จำเป็นต้องส่งภาพบัตรประชาชน สำเนาทะเบียนบ้าน รหัสผ่าน หรือรหัส OTP หากต้องใช้เอกสารภายหลัง ควรยืนยันกับผู้ดูแลร้านก่อนทุกครั้ง</p>
           <div><MapPin size={20} /><span>PD Car Center<br />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</span></div>
+          <BusinessVisitInfo />
         </div>
       </section>
 
