@@ -5,7 +5,6 @@ import { vehicleImagesBucket } from "@/lib/cloudflare-media";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const fileId = /^FILE-[A-Za-z0-9-]{1,96}$/;
 const maxUploadBytes = 3 * 1024 * 1024;
 
 function webp(bytes: Uint8Array) {
@@ -17,7 +16,7 @@ function webp(bytes: Uint8Array) {
 function objectKey(target: string) {
   if (target === "site:logo") return "site/logo.webp";
   if (target === "site:storefront") return "site/storefront.webp";
-  if (target.startsWith("vehicle:") && fileId.test(target.slice(8))) return `${target.slice(8)}.webp`;
+  if (target.startsWith("vehicle:")) throw new ArticleError("vehicle_media_managed_by_erp", 409);
   throw new ArticleError("invalid_media_target");
 }
 
@@ -42,7 +41,7 @@ export async function POST(request: Request) {
       httpMetadata: { contentType: "image/webp", cacheControl: "public, max-age=60, must-revalidate" },
       customMetadata: { updatedAt: new Date().toISOString() }
     });
-    const publicPath = key.startsWith("site/") ? `/media/site/${key.slice(5, -5)}` : `/media/vehicle-images/${key.slice(0, -5)}`;
+    const publicPath = `/media/site/${key.slice(5, -5)}`;
     return json({ ok: true, path: `${publicPath}?v=${Date.now()}` });
   } catch (error) {
     return failure(error);
