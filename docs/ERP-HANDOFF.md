@@ -60,4 +60,7 @@
 - `NEXT_PUBLIC_SHOP_PHONE`
 - `NEXT_PUBLIC_LINE_URL`
 
+ค่า LINE สาธารณะที่ยืนยันแล้วคือ OA `@pdcar` และใช้ profile URL
+`https://line.me/R/ti/p/%40pdcar` ซึ่งเปิดโปรไฟล์/แชทเท่านั้นโดยไม่กรอกหรือส่งข้อความอัตโนมัติ
+
 ค่าลับของ ERP ที่ห้ามคัดลอกมาคือ service role key, OCR API keys และ Google OAuth/service-account credentials

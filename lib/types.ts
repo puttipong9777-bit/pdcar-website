@@ -41,3 +41,8 @@ export type VehicleDataResult = {
   source: "supabase" | "not_configured" | "view_not_ready";
   message?: string;
 };
+
+export type PublicVehicleLookupResult =
+  | { status: "found"; vehicle: PublicVehicleListing; vehicles: PublicVehicleListing[] }
+  | { status: "not_found"; vehicles: PublicVehicleListing[] }
+  | { status: "unavailable"; source: Exclude<VehicleDataResult["source"], "supabase">; message: string };

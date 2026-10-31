@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getPublicVehicles } from "@/lib/vehicle-data";
+import { getPublicVehicles, VehicleDataUnavailableError } from "@/lib/vehicle-data";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +12,10 @@ function validDate(value?: string) {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.pdcarcenter.com";
   const result = await getPublicVehicles();
+  if (result.source !== "supabase") {
+    // Do not publish an apparently valid sitemap with every car silently removed.
+    throw new VehicleDataUnavailableError(result.message);
+  }
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, changeFrequency: "daily", priority: 1 },
     { url: `${baseUrl}/sell-car`, changeFrequency: "weekly", priority: 0.9 },

@@ -4,7 +4,7 @@ import { ArrowDownUp, ArrowUpRight, CarFront, ChevronLeft, ChevronRight, Gauge, 
 import Image from "next/image";
 import Link from "next/link";
 import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
-import { defaultCatalogFilters, filterCatalog, getCatalogPhotos, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
+import { catalogQuery, defaultCatalogFilters, filterCatalog, getCatalogPhotos, parseCatalogQuery, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
 import type { PublicVehicleListing } from "@/lib/types";
 import { trackSiteEvent } from "@/components/site-analytics";
 
@@ -121,11 +121,28 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
 
 export function CatalogBrowser({ vehicles }: { vehicles: PublicVehicleListing[] }) {
   const [filters, setFilters] = useState<CatalogFilters>(defaultCatalogFilters);
+  const [queryReady, setQueryReady] = useState(false);
   const brands = useMemo(() => Array.from(new Set(vehicles.map((vehicle) => vehicle.brand).filter(Boolean))).sort(), [vehicles]);
   const years = useMemo(() => Array.from(new Set(vehicles.map((vehicle) => vehicle.year))).sort((a, b) => b - a), [vehicles]);
   const filtered = useMemo(() => filterCatalog(vehicles, filters), [vehicles, filters]);
-  const hasFilters = filters.query !== "" || filters.brand !== "all" || filters.year !== "all" || filters.maxPrice !== "all" || filters.status !== "all";
+  const hasFilters = filters.query !== "" || filters.brand !== "all" || filters.year !== "all" || filters.maxPrice !== "all" || filters.status !== "all" || filters.sort !== "recommended";
   const update = <K extends keyof CatalogFilters>(key: K, value: CatalogFilters[K]) => setFilters((current) => ({ ...current, [key]: value }));
+
+  useEffect(() => {
+    const readQuery = () => setFilters(parseCatalogQuery(Object.fromEntries(new URLSearchParams(window.location.search)), brands, years));
+    readQuery();
+    setQueryReady(true);
+    window.addEventListener("popstate", readQuery);
+    return () => window.removeEventListener("popstate", readQuery);
+  }, [brands, years]);
+
+  useEffect(() => {
+    if (!queryReady) return;
+    const url = new URL(window.location.href);
+    ["q", "brand", "year", "max", "status", "sort"].forEach((key) => url.searchParams.delete(key));
+    Object.entries(catalogQuery(filters)).forEach(([key, value]) => url.searchParams.set(key, value));
+    window.history.replaceState(window.history.state, "", url);
+  }, [filters, queryReady]);
 
   return (
     <div className="catalog-browser">
