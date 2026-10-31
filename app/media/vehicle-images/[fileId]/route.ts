@@ -1,3 +1,5 @@
+import { getPublicVehicleImageMembership } from "@/lib/public-vehicle-image";
+
 const FILE_ID = /^FILE-[A-Za-z0-9-]{1,96}$/;
 const ERP_ORIGIN = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-erp-history.onrender.com").replace(/\/$/, "");
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
@@ -9,11 +11,11 @@ function timeoutMs() {
   return Number.isFinite(configured) ? Math.min(10_000, Math.max(250, configured)) : 5_000;
 }
 
-function mediaHeaders(outcome: string, durationMs: number) {
+function mediaHeaders(outcome: string, durationMs: number, membershipDurationMs: number) {
   return {
     "Cache-Control": "no-store",
     "X-PDCar-Media-Outcome": outcome,
-    "Server-Timing": `erp-image;dur=${durationMs.toFixed(1)}`
+    "Server-Timing": `public-inventory;dur=${membershipDurationMs.toFixed(1)}, erp-image;dur=${durationMs.toFixed(1)}`
   };
 }
 
@@ -59,6 +61,31 @@ export async function GET(_request: Request, { params }: { params: Promise<{ fil
   const { fileId } = await params;
   if (!FILE_ID.test(fileId)) return new Response("Invalid image identifier", { status: 400 });
 
+  const membershipStartedAt = performance.now();
+  const membership = await getPublicVehicleImageMembership(fileId);
+  const membershipDurationMs = performance.now() - membershipStartedAt;
+  if (membership.status === "not_listed") {
+    return new Response("Image not found", {
+      status: 404,
+      headers: {
+        "Cache-Control": "no-store",
+        "X-PDCar-Media-Outcome": "not-listed",
+        "Server-Timing": `public-inventory;dur=${membershipDurationMs.toFixed(1)}`
+      }
+    });
+  }
+  if (membership.status === "unavailable") {
+    return new Response("Image membership temporarily unavailable", {
+      status: 503,
+      headers: {
+        "Cache-Control": "no-store",
+        "Retry-After": "30",
+        "X-PDCar-Media-Outcome": "membership-unavailable",
+        "Server-Timing": `public-inventory;dur=${membershipDurationMs.toFixed(1)}`
+      }
+    });
+  }
+
   const startedAt = performance.now();
   const signal = AbortSignal.timeout(timeoutMs());
   let upstream: Response;
@@ -73,30 +100,30 @@ export async function GET(_request: Request, { params }: { params: Promise<{ fil
     const timedOut = isTimeout(error, signal);
     return new Response("Image source temporarily unavailable", {
       status: timedOut ? 504 : 502,
-      headers: { ...mediaHeaders(timedOut ? "timeout" : "network-error", durationMs), "Retry-After": "30" }
+      headers: { ...mediaHeaders(timedOut ? "timeout" : "network-error", durationMs, membershipDurationMs), "Retry-After": "30" }
     });
   }
 
   if (upstream.status === 404 || upstream.status === 410 || upstream.status === 401 || upstream.status === 403) {
-    return new Response("Image not found", { status: 404, headers: mediaHeaders("not-public", performance.now() - startedAt) });
+    return new Response("Image not found", { status: 404, headers: mediaHeaders("not-public", performance.now() - startedAt, membershipDurationMs) });
   }
   if (!upstream.ok || !upstream.body) {
     return new Response("Image source temporarily unavailable", {
       status: upstream.status === 429 ? 503 : 502,
-      headers: { ...mediaHeaders("upstream-error", performance.now() - startedAt), "Retry-After": "30" }
+      headers: { ...mediaHeaders("upstream-error", performance.now() - startedAt, membershipDurationMs), "Retry-After": "30" }
     });
   }
 
   const contentType = upstream.headers.get("content-type") || "";
   if (!contentType.toLowerCase().startsWith("image/")) {
     try { await upstream.body.cancel(); } catch {}
-    return new Response("Invalid image response", { status: 502, headers: mediaHeaders("invalid-upstream-type", performance.now() - startedAt) });
+    return new Response("Invalid image response", { status: 502, headers: mediaHeaders("invalid-upstream-type", performance.now() - startedAt, membershipDurationMs) });
   }
 
   const declaredLength = Number(upstream.headers.get("content-length"));
   if (Number.isFinite(declaredLength) && declaredLength > MAX_IMAGE_BYTES) {
     try { await upstream.body.cancel(); } catch {}
-    return new Response("Image response too large", { status: 502, headers: mediaHeaders("body-too-large", performance.now() - startedAt) });
+    return new Response("Image response too large", { status: 502, headers: mediaHeaders("body-too-large", performance.now() - startedAt, membershipDurationMs) });
   }
 
   let bytes: ArrayBuffer;
@@ -105,12 +132,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ fil
   } catch (error) {
     const durationMs = performance.now() - startedAt;
     if (error instanceof ImageBodyTooLargeError) {
-      return new Response("Image response too large", { status: 502, headers: mediaHeaders("body-too-large", durationMs) });
+      return new Response("Image response too large", { status: 502, headers: mediaHeaders("body-too-large", durationMs, membershipDurationMs) });
     }
     const timedOut = isTimeout(error, signal);
     return new Response("Image source temporarily unavailable", {
       status: timedOut ? 504 : 502,
-      headers: { ...mediaHeaders(timedOut ? "body-timeout" : "body-stream-error", durationMs), "Retry-After": "30" }
+      headers: { ...mediaHeaders(timedOut ? "body-timeout" : "body-stream-error", durationMs, membershipDurationMs), "Retry-After": "30" }
     });
   }
 
@@ -124,6 +151,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ fil
   headers.set("Cache-Control", "public, max-age=60, must-revalidate");
   headers.set("X-PDCar-Image-Source", "erp-authority");
   headers.set("X-PDCar-Media-Outcome", "current");
-  headers.set("Server-Timing", `erp-image;dur=${(performance.now() - startedAt).toFixed(1)}`);
+  headers.set("Server-Timing", `public-inventory;dur=${membershipDurationMs.toFixed(1)}, erp-image;dur=${(performance.now() - startedAt).toFixed(1)}`);
   return new Response(bytes, { headers });
 }

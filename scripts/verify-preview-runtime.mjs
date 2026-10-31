@@ -51,7 +51,11 @@ function fixture() {
     website_featured: false,
     updated_at: "2026-10-31T00:00:00Z",
     public_description: "ข้อมูลสังเคราะห์สำหรับทดสอบ Preview เท่านั้น",
-    photos: [{ fileId: "FILE-SYNTHETIC-1", isPrimary: true, sortOrder: 0 }]
+    photos: [
+      { fileId: "FILE-SYNTHETIC-1", isPrimary: true, sortOrder: 0 },
+      { fileId: "FILE-STALL", isPrimary: false, sortOrder: 1 },
+      { fileId: "FILE-OVERSIZE", isPrimary: false, sortOrder: 2 }
+    ]
   };
   return [
     {
@@ -101,6 +105,7 @@ const previewVars = {
 const stalledResponses = new Set();
 const mock = http.createServer((request, response) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
+  const requestUrl = new URL(request.url || "/", `http://127.0.0.1:${mockPort}`);
   if (request.url === "/api/public/vehicle-images/FILE-STALL") {
     stalledResponses.add(response);
     request.once("close", () => stalledResponses.delete(response));
@@ -126,6 +131,13 @@ const mock = http.createServer((request, response) => {
   if (request.url?.startsWith("/images/")) {
     response.writeHead(200, { "Cache-Control": "no-store", "Content-Type": "image/svg+xml" });
     response.end('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#0c3158"/><text x="80" y="160" fill="white" font-size="64">SYNTHETIC PREVIEW</text></svg>');
+    return;
+  }
+  if (requestUrl.pathname.includes("public_vehicle_listings") && requestUrl.searchParams.has("photos")) {
+    const filter = requestUrl.searchParams.get("photos") || "";
+    const allowed = fixture().flatMap((vehicle) => vehicle.photos).some((photo) => filter.includes(photo.fileId));
+    response.writeHead(200, { "Content-Range": allowed ? "0-0/1" : "*/0", "Content-Type": "application/json" });
+    response.end(JSON.stringify(allowed ? [{ car_id: "PDPREVIEW1" }] : []));
     return;
   }
   response.writeHead(200, { "Content-Range": "0-1/2", "Content-Type": "application/json" });
@@ -205,7 +217,10 @@ try {
   assert.equal(media.headers.get("x-robots-tag"), "noindex, nofollow");
   const missingMedia = await fetch(`${base}/media/vehicle-images/FILE-MISSING`);
   assert.equal(missingMedia.status, 404);
-  assert.equal(missingMedia.headers.get("x-pdcar-media-outcome"), "not-public");
+  assert.equal(missingMedia.headers.get("x-pdcar-media-outcome"), "not-listed");
+  const unlistedMedia = await fetch(`${base}/media/vehicle-images/FILE-repair-photo`);
+  assert.equal(unlistedMedia.status, 404);
+  assert.equal(unlistedMedia.headers.get("x-pdcar-media-outcome"), "not-listed");
   const stalledMedia = await fetch(`${base}/media/vehicle-images/FILE-STALL`);
   assert.equal(stalledMedia.status, 504);
   assert.equal(stalledMedia.headers.get("x-pdcar-media-outcome"), "body-timeout");
@@ -226,7 +241,7 @@ try {
       "robots disallow",
       "synthetic available and reserved inventory",
       "detail route",
-      "ERP-authoritative media plus missing, stalled and oversized bodies fail closed",
+      "public-list membership plus ERP media; missing, unlisted, stalled and oversized bodies fail closed",
       "tracking disabled",
       "admin disabled",
       "no production data bindings in local config"
@@ -238,6 +253,7 @@ try {
       detail: detail.status,
       media: media.status,
       missingMedia: missingMedia.status,
+      unlistedMedia: unlistedMedia.status,
       stalledMedia: stalledMedia.status,
       oversizeMedia: oversizeMedia.status,
       admin: admin.status

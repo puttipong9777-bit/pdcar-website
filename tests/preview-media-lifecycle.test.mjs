@@ -72,8 +72,64 @@ test("manifest freshness rejects malformed, stale and future timestamps outside 
   assert.throws(() => lifecycle.publicVehicleMediaManifestEntry(publication({ authorizedAt: "not-a-time" })), /invalid_public_media_manifest/);
 });
 
-function vehicleRoute({ env = {}, fetchImpl }) {
-  const route = loadTs("app/media/vehicle-images/[fileId]/route.ts", {}, { process: { env }, fetch: fetchImpl });
+function imageMembershipHarness(initialResponse) {
+  const calls = [];
+  const state = { response: initialResponse };
+  const query = {
+    select(columns) { calls.push(["select", columns]); return this; },
+    contains(column, value) { calls.push(["contains", column, value]); return this; },
+    limit(value) { calls.push(["limit", value]); return this; },
+    then(resolve, reject) {
+      const response = state.response;
+      return response instanceof Error
+        ? Promise.reject(response).then(resolve, reject)
+        : Promise.resolve(response).then(resolve, reject);
+    }
+  };
+  const membership = loadTs("lib/public-vehicle-image.ts", {
+    "@supabase/supabase-js": {
+      createClient: (url, key) => {
+        calls.push(["client", url, key]);
+        return { from: (view) => { calls.push(["from", view]); return query; } };
+      }
+    }
+  }, { process: { env: { NEXT_PUBLIC_SUPABASE_URL: "https://public.example", NEXT_PUBLIC_SUPABASE_ANON_KEY: "synthetic-anon" } } });
+  return { calls, membership, state };
+}
+
+test("image membership uses one narrow uncached public-view lookup instead of full inventory", async () => {
+  const harness = imageMembershipHarness({ data: [{ car_id: "PDTEST" }], error: null });
+  assert.equal((await harness.membership.getPublicVehicleImageMembership("FILE-main-gallery")).status, "allowed");
+  assert.deepEqual(harness.calls.slice(1), [
+    ["from", "public_vehicle_listings"],
+    ["select", "car_id"],
+    ["contains", "photos", '[{"fileId":"FILE-main-gallery"}]'],
+    ["limit", 1]
+  ]);
+
+  harness.calls.length = 0;
+  harness.state.response = { data: [], error: null };
+  assert.equal((await harness.membership.getPublicVehicleImageMembership("FILE-repair-photo")).status, "not_listed");
+  assert.equal(harness.calls.some(([operation]) => operation === "client"), true, "each request rechecks the public view without a stale membership cache");
+
+  harness.state.response = { data: null, error: { message: "synthetic public view outage" } };
+  assert.equal((await harness.membership.getPublicVehicleImageMembership("FILE-main-gallery")).status, "unavailable");
+  harness.state.response = new Error("synthetic network outage");
+  assert.equal((await harness.membership.getPublicVehicleImageMembership("FILE-main-gallery")).status, "unavailable");
+});
+
+test("image membership fails closed when public-view configuration is unavailable", async () => {
+  const membership = loadTs("lib/public-vehicle-image.ts", {
+    "@supabase/supabase-js": { createClient: () => { throw new Error("client must not be created"); } }
+  }, { process: { env: {} } });
+  assert.equal((await membership.getPublicVehicleImageMembership("FILE-main-gallery")).status, "unavailable");
+  assert.equal((await membership.getPublicVehicleImageMembership("bad-id")).status, "not_listed");
+});
+
+function vehicleRoute({ env = {}, fetchImpl, membership = { status: "allowed" } }) {
+  const route = loadTs("app/media/vehicle-images/[fileId]/route.ts", {
+    "@/lib/public-vehicle-image": { getPublicVehicleImageMembership: async () => membership }
+  }, { process: { env }, fetch: fetchImpl });
   return {
     get: (fileId = "FILE-test-1") => route.GET(new Request(`https://review.example/media/vehicle-images/${fileId}`), { params: Promise.resolve({ fileId }) })
   };
@@ -101,6 +157,32 @@ test("ERP status matrix fails closed without any legacy object bypass", async ()
     assert.equal(response.status, publicStatus, `upstream ${upstreamStatus}`);
     assert.equal(response.headers.get("cache-control"), "no-store");
   }
+});
+
+test("vehicle image route allows listed gallery refs and blocks linked but unlisted files before ERP", async () => {
+  let erpFetches = 0;
+  const fetchImpl = async () => {
+    erpFetches++;
+    return new Response("allowed main image", { headers: { "Content-Type": "image/jpeg" } });
+  };
+  const allowed = vehicleRoute({ fetchImpl, membership: { status: "allowed" } });
+  assert.equal((await allowed.get("FILE-main-gallery")).status, 200);
+  assert.equal(erpFetches, 1);
+
+  for (const fileId of ["FILE-repair-photo", "FILE-damage-photo", "FILE-document-image"]) {
+    const unlisted = vehicleRoute({ fetchImpl, membership: { status: "not_listed" } });
+    const response = await unlisted.get(fileId);
+    assert.equal(response.status, 404, fileId);
+    assert.equal(response.headers.get("x-pdcar-media-outcome"), "not-listed");
+  }
+  assert.equal(erpFetches, 1, "unlisted files never reach ERP");
+
+  const unavailable = vehicleRoute({ fetchImpl, membership: { status: "unavailable" } });
+  const unavailableResponse = await unavailable.get("FILE-main-gallery");
+  assert.equal(unavailableResponse.status, 503);
+  assert.equal(unavailableResponse.headers.get("retry-after"), "30");
+  assert.equal(unavailableResponse.headers.get("x-pdcar-media-outcome"), "membership-unavailable");
+  assert.equal(erpFetches, 1, "an inventory outage fails before ERP");
 });
 
 test("media proxy distinguishes header timeout, network and invalid content without leaking provider details", async () => {
