@@ -36,6 +36,18 @@
     "ARTICLE_DAILY_CRON_ENABLED": "false",
     "ARTICLE_LINE_POSTBACK_ENABLED": "false"
   },
+  // Worker Previews do not inherit production vars or bindings. Keep previews
+  // read-only and tracking-free; intentionally omit R2 and Hyperdrive.
+  "previews": {
+    "vars": {
+      "SITE_ENV": "preview",
+      "SITE_ANALYTICS_ENABLED": "false",
+      "SITE_ADMIN_ENABLED": "false",
+      "ARTICLE_APPROVAL_ENABLED": "false",
+      "ARTICLE_DAILY_CRON_ENABLED": "false",
+      "ARTICLE_LINE_POSTBACK_ENABLED": "false"
+    }
+  },
   // Add "0 12 * * *" only when article integrations have been verified.
   "triggers": { "crons": [] }
 }
