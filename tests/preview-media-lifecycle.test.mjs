@@ -126,6 +126,13 @@ test("image membership fails closed when public-view configuration is unavailabl
   assert.equal((await membership.getPublicVehicleImageMembership("bad-id")).status, "not_listed");
 });
 
+test("image membership converts malformed public client configuration into controlled unavailability", async () => {
+  const membership = loadTs("lib/public-vehicle-image.ts", {
+    "@supabase/supabase-js": { createClient: () => { throw new Error("synthetic malformed public configuration"); } }
+  }, { process: { env: { NEXT_PUBLIC_SUPABASE_URL: "not-a-valid-url", NEXT_PUBLIC_SUPABASE_ANON_KEY: "synthetic-anon" } } });
+  assert.equal((await membership.getPublicVehicleImageMembership("FILE-main-gallery")).status, "unavailable");
+});
+
 function vehicleRoute({ env = {}, fetchImpl, membership = { status: "allowed" } }) {
   const route = loadTs("app/media/vehicle-images/[fileId]/route.ts", {
     "@/lib/public-vehicle-image": { getPublicVehicleImageMembership: async () => membership }

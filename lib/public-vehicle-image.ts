@@ -20,20 +20,19 @@ export async function getPublicVehicleImageMembership(fileId: string): Promise<P
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return { status: "unavailable" };
 
-  const supabase = createClient(url, key, {
-    auth: { persistSession: false },
-    global: {
-      fetch: (input, init) => fetch(input, {
-        ...init,
-        cache: "no-store",
-        signal: init?.signal
-          ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs())])
-          : AbortSignal.timeout(timeoutMs())
-      })
-    }
-  });
-
   try {
+    const supabase = createClient(url, key, {
+      auth: { persistSession: false },
+      global: {
+        fetch: (input, init) => fetch(input, {
+          ...init,
+          cache: "no-store",
+          signal: init?.signal
+            ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs())])
+            : AbortSignal.timeout(timeoutMs())
+        })
+      }
+    });
     const response = await supabase
       .from("public_vehicle_listings")
       .select("car_id")
