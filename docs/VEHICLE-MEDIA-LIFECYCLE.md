@@ -21,7 +21,10 @@ Supabase/ERP remains the source of truth for vehicle publication. R2 is a versio
 - Safe response metrics are limited to outcome/source and `Server-Timing`; upstream bodies, storage keys, credentials and private identifiers are never logged or returned.
 - The legacy R2 fallback is disabled by default. It can be enabled only with `VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED=true` as an explicit rollback measure; fallback responses are marked stale and `no-store`, so every later request rechecks ERP.
 - The website admin media endpoint now accepts only site-owned logo/storefront assets. Vehicle targets return `vehicle_media_managed_by_erp` and never write the bucket.
+- The admin media screen keeps logo/storefront uploads unchanged, but shows vehicle photos read-only with a clear `จัดการใน ERP` label. Authenticated site administrators who previously replaced a vehicle image directly from this screen must now make that change in ERP so publication eligibility and image revision stay together. Direct legacy callers receive an explicit HTTP 409 instead of a silent success or overwrite.
 - `lib/vehicle-media-lifecycle.ts` provides the reviewed, side-effect-free manifest contract and idempotent immutable-key refresh plan used by synthetic tests. It does not create a table, endpoint, bucket object or background job.
+
+This is intentionally backward-compatible for public image URLs and for site logo/storefront uploads. It is not backward-compatible with the old administrator-only vehicle overwrite action: that action created the source-of-truth conflict this phase removes. No existing R2 object is changed or deleted, and no ERP row is written by this branch.
 
 ## Approval-dependent target design
 

@@ -235,11 +235,12 @@ export function AdminDashboard({ vehicles }: { vehicles: Vehicle[] }) {
       </section>}
 
       {tab === "media" && <section className="admin-panel">
-        <div className="admin-section-title"><div><span>คลังรูปภาพ</span><h2>เปลี่ยนรูปที่แสดงบนเว็บไซต์</h2></div><small>ระบบย่อเป็น WebP ให้อัตโนมัติ</small></div>
+        <div className="admin-section-title"><div><span>คลังรูปภาพ</span><h2>รูปภาพบนเว็บไซต์</h2></div><small>โลโก้และหน้าร้านอัปโหลดที่นี่ · รูปรถจัดการใน ERP</small></div>
         <div className="media-site-grid"><MediaUpload title="โลโก้ร้าน" image="/media/site/logo" target="site:logo" busy={busy} loading={uploadTarget} onUpload={uploadImage} /><MediaUpload title="ภาพหน้าร้าน" image="/media/site/storefront" target="site:storefront" busy={busy} loading={uploadTarget} onUpload={uploadImage} /></div>
-        <article className="admin-card vehicle-media"><div className="card-heading"><div><small>รูปรถในคลัง</small><h3>เลือกรถแล้วเปลี่ยนรูปเดิม</h3></div><ImageIcon size={22} /></div>
-          <label className="admin-field"><span>รถที่ต้องการแก้รูป</span><select value={selectedCar} onChange={(event) => setSelectedCar(event.target.value)}>{vehicles.map((vehicle) => <option value={vehicle.carId} key={vehicle.carId}>{vehicle.carId} — {vehicle.title}</option>)}</select></label>
-          <div className="vehicle-photo-grid">{selectedVehicle?.photos.map((photo, index) => <MediaUpload key={photo.fileId} title={`ภาพที่ ${index + 1}`} image={`${photo.url}?admin=1`} target={`vehicle:${photo.fileId}`} busy={busy} loading={uploadTarget} onUpload={uploadImage} compact />)}</div>
+        <article className="admin-card vehicle-media"><div className="card-heading"><div><small>รูปรถจาก ERP</small><h3>ตรวจรูปที่เผยแพร่บนเว็บไซต์</h3></div><ImageIcon size={22} /></div>
+          <p className="media-managed-note"><strong>จัดการรูปรถในระบบ ERP</strong> หน้านี้แสดงตัวอย่างแบบอ่านอย่างเดียว เพื่อให้สถานะรถและรูปอ้างอิงแหล่งข้อมูลเดียวกัน</p>
+          <label className="admin-field"><span>เลือกรถเพื่อตรวจรูป</span><select value={selectedCar} onChange={(event) => setSelectedCar(event.target.value)}>{vehicles.map((vehicle) => <option value={vehicle.carId} key={vehicle.carId}>{vehicle.carId} — {vehicle.title}</option>)}</select></label>
+          <div className="vehicle-photo-grid">{selectedVehicle?.photos.map((photo, index) => <VehicleMediaPreview key={photo.fileId} title={`ภาพที่ ${index + 1}`} image={`${photo.url}?admin=1`} />)}</div>
           {!selectedVehicle?.photos.length ? <p className="admin-empty">รถคันนี้ยังไม่มีช่องรูปจากระบบ ERP</p> : null}
         </article>
       </section>}
@@ -265,4 +266,8 @@ function ArticleEditor({ form, setForm, busy, onSave, onCancel }: { form: Articl
 
 function MediaUpload({ title, image, target, busy, loading, onUpload, compact = false }: { title: string; image: string; target: string; busy: boolean; loading?: string; onUpload(target: string, file?: File): void; compact?: boolean }) {
   return <article className={`media-upload ${compact ? "compact" : ""}`}><div className="media-preview"><Image src={image} alt={title} fill sizes={compact ? "220px" : "420px"} /></div><div className="media-upload-info"><h3>{title}</h3><label className="upload-button">{loading === target ? <LoaderCircle className="spin" size={17} /> : <Upload size={17} />}เลือกรูปใหม่<input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(event) => { void onUpload(target, event.target.files?.[0]); event.currentTarget.value = ""; }} /></label></div></article>;
+}
+
+function VehicleMediaPreview({ title, image }: { title: string; image: string }) {
+  return <article className="media-upload compact"><div className="media-preview"><Image src={image} alt={title} fill sizes="220px" /></div><div className="media-upload-info"><h3>{title}</h3><span className="media-managed-label">จัดการใน ERP</span></div></article>;
 }

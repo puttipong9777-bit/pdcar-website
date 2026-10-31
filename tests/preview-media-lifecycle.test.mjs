@@ -163,6 +163,15 @@ test("admin media keeps site assets compatible but cannot overwrite ERP vehicle 
   assert.equal(writes, 1);
 });
 
+test("admin UI presents ERP vehicle photos read-only while keeping site asset uploads", () => {
+  const source = readFileSync(new URL("../app/admin/dashboard-client.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /target=\{`vehicle:/);
+  assert.match(source, /จัดการรูปรถในระบบ ERP/);
+  assert.match(source, /จัดการใน ERP/);
+  assert.match(source, /target="site:logo"/);
+  assert.match(source, /target="site:storefront"/);
+});
+
 test("disabled Preview admin fails before authentication or storage access", async () => {
   const unexpected = () => { throw new Error("Preview attempted privileged access"); };
   const route = loadTs("app/api/admin/media/route.ts", {
