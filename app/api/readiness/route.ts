@@ -7,7 +7,7 @@ export async function GET() {
   if (result.source !== "supabase") {
     return Response.json(
       { status: "unavailable", dependency: "public_vehicle_listings" },
-      { status: 503, headers: { "Cache-Control": "no-store" } }
+      { status: 503, headers: { "Cache-Control": "no-store", "Retry-After": "60" } }
     );
   }
 

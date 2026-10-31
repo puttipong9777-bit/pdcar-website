@@ -1,9 +1,11 @@
-import { ArrowLeft, CalendarDays, Fuel, Gauge, Images, MessageCircle, Palette, Phone, Settings2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CalendarDays, Fuel, Gauge, MessageCircle, Palette, Phone, Settings2, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { MetaViewContent } from "@/components/meta-view-content";
+import { VehicleDetailGallery } from "@/components/vehicle-detail-gallery";
 import { getPublicLineUrl, publicLineOaId } from "@/lib/contact-info";
 import { getPublicVehicle, VehicleDataUnavailableError } from "@/lib/vehicle-data";
 import { relatedVehicles, vehicleMetaDescription } from "@/lib/vehicle-presentation";
@@ -59,7 +61,6 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
     : vehicle.coverImageUrl
       ? [{ fileId: "cover", url: vehicle.coverImageUrl, isPrimary: true, sortOrder: 0 }]
       : [];
-  const [primaryPhoto, ...extraPhotos] = gallery;
   const suggestions = relatedVehicles(vehicle, vehicles);
   const hasFinance = [vehicle.downPayment, vehicle.financeAmount, vehicle.installment, vehicle.monthlyPayment].some((value) => value !== undefined);
   const description = vehicleMetaDescription(vehicle);
@@ -95,15 +96,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
 
       <div className="detail-layout">
         <section className="gallery" aria-label={`รูปภาพ ${vehicle.title}`}>
-          {primaryPhoto ? <div className="gallery-image gallery-image-primary"><Image src={primaryPhoto.url} alt={`${vehicle.title} ภาพหลัก`} fill priority sizes="(max-width: 900px) 100vw, 60vw" /></div> : null}
-          {vehicle.youtubeVideoId ? <div className="vehicle-video"><iframe src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(vehicle.youtubeVideoId)}?playsinline=1&rel=0`} title={`วิดีโอ ${vehicle.title}`} loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div> : null}
-          {extraPhotos.length ? <details className="gallery-more">
-            <summary><Images size={19} />ดูรูปทั้งหมด {gallery.length} ภาพ</summary>
-            <div className="gallery-more-grid">
-              {extraPhotos.map((photo, index) => <div className="gallery-image" key={photo.fileId}><Image src={photo.url} alt={`${vehicle.title} ภาพที่ ${index + 2}`} fill loading="lazy" sizes="(max-width: 900px) 100vw, 30vw" /></div>)}
-            </div>
-          </details> : null}
-          {!primaryPhoto && !vehicle.youtubeVideoId ? <div className="gallery-empty">กำลังเพิ่มรูปรถ</div> : null}
+          <VehicleDetailGallery title={vehicle.title} photos={gallery} />
         </section>
 
         <aside className="vehicle-summary">
@@ -133,8 +126,14 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
             <a className="primary-action full" href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={19} />สอบถามรถคันนี้ {phone}</a>
             <a className="line-action full" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={19} />เปิด LINE {publicLineOaId}</a>
           </div>
+          <BusinessVisitInfo compact />
         </aside>
       </div>
+
+      {vehicle.youtubeVideoId ? <section className="vehicle-video-section" aria-label={`วิดีโอ ${vehicle.title}`}>
+        <h2>ชมรถคันนี้ผ่านวิดีโอ</h2>
+        <div className="vehicle-video"><iframe src={`https://www.youtube-nocookie.com/embed/${encodeURIComponent(vehicle.youtubeVideoId)}?playsinline=1&rel=0`} title={`วิดีโอ ${vehicle.title}`} loading="lazy" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div>
+      </section> : null}
 
       <section className="vehicle-detail-notes" aria-label="รายละเอียดและเงื่อนไขรถ">
         {vehicle.description ? <details className="vehicle-description">

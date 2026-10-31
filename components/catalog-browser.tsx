@@ -20,6 +20,10 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   const suppressPhotoLink = useRef(false);
   const activeIndex = photoIndex < photos.length ? photoIndex : 0;
   const href = `/cars/${encodeURIComponent(vehicle.slug)}`;
+  const financeAssumptions = [
+    vehicle.downPayment !== undefined ? `ดาวน์ ${number.format(vehicle.downPayment)} บ.` : "",
+    vehicle.installment !== undefined ? `${number.format(vehicle.installment)} งวด` : ""
+  ].filter(Boolean).join(" · ");
 
   useEffect(() => {
     const card = cardRef.current;
@@ -104,7 +108,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
         <div className="catalog-card-topline"><span>{vehicle.carId}</span>{vehicle.featured ? <span className="catalog-featured">ร้านแนะนำ</span> : null}</div>
         <h3><Link href={href}>{vehicle.title}</Link></h3>
         <div className="catalog-specs">
-          <span className="catalog-spec-year">ปี {vehicle.year}</span>
+          <span className="catalog-spec-year">ปีรุ่น {vehicle.year}</span>
           {vehicle.mileage !== undefined ? <span className="catalog-spec-mileage"><Gauge size={15} />{number.format(vehicle.mileage)} กม.</span> : null}
           {vehicle.transmission ? <span className="catalog-spec-secondary">{vehicle.transmission}</span> : null}
           {vehicle.fuelType ? <span className="catalog-spec-secondary">{vehicle.fuelType}</span> : null}
@@ -113,7 +117,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
           <div><small>ราคาขาย</small><strong>{vehicle.salePrice !== undefined ? <>{number.format(vehicle.salePrice)} <span>บาท</span></> : "สอบถามราคา"}</strong></div>
           <Link href={href} className="catalog-open" aria-label={`ดูรายละเอียด ${vehicle.title}`}><ArrowUpRight size={23} /></Link>
         </div>
-        <p className="catalog-installment">{vehicle.monthlyPayment !== undefined ? `ผ่อน ${number.format(vehicle.monthlyPayment)} บ./เดือน` : "สอบถามเงื่อนไขผ่อนกับร้าน"}</p>
+        <p className="catalog-installment">{vehicle.monthlyPayment !== undefined ? <><span>ผ่อน {number.format(vehicle.monthlyPayment)} บ./เดือน</span>{financeAssumptions ? <small>โดยประมาณ: {financeAssumptions}</small> : null}</> : "สอบถามเงื่อนไขผ่อนกับร้าน"}</p>
       </div>
     </article>
   );

@@ -10,7 +10,7 @@ const navigation = [
   ["หน้าแรก", "/#showroom"],
   ["รถในร้าน", "/#inventory"],
   ["วิดีโอ", "/#videos"],
-  ["บทความ", "/articles"],
+  ["บทความ", "/#articles"],
   ["เกี่ยวกับเรา", "/#about"]
 ] as const;
 

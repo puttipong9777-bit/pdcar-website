@@ -117,6 +117,8 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
 async function fetchPublicVehicles(): Promise<VehicleDataResult> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const configuredTimeout = Number(process.env.VEHICLE_DATA_TIMEOUT_MS);
+  const timeoutMs = Number.isFinite(configuredTimeout) ? Math.min(8_000, Math.max(100, configuredTimeout)) : 8_000;
   if (!url || !key) {
     return {
       vehicles: [],
@@ -132,8 +134,8 @@ async function fetchPublicVehicles(): Promise<VehicleDataResult> {
         ...init,
         cache: "no-store",
         signal: init?.signal
-          ? AbortSignal.any([init.signal, AbortSignal.timeout(8_000)])
-          : AbortSignal.timeout(8_000)
+          ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs)])
+          : AbortSignal.timeout(timeoutMs)
       })
     }
   });

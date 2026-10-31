@@ -22,7 +22,11 @@ export default async function ArticlesPage({ searchParams }: { searchParams: Pro
       <h2><Link href={`/articles/${article.slug}`}>{article.content?.title}</Link></h2>
       <p>{article.content?.description}</p><Link href={`/articles/${article.slug}`}>อ่านบทความ →</Link>
     </article>)}</div>
-    {!articles.length && <p>ยังไม่มีบทความที่เผยแพร่ในหน้านี้</p>}
+    {!articles.length && <section className="pd-article-empty" aria-labelledby="article-empty-title">
+      <h2 id="article-empty-title">ยังไม่มีบทความฉบับเต็มที่เผยแพร่</h2>
+      <p>อ่านคู่มือสั้นที่ตรวจทานแล้วบนหน้าแรก หรือเลือกดูรถและขั้นตอนขายรถให้เราได้ทันที</p>
+      <div><Link href="/#articles">อ่านคู่มือสั้นบนหน้าแรก</Link><Link href="/#inventory">ดูรถในร้าน</Link><Link href="/sell-car">ขายรถให้เรา</Link></div>
+    </section>}
     <nav className="pd-article-nav" aria-label="หน้าบทความ">
       {page > 1 && <Link href={`/articles?page=${page - 1}`}>← หน้าก่อนหน้า</Link>}
       {articles.length === 12 && <Link href={`/articles?page=${page + 1}`}>หน้าถัดไป →</Link>}

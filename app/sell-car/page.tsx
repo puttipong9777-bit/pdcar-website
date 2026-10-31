@@ -17,6 +17,7 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { getPublicLineUrl, publicLineOaId } from "@/lib/contact-info";
 
 export const metadata: Metadata = {
@@ -141,6 +142,7 @@ export default function SellCarPage() {
           <h3>เริ่มต้นโดยไม่ส่งข้อมูลส่วนตัวสำคัญ</h3>
           <p>ขั้นตอนประเมินเบื้องต้นไม่จำเป็นต้องส่งภาพบัตรประชาชน สำเนาทะเบียนบ้าน รหัสผ่าน หรือรหัส OTP หากต้องใช้เอกสารภายหลัง ควรยืนยันกับผู้ดูแลร้านก่อนทุกครั้ง</p>
           <div><MapPin size={20} /><span>PD Car Center<br />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</span></div>
+          <BusinessVisitInfo compact />
         </div>
       </section>
 

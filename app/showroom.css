@@ -103,7 +103,8 @@
 .catalog-price strong > span { font-size: 13px; font-weight: 500; letter-spacing: 0; }
 .catalog-open { flex: 0 0 auto; width: 47px; height: 47px; display: grid; place-items: center; border: 1px solid #dbe5f2; border-radius: 50%; color: #175cdb; background: #f0f5fe; transition: background .2s, color .2s; }
 .catalog-open:hover { color: #fff; background: #175cdb; }
-.catalog-installment { margin: 10px 0 0; color: #687a92; font-size: 12px; }
+.catalog-installment { display: flex; flex-direction: column; gap: 2px; margin: 10px 0 0; color: #687a92; font-size: 12px; }
+.catalog-installment small { color: #7a8798; font-size: 10px; line-height: 1.4; }
 .catalog-empty { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 18px; text-align: center; border: 1px dashed #bccce0; border-radius: 16px; background: #fff; color: #697f99; }
 .catalog-empty h3 { margin: 15px 0 8px; color: #17304f; font-size: 23px; }
 .catalog-empty p { margin: 0 0 20px; font-size: 15px; }

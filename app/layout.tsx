@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { MetaPixel } from "@/components/meta-pixel";
 import { SiteAnalytics } from "@/components/site-analytics";
 import { SiteHeader } from "@/components/site-header";
+import { businessMapUrl, businessOpeningHours } from "@/lib/business-info";
 import "./globals.css";
 
 // Runtime configuration and preview tracking controls must apply to every page.
@@ -48,6 +49,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         url: "https://www.pdcarcenter.com/",
         logo: "https://www.pdcarcenter.com/media/site/logo",
         image: "https://www.pdcarcenter.com/media/site/storefront",
+        hasMap: businessMapUrl,
+        openingHoursSpecification: businessOpeningHours,
         telephone: phone,
         description: "ร้านรถมือสองและรับซื้อรถมือสองในจังหวัดนครปฐม",
         address: {
