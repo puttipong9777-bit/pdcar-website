@@ -12,6 +12,11 @@
 .pd-article-detail p { line-height: 1.95; overflow-wrap: anywhere; }
 .pd-article-sources { border-top: 1px solid #d8e1ed; padding-top: 20px; font-size: 14px; }
 .pd-article-nav, .pd-admin-actions { display: flex; flex-wrap: wrap; gap: 14px; margin: 26px 0; align-items: center; }
+.pd-article-empty { margin-top: 28px; padding: clamp(24px, 4vw, 42px); border: 1px solid #dce4ee; border-radius: 10px; background: #f5f8fc; }
+.pd-article-empty h2 { margin: 0; color: #07182d; }
+.pd-article-empty p { color: #5f6e82; line-height: 1.65; }
+.pd-article-empty > div { display: flex; flex-wrap: wrap; gap: 9px; }
+.pd-article-empty > div a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 5px; color: #fff; background: #115fc5; font-weight: 800; }
 .pd-admin-actions button, .pd-admin-load { padding: 12px 20px; border: 1px solid #1459a6; border-radius: 8px; background: #1459a6; color: #fff; cursor: pointer; font: inherit; }
 .pd-admin-actions .danger { background: #a82b35; border-color: #a82b35; }
 .pd-admin-actions button:disabled { opacity: .5; cursor: wait; }

@@ -9,7 +9,7 @@ const source = readFileSync(new URL("../lib/vehicle-catalog.ts", import.meta.url
 const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
 const context = { exports: {} };
 runInNewContext(outputText, context);
-const { filterCatalog, getCatalogPhotos, defaultCatalogFilters } = context.exports;
+const { catalogQuery, filterCatalog, getCatalogPhotos, parseCatalogQuery, defaultCatalogFilters } = context.exports;
 const makeVehicle = (fields) => Object.freeze({ carId: "TEST", slug: "test", status: "available", brand: "Toyota", model: "Yaris", title: "Toyota Yaris", year: 2020, photos: [], featured: false, updatedAt: "2026-01-01", ...fields });
 const vehicles = Object.freeze([
   makeVehicle({ carId: "A", salePrice: 500000, year: 2023, featured: true }),
@@ -29,3 +29,12 @@ test("year sorting and empty results", () => { assert.equal(ids({ sort: "year-de
 test("filtering and sorting never mutate inventory records", () => { const before = JSON.stringify(vehicles); ids({ sort: "price-desc" }); ids({ maxPrice: "300000" }); assert.equal(JSON.stringify(vehicles), before); });
 test("photo list preserves originals, removes duplicates and puts cover first", () => { const photos = getCatalogPhotos(makeVehicle({ coverImageUrl: "/cover.jpg", photos: [{ url: "/side.jpg" }, { url: "/cover.jpg" }] })); assert.equal(photos.join(","), "/cover.jpg,/side.jpg"); });
 test("photo and inventory empty states are safe", () => { assert.equal(getCatalogPhotos(makeVehicle({})).length, 0); assert.equal(filterCatalog([], defaultCatalogFilters).length, 0); });
+test("shareable catalog query accepts only known filter values", () => {
+  const parsed = parseCatalogQuery({ q: "Fortuner", brand: "Toyota", year: "2019", max: "800000", status: "reserved", sort: "price-desc" }, ["Honda", "Toyota"], [2024, 2019]);
+  assert.deepEqual({ ...parsed }, { query: "Fortuner", brand: "Toyota", year: "2019", maxPrice: "800000", status: "reserved", sort: "price-desc" });
+  assert.deepEqual({ ...parseCatalogQuery({ brand: "Unknown", year: "1900", max: "999", status: "sold", sort: "random" }, ["Toyota"], [2019]) }, { ...defaultCatalogFilters });
+});
+test("catalog query serializes only non-default filters", () => {
+  assert.deepEqual({ ...catalogQuery(defaultCatalogFilters) }, {});
+  assert.deepEqual({ ...catalogQuery({ ...defaultCatalogFilters, brand: "Toyota", status: "reserved" }) }, { brand: "Toyota", status: "reserved" });
+});

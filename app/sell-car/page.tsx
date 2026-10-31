@@ -17,6 +17,8 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
+import { getPublicLineUrl, publicLineOaId } from "@/lib/contact-info";
 
 export const metadata: Metadata = {
   title: "รับซื้อรถมือสองนครปฐม | ขายรถให้เรา",
@@ -46,7 +48,7 @@ const faqs = [
 
 export default function SellCarPage() {
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = getPublicLineUrl();
   const serviceJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -85,7 +87,7 @@ export default function SellCarPage() {
               <h1>อยากขายรถมือสอง?<br /><em>เริ่มประเมินกับเรา</em></h1>
               <p>สำหรับเจ้าของรถที่กำลังค้นหาที่รับซื้อรถมือสองในนครปฐม ส่งข้อมูลเบื้องต้นและคุยกับผู้ดูแลร้านโดยตรง ก่อนนัดตรวจรถจริงเมื่อคุณพร้อม</p>
               <div className="sell-hero-actions">
-                {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={19} />ส่งข้อมูลรถทาง LINE</a> : null}
+                <a className="line-action" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={19} />เปิด LINE {publicLineOaId}</a>
                 <a className="outline-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={19} />โทร {phone}</a>
               </div>
             </div>
@@ -140,6 +142,7 @@ export default function SellCarPage() {
           <h3>เริ่มต้นโดยไม่ส่งข้อมูลส่วนตัวสำคัญ</h3>
           <p>ขั้นตอนประเมินเบื้องต้นไม่จำเป็นต้องส่งภาพบัตรประชาชน สำเนาทะเบียนบ้าน รหัสผ่าน หรือรหัส OTP หากต้องใช้เอกสารภายหลัง ควรยืนยันกับผู้ดูแลร้านก่อนทุกครั้ง</p>
           <div><MapPin size={20} /><span>PD Car Center<br />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</span></div>
+          <BusinessVisitInfo compact />
         </div>
       </section>
 
@@ -165,14 +168,14 @@ export default function SellCarPage() {
           <span>ส่งข้อมูลเบื้องต้น หรือโทรสอบถามก่อนนัดตรวจรถจริง</span>
         </div>
         <div>
-          {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={19} />ส่งข้อมูลทาง LINE</a> : null}
+          <a className="line-action" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={19} />เปิด LINE {publicLineOaId}</a>
           <a className="phone-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={19} />{phone}</a>
         </div>
       </section>
 
       <div className="mobile-sticky-actions" aria-label="ติดต่อขายรถ">
         <a href={`tel:${phone}`} data-analytics="phone_click"><Phone size={18} />โทรหาร้าน</a>
-        {lineUrl ? <a href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={18} />ส่งข้อมูลทาง LINE</a> : null}
+        <a href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={18} />LINE {publicLineOaId}</a>
       </div>
     </main>
   );

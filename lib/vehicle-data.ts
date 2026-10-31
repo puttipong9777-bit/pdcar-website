@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import type { PublicVehicleListing, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
+import { cache } from "react";
+import type { PublicVehicleListing, PublicVehicleLookupResult, PublicVehiclePhoto, VehicleDataResult } from "@/lib/types";
 
 type PublicVehicleRow = Record<string, unknown>;
 
@@ -21,6 +22,36 @@ function cleanVehicleText(value: string) {
     .join(" ");
 }
 
+function normalizedEnum(value: unknown, labels: Record<string, string>) {
+  const original = text(value).trim();
+  if (!original) return undefined;
+  return labels[original.toLocaleLowerCase("en-US")] || original;
+}
+
+function fuelType(value: unknown) {
+  return normalizedEnum(value, {
+    gasoline: "เบนซิน",
+    petrol: "เบนซิน",
+    diesel: "ดีเซล",
+    hybrid: "ไฮบริด",
+    electric: "ไฟฟ้า",
+    ev: "ไฟฟ้า",
+    lpg: "LPG",
+    ngv: "NGV"
+  });
+}
+
+function transmission(value: unknown) {
+  return normalizedEnum(value, {
+    automatic: "อัตโนมัติ",
+    auto: "อัตโนมัติ",
+    at: "อัตโนมัติ",
+    manual: "ธรรมดา",
+    mt: "ธรรมดา",
+    cvt: "CVT"
+  });
+}
+
 function photos(value: unknown): PublicVehiclePhoto[] {
   if (!Array.isArray(value)) return [];
   const mediaUrl = (process.env.NEXT_PUBLIC_VEHICLE_IMAGE_BASE_URL || "https://www.pdcarcenter.com/media/vehicle-images").replace(/\/$/, "");
@@ -35,7 +66,7 @@ function photos(value: unknown): PublicVehiclePhoto[] {
       isPrimary: Boolean(row.isPrimary),
       sortOrder: Number(row.sortOrder ?? 0)
     }];
-  });
+  }).sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.sortOrder - b.sortOrder);
 }
 
 function verticalVideo(value: unknown) {
@@ -61,12 +92,12 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
     status: row.status === "reserved" ? "reserved" : "available",
     brand,
     model,
-    variant: text(row.variant) || undefined,
+    variant: cleanVehicleText(text(row.variant)) || undefined,
     year: Number(row.year ?? 0),
     color: text(row.color) || undefined,
     mileage: optionalNumber(row.mileage),
-    fuelType: text(row.fuel_type) || undefined,
-    transmission: text(row.transmission) || undefined,
+    fuelType: fuelType(row.fuel_type),
+    transmission: transmission(row.transmission),
     conditionSummary: text(row.condition_summary) || undefined,
     salePrice: optionalNumber(row.sale_price),
     downPayment: optionalNumber(row.listing_down_payment),
@@ -83,9 +114,11 @@ function mapVehicle(row: PublicVehicleRow): PublicVehicleListing {
   };
 }
 
-export async function getPublicVehicles(): Promise<VehicleDataResult> {
+async function fetchPublicVehicles(): Promise<VehicleDataResult> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const configuredTimeout = Number(process.env.VEHICLE_DATA_TIMEOUT_MS);
+  const timeoutMs = Number.isFinite(configuredTimeout) ? Math.min(8_000, Math.max(100, configuredTimeout)) : 8_000;
   if (!url || !key) {
     return {
       vehicles: [],
@@ -94,12 +127,32 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  const supabase = createClient(url, key, { auth: { persistSession: false } });
-  const { data, error } = await supabase
-    .from("public_vehicle_listings")
-    .select("*")
-    .order("website_featured", { ascending: false })
-    .order("updated_at", { ascending: false });
+  const supabase = createClient(url, key, {
+    auth: { persistSession: false },
+    global: {
+      fetch: (input, init) => fetch(input, {
+        ...init,
+        cache: "no-store",
+        signal: init?.signal
+          ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs)])
+          : AbortSignal.timeout(timeoutMs)
+      })
+    }
+  });
+
+  let data: PublicVehicleRow[] | null = null;
+  let error: unknown;
+  try {
+    const response = await supabase
+      .from("public_vehicle_listings")
+      .select("*")
+      .order("website_featured", { ascending: false })
+      .order("updated_at", { ascending: false });
+    data = response.data as PublicVehicleRow[] | null;
+    error = response.error;
+  } catch (caught) {
+    error = caught;
+  }
 
   if (error) {
     return {
@@ -109,10 +162,33 @@ export async function getPublicVehicles(): Promise<VehicleDataResult> {
     };
   }
 
-  return { vehicles: (data ?? []).map(mapVehicle), source: "supabase" };
+  const vehicles = (data ?? []).flatMap((row) => {
+    if (row.website_published === false || (row.status !== "available" && row.status !== "reserved") || !text(row.car_id)) return [];
+    return [mapVehicle(row)];
+  });
+  return { vehicles, source: "supabase" };
 }
 
-export async function getPublicVehicle(identifier: string) {
+// React request memoization keeps metadata and page rendering on one fresh inventory
+// snapshot while still re-reading Supabase on the next HTTP request.
+export const getPublicVehicles = cache(fetchPublicVehicles);
+
+export async function getPublicVehicle(identifier: string): Promise<PublicVehicleLookupResult> {
   const result = await getPublicVehicles();
-  return result.vehicles.find((vehicle) => vehicle.carId === identifier || vehicle.slug === identifier) ?? null;
+  if (result.source !== "supabase") {
+    return {
+      status: "unavailable",
+      source: result.source,
+      message: result.message || "ไม่สามารถเชื่อมต่อข้อมูลรถได้ชั่วคราว กรุณาลองใหม่อีกครั้ง"
+    };
+  }
+  const vehicle = result.vehicles.find((item) => item.carId === identifier || item.slug === identifier);
+  return vehicle ? { status: "found", vehicle, vehicles: result.vehicles } : { status: "not_found", vehicles: result.vehicles };
+}
+
+export class VehicleDataUnavailableError extends Error {
+  constructor(message = "vehicle_data_unavailable") {
+    super(message);
+    this.name = "VehicleDataUnavailableError";
+  }
 }

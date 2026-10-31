@@ -18,7 +18,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "drive.google.com" },
       { protocol: "https", hostname: "*.supabase.co" },
-      { protocol: "https", hostname: "pdcar-erp-history.onrender.com" }
+      { protocol: "https", hostname: "pdcar-erp-history.onrender.com" },
+      ...(process.env.ALLOW_LOCAL_MEDIA_FIXTURES === "true" ? [{ protocol: "http" as const, hostname: "127.0.0.1" }] : [])
     ]
   }
 };

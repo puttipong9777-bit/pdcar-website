@@ -18,9 +18,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { CatalogBrowser } from "@/components/catalog-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import { ShowroomHero } from "@/components/showroom-hero";
+import { getPublicLineUrl, publicLineOaId } from "@/lib/contact-info";
 import { getPublicVehicles } from "@/lib/vehicle-data";
 import "./showroom.css";
 
@@ -29,14 +31,16 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const result = await getPublicVehicles();
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
-  const lineUrl = process.env.NEXT_PUBLIC_LINE_URL;
+  const lineUrl = getPublicLineUrl();
+  const videos = result.vehicles.filter((vehicle) => vehicle.youtubeVideoId);
+  const inventoryAvailable = result.source === "supabase";
 
   return (
     <main className="showroom-page">
-      <ShowroomHero count={result.vehicles.length} />
+      <ShowroomHero count={inventoryAvailable ? result.vehicles.length : undefined} />
 
       <section className="stock-highlights" aria-label="ข้อมูลเด่นของ PD Car Center">
-        <div><CarFront /><p><strong>{result.vehicles.length}</strong><span>คันพร้อมเลือกบนเว็บไซต์</span></p></div>
+        <div><CarFront /><p><strong>{inventoryAvailable ? result.vehicles.length : "—"}</strong><span>{inventoryAvailable ? "คันพร้อมเลือกบนเว็บไซต์" : "กำลังตรวจสอบข้อมูลสต็อก"}</span></p></div>
         <div><Clock3 /><p><strong>อัปเดตจริง</strong><span>สถานะพร้อมขายและติดจอง</span></p></div>
         <div><Smartphone /><p><strong>ดูง่ายทุกจอ</strong><span>คอมพิวเตอร์ ไอแพด และมือถือ</span></p></div>
         <div><WalletCards /><p><strong>ซื้อและรับซื้อรถ</strong><span>คุยกับผู้ดูแลร้านได้โดยตรง</span></p></div>
@@ -49,10 +53,10 @@ export default async function HomePage() {
             <h2>เลือกคันที่เป็นคุณ<span className="heading-dot">.</span></h2>
             <p>เลือกยี่ห้อ ตั้งงบ แล้วทำความรู้จักคันที่ถูกใจ</p>
           </div>
-          <span>{result.vehicles.length} คันในเว็บไซต์</span>
+          <span>{inventoryAvailable ? `${result.vehicles.length} คันในเว็บไซต์` : "ข้อมูลสต็อกไม่พร้อมใช้งาน"}</span>
         </div>
-        {result.source !== "supabase" ? <div className="setup-notice"><strong>{result.message}</strong><span>หน้าเว็บไซต์ยังใช้งานได้ตามปกติ และจะดึงข้อมูลกลับมาอัตโนมัติเมื่อการเชื่อมต่อพร้อม</span></div> : null}
-        <CatalogBrowser vehicles={result.vehicles} />
+        {!inventoryAvailable ? <div className="setup-notice" role="status"><strong>{result.message}</strong><span>ยังยืนยันจำนวนและสถานะรถไม่ได้ในขณะนี้ กรุณาลองโหลดหน้าใหม่ภายหลัง หรือติดต่อร้านเพื่อตรวจสอบรถที่สนใจ</span></div> : null}
+        {inventoryAvailable ? <CatalogBrowser vehicles={result.vehicles} /> : <div className="inventory-unavailable-actions"><a className="phone-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={18} />โทรตรวจสอบสต็อก {phone}</a><a className="line-action" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={18} />เปิด LINE {publicLineOaId}</a></div>}
       </section>
 
       <section className="sell-acquisition-section" id="sell-car">
@@ -62,7 +66,7 @@ export default async function HomePage() {
           <p>หากคุณกำลังค้นหาที่รับซื้อรถมือสองในนครปฐม ส่งข้อมูลรถมาให้เราประเมินเบื้องต้นก่อนนัดดูรถจริงได้ ไม่ต้องกรอกข้อมูลลงเว็บไซต์</p>
           <div className="sell-acquisition-actions">
             <Link className="primary-action" href="/sell-car">ประเมินรถของคุณ <ArrowRight size={18} /></Link>
-            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click"><MessageCircle size={18} />ส่งรูปรถทาง LINE</a> : null}
+            <a className="line-action" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={18} />เปิด LINE {publicLineOaId}</a>
           </div>
         </div>
         <div className="sell-acquisition-steps" aria-label="ขั้นตอนเริ่มขายรถ">
@@ -88,7 +92,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="stories-section" id="videos">
+      {videos.length ? <section className="stories-section" id="videos">
         <div className="stories-heading">
           <div>
             <p className="eyebrow light">VERTICAL CAR VIDEOS · 9:16</p>
@@ -96,8 +100,8 @@ export default async function HomePage() {
           </div>
           <p>วิดีโอของรถแต่ละคันแสดงในสัดส่วน 9:16 เหมาะกับการรับชมบนโทรศัพท์ และเลื่อนชมคันถัดไปได้อย่างเป็นธรรมชาติ</p>
         </div>
-        <VehicleStories vehicles={result.vehicles} />
-      </section>
+        <VehicleStories vehicles={videos} />
+      </section> : null}
 
       <section className="knowledge-section" id="articles">
         <div className="section-heading knowledge-heading">
@@ -105,7 +109,7 @@ export default async function HomePage() {
             <p className="eyebrow">PDCAR KNOWLEDGE</p>
             <h2>บทความน่ารู้ก่อนซื้อรถ</h2>
           </div>
-          <div><p>คำแนะนำสั้น กระชับ และนำไปใช้ตัดสินใจเลือกรถได้จริง</p><Link href="/articles">อ่านบทความทั้งหมด →</Link></div>
+          <p>คู่มือสั้นบนหน้านี้ อ่านได้ทันทีโดยไม่พาไปหน้าบทความที่ยังไม่มีเนื้อหา</p>
         </div>
 
         <div className="article-grid">
@@ -178,9 +182,10 @@ export default async function HomePage() {
           <h2>คุยกับ PD Car Center ได้โดยตรง</h2>
           <div className="contact-actions">
             <a className="phone-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={19} />{phone}</a>
-            {lineUrl ? <a className="line-action" href={lineUrl} target="_blank" rel="noreferrer" data-analytics="line_click">คุยกับเราทาง LINE <ArrowRight size={18} /></a> : null}
+            <a className="line-action" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click">เปิด LINE {publicLineOaId} <ArrowRight size={18} /></a>
             <Link className="outline-action" href="/sell-car">ดูขั้นตอนขายรถ</Link>
           </div>
+          <BusinessVisitInfo compact />
         </div>
       </section>
 
@@ -200,7 +205,9 @@ export default async function HomePage() {
         <div className="footer-contact">
           <strong>ติดต่อเรา</strong>
           <a href={`tel:${phone}`} data-analytics="phone_click"><Phone size={16} />{phone}</a>
+          <a href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={16} />LINE {publicLineOaId}</a>
           <p><MapPin size={16} />23/2 หมู่ 13 ต.โพรงมะเดื่อ อ.เมืองนครปฐม จ.นครปฐม 73000</p>
+          <BusinessVisitInfo compact />
         </div>
       </footer>
     </main>

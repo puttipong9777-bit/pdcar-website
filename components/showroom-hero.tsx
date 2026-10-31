@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 
-export function ShowroomHero({ count }: { count: number }) {
+export function ShowroomHero({ count }: { count?: number }) {
   const photo = useRef<HTMLDivElement>(null);
 
   return (
@@ -35,7 +35,7 @@ export function ShowroomHero({ count }: { count: number }) {
         <div className="discovery-photo-shade" aria-hidden="true" />
         <span className="discovery-location"><MapPin size={15} /> นครปฐม</span>
         <div className="discovery-photo-caption"><span>YOUR NEXT CHAPTER STARTS HERE</span><p>มาดูคันจริง<br />แล้วค่อยตัดสินใจ</p></div>
-        <a className="discovery-stock" href="#inventory"><span><strong>{count.toLocaleString("th-TH")}</strong> คันในเว็บไซต์</span><ArrowUpRight size={26} /><span className="sr-only">ดูแคตาล็อกรถทั้งหมด</span></a>
+        <a className="discovery-stock" href="#inventory"><span>{count === undefined ? <><strong>ดูสต็อก</strong> เมื่อระบบพร้อม</> : <><strong>{count.toLocaleString("th-TH")}</strong> คันในเว็บไซต์</>}</span><ArrowUpRight size={26} /><span className="sr-only">ดูแคตาล็อกรถทั้งหมด</span></a>
       </div>
     </section>
   );
