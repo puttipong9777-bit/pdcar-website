@@ -22,6 +22,7 @@ export type StoredDerivative = {
 
 const FILE_ID = /^FILE-[A-Za-z0-9-]{1,96}$/;
 const VERSION = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
+export const PUBLIC_MEDIA_CLOCK_SKEW_MS = 30_000;
 
 function validTimestamp(value: string) {
   return Number.isFinite(Date.parse(value));
@@ -47,11 +48,20 @@ export function immutableVehicleDerivativeKey(entry: PublicVehicleMediaManifestE
   return `vehicles/${entry.fileId}/${entry.sourceVersion}/${entry.derivativeVersion}.webp`;
 }
 
-export function publicMediaManifestState(entry: PublicVehicleMediaManifestEntry | null, now = Date.now(), maxAgeMs = 5 * 60_000) {
+export function publicMediaManifestState(
+  entry: PublicVehicleMediaManifestEntry | null,
+  now = Date.now(),
+  maxAgeMs = 5 * 60_000,
+  clockSkewMs = PUBLIC_MEDIA_CLOCK_SKEW_MS
+) {
   if (!entry) return "not_found" as const;
   const authorizedAt = Date.parse(entry.authorizedAt);
-  if (!Number.isFinite(authorizedAt) || !Number.isFinite(now) || !Number.isFinite(maxAgeMs) || maxAgeMs <= 0) return "unavailable" as const;
-  return now - authorizedAt <= maxAgeMs ? "current" as const : "expired" as const;
+  if (!Number.isFinite(authorizedAt) || !Number.isFinite(now) || !Number.isFinite(maxAgeMs) || maxAgeMs <= 0 || !Number.isFinite(clockSkewMs) || clockSkewMs < 0) {
+    return "unavailable" as const;
+  }
+  const ageMs = now - authorizedAt;
+  if (ageMs < -clockSkewMs) return "unavailable" as const;
+  return ageMs <= maxAgeMs ? "current" as const : "expired" as const;
 }
 
 export function planVehicleDerivativeRefresh(entry: PublicVehicleMediaManifestEntry, stored?: StoredDerivative | null) {

@@ -17,8 +17,7 @@ test("Worker Preview has only read-only flags and no production data bindings", 
     "SITE_ADMIN_ENABLED",
     "ARTICLE_APPROVAL_ENABLED",
     "ARTICLE_DAILY_CRON_ENABLED",
-    "ARTICLE_LINE_POSTBACK_ENABLED",
-    "VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED"
+    "ARTICLE_LINE_POSTBACK_ENABLED"
   ]) assert.equal(preview.vars[name], "false", name);
   for (const forbidden of ["r2_buckets", "hyperdrive", "routes", "route", "triggers", "services", "queues", "d1_databases", "kv_namespaces"]) {
     assert.equal(Object.hasOwn(preview, forbidden), false, forbidden);
@@ -60,69 +59,51 @@ test("immutable refresh planning is idempotent and never overwrites an old revis
   assert.notEqual(secondPlan.key, firstPlan.key);
 });
 
-test("expired manifest eligibility fails closed instead of silently serving stale media", () => {
+test("manifest freshness rejects malformed, stale and future timestamps outside bounded clock skew", () => {
   const entry = lifecycle.publicVehicleMediaManifestEntry(publication());
   assert.equal(lifecycle.publicMediaManifestState(entry, Date.parse("2026-10-31T00:04:59Z")), "current");
   assert.equal(lifecycle.publicMediaManifestState(entry, Date.parse("2026-10-31T00:05:01Z")), "expired");
+  assert.equal(lifecycle.publicMediaManifestState(entry, Date.parse("2026-10-30T23:59:30Z")), "current", "30-second clock skew is bounded and documented");
+  assert.equal(lifecycle.publicMediaManifestState(entry, Date.parse("2026-10-30T23:59:29.999Z")), "unavailable", "an arbitrarily future authorization is rejected");
+  assert.equal(lifecycle.publicMediaManifestState({ ...entry, authorizedAt: "not-a-time" }), "unavailable");
+  assert.equal(lifecycle.publicMediaManifestState(entry, Date.parse("2026-10-31T00:00:01Z"), 0), "unavailable");
+  assert.equal(lifecycle.publicMediaManifestState(entry, Date.parse("2026-10-31T00:00:01Z"), 300_000, -1), "unavailable");
   assert.equal(lifecycle.publicMediaManifestState(null), "not_found");
+  assert.throws(() => lifecycle.publicVehicleMediaManifestEntry(publication({ authorizedAt: "not-a-time" })), /invalid_public_media_manifest/);
 });
 
-function imageObject(body = "legacy") {
+function vehicleRoute({ env = {}, fetchImpl }) {
+  const route = loadTs("app/media/vehicle-images/[fileId]/route.ts", {}, { process: { env }, fetch: fetchImpl });
   return {
-    body: new Response(body).body,
-    httpEtag: '"legacy"',
-    size: body.length,
-    writeHttpMetadata(headers) { headers.set("Content-Type", "image/webp"); }
+    get: (fileId = "FILE-test-1") => route.GET(new Request(`https://review.example/media/vehicle-images/${fileId}`), { params: Promise.resolve({ fileId }) })
   };
 }
 
-function vehicleRoute({ env = {}, fetchImpl, object = imageObject() }) {
-  let bucketReads = 0;
-  const route = loadTs("app/media/vehicle-images/[fileId]/route.ts", {
-    "@/lib/cloudflare-media": {
-      vehicleImagesBucket: async () => ({ get: async () => { bucketReads++; return object; } }),
-      imageResponse: (stored) => new Response(stored.body, { headers: { "Content-Type": "image/webp", ETag: stored.httpEtag } })
-    }
-  }, { process: { env }, fetch: fetchImpl });
-  return {
-    get: (fileId = "FILE-test-1") => route.GET(new Request(`https://review.example/media/vehicle-images/${fileId}`), { params: Promise.resolve({ fileId }) }),
-    bucketReads: () => bucketReads
-  };
-}
-
-test("ERP remains authoritative even when a legacy R2 object exists", async () => {
+test("ERP is the only vehicle image authority and successful bodies are bounded before response", async () => {
   const current = vehicleRoute({ fetchImpl: async () => new Response("fresh-image", { headers: { "Content-Type": "image/jpeg", ETag: '"source-v2"' } }) });
   const response = await current.get();
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("x-pdcar-image-source"), "erp-authority");
   assert.equal(response.headers.get("x-pdcar-media-outcome"), "current");
   assert.equal(response.headers.get("cache-control"), "public, max-age=60, must-revalidate");
-  assert.equal(current.bucketReads(), 0);
-
-  const removed = vehicleRoute({ env: { VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED: "true" }, fetchImpl: async () => new Response("missing", { status: 404 }) });
-  const missing = await removed.get();
-  assert.equal(missing.status, 404);
-  assert.equal(missing.headers.get("cache-control"), "no-store");
-  assert.equal(removed.bucketReads(), 0, "an ERP ineligibility result can never fall back to R2");
+  assert.equal(response.headers.get("content-length"), String("fresh-image".length));
+  assert.equal(await response.text(), "fresh-image");
 });
 
-test("retryable ERP failures fail closed unless the explicit rollback flag is enabled", async () => {
-  const closed = vehicleRoute({ fetchImpl: async () => new Response("unavailable", { status: 503 }) });
-  const failed = await closed.get();
-  assert.equal(failed.status, 502);
-  assert.equal(failed.headers.get("retry-after"), "30");
-  assert.equal(closed.bucketReads(), 0);
-
-  const rollback = vehicleRoute({ env: { VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED: "true" }, fetchImpl: async () => new Response("unavailable", { status: 503 }) });
-  const stale = await rollback.get();
-  assert.equal(stale.status, 200);
-  assert.equal(stale.headers.get("x-pdcar-image-source"), "legacy-r2-fallback");
-  assert.equal(stale.headers.get("x-pdcar-media-outcome"), "stale-fallback");
-  assert.equal(stale.headers.get("cache-control"), "no-store");
-  assert.equal(rollback.bucketReads(), 1);
+test("ERP status matrix fails closed without any legacy object bypass", async () => {
+  const source = readFileSync(new URL("../app/media/vehicle-images/[fileId]/route.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /vehicleImagesBucket|VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED|legacy-r2-fallback/);
+  for (const [upstreamStatus, publicStatus] of [[401, 404], [403, 404], [404, 404], [410, 404], [429, 503], [500, 502], [503, 502], [599, 502]]) {
+    const route = vehicleRoute({
+      fetchImpl: async () => new Response("synthetic upstream status", { status: upstreamStatus })
+    });
+    const response = await route.get();
+    assert.equal(response.status, publicStatus, `upstream ${upstreamStatus}`);
+    assert.equal(response.headers.get("cache-control"), "no-store");
+  }
 });
 
-test("media proxy distinguishes timeout, network and invalid upstream content without leaking a body", async () => {
+test("media proxy distinguishes header timeout, network and invalid content without leaking provider details", async () => {
   const timeout = vehicleRoute({ fetchImpl: async () => { throw new DOMException("synthetic timeout", "TimeoutError"); } });
   assert.equal((await timeout.get()).status, 504);
   const network = vehicleRoute({ fetchImpl: async () => { throw new Error("synthetic provider details"); } });
@@ -131,6 +112,42 @@ test("media proxy distinguishes timeout, network and invalid upstream content wi
   assert.doesNotMatch(await networkResponse.text(), /synthetic provider details/);
   const invalid = vehicleRoute({ fetchImpl: async () => new Response("<html>provider error</html>", { headers: { "Content-Type": "text/html" } }) });
   assert.equal((await invalid.get()).status, 502);
+});
+
+test("media proxy bounds stalled, failed and oversized response bodies", async () => {
+  const stalled = vehicleRoute({
+    env: { VEHICLE_MEDIA_TIMEOUT_MS: "250" },
+    fetchImpl: async (_input, init) => new Response(new ReadableStream({
+      start(controller) {
+        init.signal.addEventListener("abort", () => controller.error(init.signal.reason), { once: true });
+      }
+    }), { headers: { "Content-Type": "image/jpeg" } })
+  });
+  const stalledResponse = await stalled.get();
+  assert.equal(stalledResponse.status, 504);
+  assert.equal(stalledResponse.headers.get("x-pdcar-media-outcome"), "body-timeout");
+
+  const failed = vehicleRoute({
+    fetchImpl: async () => new Response(new ReadableStream({ start(controller) { controller.error(new Error("private stream failure")); } }), { headers: { "Content-Type": "image/jpeg" } })
+  });
+  const failedResponse = await failed.get();
+  assert.equal(failedResponse.status, 502);
+  assert.equal(failedResponse.headers.get("x-pdcar-media-outcome"), "body-stream-error");
+  assert.doesNotMatch(await failedResponse.text(), /private stream failure/);
+
+  const declaredOversize = vehicleRoute({
+    fetchImpl: async () => new Response("small", { headers: { "Content-Type": "image/jpeg", "Content-Length": String(9 * 1024 * 1024) } })
+  });
+  const declaredResponse = await declaredOversize.get();
+  assert.equal(declaredResponse.status, 502);
+  assert.equal(declaredResponse.headers.get("x-pdcar-media-outcome"), "body-too-large");
+
+  const streamedOversize = vehicleRoute({
+    fetchImpl: async () => new Response(new Uint8Array(8 * 1024 * 1024 + 1), { headers: { "Content-Type": "image/jpeg" } })
+  });
+  const streamedResponse = await streamedOversize.get();
+  assert.equal(streamedResponse.status, 502);
+  assert.equal(streamedResponse.headers.get("x-pdcar-media-outcome"), "body-too-large");
 });
 
 function webpFile() {
@@ -161,6 +178,20 @@ test("admin media keeps site assets compatible but cannot overwrite ERP vehicle 
   assert.equal(logo.status, 200);
   assert.equal((await logo.json()).path.startsWith("/media/site/logo?v="), true);
   assert.equal(writes, 1);
+});
+
+test("vehicle media target returns 409 before a missing storage binding is resolved", async () => {
+  let bucketLookups = 0;
+  const route = loadTs("app/api/admin/media/route.ts", {
+    "@/lib/admin-auth": { siteAdminEnabled: () => true, requireAdminRequest: async () => "admin" },
+    "@/lib/cloudflare-media": { vehicleImagesBucket: async () => { bucketLookups++; return undefined; } }
+  }, { process: { env: { ADMIN_SITE_URL: "https://www.pdcarcenter.com" } }, console: { error() {} } });
+  const vehicle = await route.POST(mediaRequest("vehicle:FILE-test-1"));
+  assert.equal(vehicle.status, 409);
+  assert.equal(bucketLookups, 0);
+  const logo = await route.POST(mediaRequest("site:logo"));
+  assert.equal(logo.status, 503);
+  assert.equal(bucketLookups, 1);
 });
 
 test("admin UI presents ERP vehicle photos read-only while keeping site asset uploads", () => {

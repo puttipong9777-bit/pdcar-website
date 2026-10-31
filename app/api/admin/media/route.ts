@@ -31,12 +31,12 @@ export async function POST(request: Request) {
     const target = form.get("target");
     const upload = form.get("image");
     if (typeof target !== "string" || !(upload instanceof File)) throw new ArticleError("invalid_upload");
+    const key = objectKey(target);
     if (upload.size < 100 || upload.size > maxUploadBytes || upload.type !== "image/webp") throw new ArticleError("invalid_image");
     const bytes = new Uint8Array(await upload.arrayBuffer());
     if (!webp(bytes)) throw new ArticleError("invalid_image");
     const bucket = await vehicleImagesBucket();
     if (!bucket) throw new ArticleError("media_storage_unavailable", 503);
-    const key = objectKey(target);
     await bucket.put(key, bytes, {
       httpMetadata: { contentType: "image/webp", cacheControl: "public, max-age=60, must-revalidate" },
       customMetadata: { updatedAt: new Date().toISOString() }

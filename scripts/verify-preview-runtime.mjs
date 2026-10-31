@@ -91,15 +91,28 @@ const previewVars = {
   ARTICLE_APPROVAL_ENABLED: "false",
   ARTICLE_DAILY_CRON_ENABLED: "false",
   ARTICLE_LINE_POSTBACK_ENABLED: "false",
-  VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED: "false",
+  VEHICLE_MEDIA_TIMEOUT_MS: "500",
   NEXT_PUBLIC_ERP_URL: `http://127.0.0.1:${mockPort}`,
   NEXT_PUBLIC_SUPABASE_URL: `http://127.0.0.1:${mockPort}`,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: "synthetic-public-key",
   NEXT_PUBLIC_VEHICLE_IMAGE_BASE_URL: `http://127.0.0.1:${mockPort}/images`
 };
 
+const stalledResponses = new Set();
 const mock = http.createServer((request, response) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
+  if (request.url === "/api/public/vehicle-images/FILE-STALL") {
+    stalledResponses.add(response);
+    request.once("close", () => stalledResponses.delete(response));
+    response.writeHead(200, { "Cache-Control": "no-store", "Content-Type": "image/jpeg" });
+    response.flushHeaders();
+    return;
+  }
+  if (request.url === "/api/public/vehicle-images/FILE-OVERSIZE") {
+    response.writeHead(200, { "Cache-Control": "no-store", "Content-Length": String(9 * 1024 * 1024), "Content-Type": "image/jpeg" });
+    response.end("synthetic declared oversize");
+    return;
+  }
   if (request.url === "/api/public/vehicle-images/FILE-MISSING") {
     response.writeHead(404, { "Cache-Control": "no-store", "Content-Type": "application/json" });
     response.end('{"error":"synthetic missing image"}');
@@ -193,6 +206,12 @@ try {
   const missingMedia = await fetch(`${base}/media/vehicle-images/FILE-MISSING`);
   assert.equal(missingMedia.status, 404);
   assert.equal(missingMedia.headers.get("x-pdcar-media-outcome"), "not-public");
+  const stalledMedia = await fetch(`${base}/media/vehicle-images/FILE-STALL`);
+  assert.equal(stalledMedia.status, 504);
+  assert.equal(stalledMedia.headers.get("x-pdcar-media-outcome"), "body-timeout");
+  const oversizeMedia = await fetch(`${base}/media/vehicle-images/FILE-OVERSIZE`);
+  assert.equal(oversizeMedia.status, 502);
+  assert.equal(oversizeMedia.headers.get("x-pdcar-media-outcome"), "body-too-large");
 
   const admin = await fetch(`${base}/api/admin/media`, { method: "POST" });
   assert.equal(admin.status, 503);
@@ -207,7 +226,7 @@ try {
       "robots disallow",
       "synthetic available and reserved inventory",
       "detail route",
-      "ERP-authoritative media and missing-media fail closed",
+      "ERP-authoritative media plus missing, stalled and oversized bodies fail closed",
       "tracking disabled",
       "admin disabled",
       "no production data bindings in local config"
@@ -219,6 +238,8 @@ try {
       detail: detail.status,
       media: media.status,
       missingMedia: missingMedia.status,
+      stalledMedia: stalledMedia.status,
+      oversizeMedia: oversizeMedia.status,
       admin: admin.status
     }
   };
@@ -227,6 +248,7 @@ try {
   if (worker?.pid) {
     try { process.kill(-worker.pid, "SIGTERM"); } catch {}
   }
+  for (const response of stalledResponses) response.destroy();
   await new Promise((resolveClose) => mock.close(resolveClose));
   await rm(temporary, { recursive: true, force: true });
 }

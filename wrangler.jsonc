@@ -45,8 +45,7 @@
       "SITE_ADMIN_ENABLED": "false",
       "ARTICLE_APPROVAL_ENABLED": "false",
       "ARTICLE_DAILY_CRON_ENABLED": "false",
-      "ARTICLE_LINE_POSTBACK_ENABLED": "false",
-      "VEHICLE_MEDIA_LEGACY_R2_FALLBACK_ENABLED": "false"
+      "ARTICLE_LINE_POSTBACK_ENABLED": "false"
     }
   },
   // Add "0 12 * * *" only when article integrations have been verified.
