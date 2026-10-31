@@ -9,13 +9,12 @@ import "./globals.css";
 // Runtime configuration and preview tracking controls must apply to every page.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   metadataBase: new URL("https://www.pdcarcenter.com"),
   other: { "facebook-domain-verification": "1h2omtxmsu0vgdm1ustg0x9zokcgl9" },
   title: { default: "PD Car Center | รถมือสองและรับซื้อรถนครปฐม", template: "%s | PD Car Center" },
   description: "PD Car Center รถมือสองคัดคุณภาพในนครปฐม พร้อมบริการรับซื้อรถมือสอง ติดต่อดูรถหรือส่งข้อมูลรถเพื่อประเมินเบื้องต้นกับร้านได้โดยตรง",
   alternates: { canonical: "/" },
-  robots: { index: true, follow: true },
   openGraph: {
     title: "PD Car Center | ซื้อรถดี ขายรถง่าย คุยกับร้านโดยตรง",
     description: "ดูรถมือสองจากสต็อกจริง หรือส่งข้อมูลรถเพื่อประเมินเบื้องต้นกับ PD Car Center นครปฐม",
@@ -31,6 +30,12 @@ export const metadata: Metadata = {
     images: ["/og-sell-car.png"]
   }
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const host = (await headers()).get("host")?.split(":")[0];
+  const preview = process.env.SITE_ENV === "preview" || (host !== "www.pdcarcenter.com" && host !== "pdcarcenter.com");
+  return { ...baseMetadata, robots: { index: !preview, follow: !preview } };
+}
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const host = (await headers()).get("host")?.split(":")[0];

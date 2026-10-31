@@ -201,6 +201,8 @@ try {
   const html = await home.text();
   assert.match(html, /Toyota Corolla Cross ข้อมูลสังเคราะห์/);
   assert.match(html, /Honda City จองแล้ว ข้อมูลสังเคราะห์/);
+  assert.match(html, /<meta name="robots" content="noindex, nofollow"/);
+  assert.doesNotMatch(html, /<meta name="robots" content="index, follow"/);
   assert.doesNotMatch(html, /connect\.facebook\.net|fbevents\.js|data-site-analytics="enabled"/);
 
   const detail = await fetch(`${base}/cars/pdpreview1`);
@@ -209,6 +211,7 @@ try {
   const detailHtml = await detail.text();
   assert.match(detailHtml, /PDPREVIEW1/);
   assert.match(detailHtml, /ข้อมูลสังเคราะห์สำหรับทดสอบ Preview เท่านั้น/);
+  assert.match(detailHtml, /<meta name="robots" content="noindex, nofollow"/);
 
   const media = await fetch(`${base}/media/vehicle-images/FILE-SYNTHETIC-1`);
   assert.equal(media.status, 200);
@@ -238,7 +241,7 @@ try {
     environment: "local OpenNext build served by Wrangler workerd with synthetic HTTP fixtures; not a remote Cloudflare Preview",
     checks: [
       "health noindex",
-      "robots disallow",
+      "robots header, HTML meta and disallow",
       "synthetic available and reserved inventory",
       "detail route",
       "public-list membership plus ERP media; missing, unlisted, stalled and oversized bodies fail closed",
