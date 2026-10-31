@@ -163,7 +163,7 @@ async function fetchPublicVehicles(): Promise<VehicleDataResult> {
   }
 
   const vehicles = (data ?? []).flatMap((row) => {
-    if ((row.status !== "available" && row.status !== "reserved") || !text(row.car_id)) return [];
+    if (row.website_published === false || (row.status !== "available" && row.status !== "reserved") || !text(row.car_id)) return [];
     return [mapVehicle(row)];
   });
   return { vehicles, source: "supabase" };

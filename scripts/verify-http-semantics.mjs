@@ -32,6 +32,14 @@ async function waitFor(url, child, logs) {
   throw new Error(`Timed out waiting for ${url}\n${logs.slice(-4_000)}`);
 }
 
+async function waitForExit(child, logs, label) {
+  const exitCode = await new Promise((resolveExit, reject) => {
+    child.once("error", reject);
+    child.once("exit", resolveExit);
+  });
+  if (exitCode !== 0) throw new Error(`${label} exited with ${exitCode}\n${logs.slice(-4_000)}`);
+}
+
 const mockPort = await freePort();
 const appPort = await freePort();
 const mock = http.createServer((_request, response) => {
@@ -41,24 +49,34 @@ const mock = http.createServer((_request, response) => {
 await new Promise((resolveListen) => mock.listen(mockPort, "127.0.0.1", resolveListen));
 
 let logs = "";
-const next = spawn(process.execPath, ["node_modules/next/dist/bin/next", "dev", "-p", String(appPort), "-H", "127.0.0.1"], {
+const runtimeEnvironment = {
+  ...process.env,
+  NEXT_PUBLIC_SUPABASE_URL: `http://127.0.0.1:${mockPort}`,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: "synthetic-anon-key",
+  VEHICLE_DATA_TIMEOUT_MS: "250",
+  SITE_ENV: "preview",
+  SITE_ANALYTICS_ENABLED: "false"
+};
+const build = spawn(process.execPath, ["node_modules/next/dist/bin/next", "build"], {
+  cwd: root,
+  env: runtimeEnvironment,
+  stdio: ["ignore", "pipe", "pipe"]
+});
+build.stdout.on("data", (chunk) => { logs += chunk; });
+build.stderr.on("data", (chunk) => { logs += chunk; });
+await waitForExit(build, logs, "next build");
+
+const next = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", String(appPort), "-H", "127.0.0.1"], {
   cwd: root,
   detached: true,
-  env: {
-    ...process.env,
-    NEXT_PUBLIC_SUPABASE_URL: `http://127.0.0.1:${mockPort}`,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: "synthetic-anon-key",
-    VEHICLE_DATA_TIMEOUT_MS: "250",
-    SITE_ENV: "preview",
-    SITE_ANALYTICS_ENABLED: "false"
-  },
+  env: runtimeEnvironment,
   stdio: ["ignore", "pipe", "pipe"]
 });
 next.stdout.on("data", (chunk) => { logs += chunk; });
 next.stderr.on("data", (chunk) => { logs += chunk; });
 
 const base = `http://127.0.0.1:${appPort}`;
-const report = { generatedAt: new Date().toISOString(), environment: "local synthetic upstream 503", checks: [] };
+const report = { generatedAt: new Date().toISOString(), environment: "local built Next Node server (next build + next start); synthetic upstream 503; not Cloudflare adapter evidence", checks: [] };
 const check = (name, response, expectedStatus) => {
   assert.equal(response.status, expectedStatus, `${name} status`);
   report.checks.push({ name, status: response.status, retryAfter: response.headers.get("retry-after") });

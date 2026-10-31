@@ -34,9 +34,10 @@ The detail route remains 500 on an upstream dependency failure. A server page ca
 ## Test evidence
 
 - `npm test`: 72/72 passing.
-- `npm run test:http-semantics -- --report /tmp/pdcar-audit-evidence/http-semantics.json`: passed against a real local Next HTTP server and synthetic upstream 503.
-- `npm run test:browser-gallery -- /tmp/pdcar-audit-evidence`: passed in headless Chromium at 390, 768, 1165, and 1440 px with no horizontal overflow. Verified keyboard next, Escape close, focus restoration, pointer swipe, mobile content order, map/hours, filter deep link, card year and finance assumptions.
+- `npm run test:http-semantics -- --report /tmp/pdcar-audit-evidence/http-semantics.json`: passed against a locally built Next Node server (`next build` + `next start`) and synthetic upstream 503. This is production-mode Next evidence, not Cloudflare adapter runtime evidence.
+- `npm run test:browser-gallery -- /tmp/pdcar-audit-evidence`: passed against a local Next development server in headless Chromium. Both home and vehicle detail were checked at 390, 768, 1165, and 1440 px with no horizontal overflow. Verified discriminating brand/status/search/sort/reset behavior with multiple synthetic available/reserved vehicles, exclusion of sold/unpublished fixtures, Tab/Shift+Tab containment, background inert state, keyboard next, Escape close, focus restoration, simulated pointer-event swipe, mobile content order, map/hours, card year and finance assumptions.
 - `npm run verify`: lint, typecheck, and Next production build passed.
+- OpenNext bundle build and `wrangler deploy --dry-run` passed. No OpenNext/Workers local runtime response-semantic test was claimed.
 - Screenshots (synthetic fixtures):
   - `/tmp/pdcar-audit-evidence/pdcar-detail-390-updated.png`
   - `/tmp/pdcar-audit-evidence/pdcar-detail-lightbox-390.png`
@@ -50,6 +51,7 @@ The detail route remains 500 on an upstream dependency failure. A server page ca
 - Per-user admin roles/revocation, privacy-aware attribution/retention, and edge-security settings remain approval-dependent architecture work in `docs/ADMIN-SECURITY-NEXT-STEPS.md`.
 - Messenger remains absent because no verified public destination was supplied. Paused chatbots remain paused.
 - A cleaner dependency-specific 503 for server-rendered vehicle detail would require a separately reviewed routing architecture change.
+- No hosted preview URL was created. The screenshots are local synthetic-fixture browser evidence, not a deployed preview.
 
 ## Rollback
 

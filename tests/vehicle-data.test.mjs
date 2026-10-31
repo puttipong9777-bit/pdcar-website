@@ -26,7 +26,7 @@ after(() => {
   if (originalMedia === undefined) delete process.env.NEXT_PUBLIC_VEHICLE_IMAGE_BASE_URL; else process.env.NEXT_PUBLIC_VEHICLE_IMAGE_BASE_URL = originalMedia;
 });
 
-test("public inventory preserves available and reserved while excluding sold rows", async () => {
+test("public inventory preserves published available/reserved while excluding sold and explicitly unpublished rows", async () => {
   process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "public-test-key";
   process.env.NEXT_PUBLIC_VEHICLE_IMAGE_BASE_URL = "https://media.example/vehicles";
@@ -41,7 +41,8 @@ test("public inventory preserves available and reserved while excluding sold row
           { fileId: "FILE-cover", isPrimary: true, sortOrder: 9 }
         ], updated_at: "2026-01-01"
       },
-      { car_id: "PD-SOLD", status: "sold", brand: "Honda", model: "City", year: 2022, photos: [] }
+      { car_id: "PD-SOLD", status: "sold", brand: "Honda", model: "City", year: 2022, photos: [] },
+      { car_id: "PD-UNPUBLISHED", status: "available", website_published: false, brand: "Mazda", model: "2", year: 2023, photos: [] }
     ]
   };
 
