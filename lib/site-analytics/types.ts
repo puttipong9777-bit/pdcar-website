@@ -46,7 +46,7 @@ export type DashboardMetrics = {
   topVehicles: { carId: string; views: number; gallerySwipes: number; phoneClicks: number; lineClicks: number; contactClicks: number }[];
   topPages: { path: string; views: number }[];
   sources: {
-    source: AnalyticsSource | "direct";
+    source: AnalyticsSource | "untagged";
     medium: AnalyticsMedium | "none";
     campaign: AnalyticsCampaign | "none";
     visitors: number;

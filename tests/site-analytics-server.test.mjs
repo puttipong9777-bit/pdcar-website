@@ -19,7 +19,7 @@ test("server records only the parsed compact event and its three attribution fie
   });
   const event = {
     eventId: randomUUID(), sessionId: randomUUID(), eventName: "line_click", path: "/cars/pd0002", carId: "PD0002",
-    utmSource: "line", utmMedium: "messaging", utmCampaign: "pd0002_b"
+    utmSource: "line", utmMedium: "messaging", utmCampaign: "pd0002_a"
   };
   assert.equal(await server.recordAnalyticsEvent(event), true);
   assert.deepEqual(captured.values, [event.eventId, event.sessionId, event.eventName, event.path, event.carId, event.utmSource, event.utmMedium, event.utmCampaign]);

@@ -139,8 +139,8 @@ try {
           topPages: [{ path: '/cars/pd0028', views: 31 }, { path: '/cars/pd0025', views: 24 }],
           sources: [
             { source: 'facebook', medium: 'organic_social', campaign: 'pd0028_a', visitors: 18, pageViews: 35, vehicleViews: 28, phoneClicks: 3, lineClicks: 7 },
-            { source: 'line', medium: 'messaging', campaign: 'pd0025_b', visitors: 12, pageViews: 22, vehicleViews: 17, phoneClicks: 4, lineClicks: 8 },
-            { source: 'direct', medium: 'none', campaign: 'none', visitors: 25, pageViews: 73, vehicleViews: 32, phoneClicks: 4, lineClicks: 4 }
+            { source: 'line', medium: 'messaging', campaign: 'pd0025_a', visitors: 12, pageViews: 22, vehicleViews: 17, phoneClicks: 4, lineClicks: 8 },
+            { source: 'untagged', medium: 'none', campaign: 'none', visitors: 25, pageViews: 73, vehicleViews: 32, phoneClicks: 4, lineClicks: 4 }
           ]
         };
         return new Response(JSON.stringify({ analyticsEnabled: true, metrics }), { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -173,9 +173,10 @@ try {
     hasThaiTimezone: document.body.innerText.includes('Asia/Bangkok'),
     hasPhoneAndLine: document.body.innerText.includes('กดโทร') && document.body.innerText.includes('กด LINE'),
     hasSources: document.body.innerText.includes('facebook') && document.body.innerText.includes('organic_social') && document.body.innerText.includes('PD0028_A'),
+    hasHonestUntaggedLabel: document.body.innerText.includes('ไม่ติดแท็ก / ไม่ทราบแหล่งที่มา'),
     hasPrivacyNote: document.body.innerText.includes('ไม่เก็บ URL เต็ม')
   })`);
-  assert.deepEqual(labels, { hasThaiTimezone: true, hasPhoneAndLine: true, hasSources: true, hasPrivacyNote: true });
+  assert.deepEqual(labels, { hasThaiTimezone: true, hasPhoneAndLine: true, hasSources: true, hasHonestUntaggedLabel: true, hasPrivacyNote: true });
 
   const report = { environment: "local Next development server with synthetic public inventory and browser-intercepted synthetic admin responses; no production reads or writes", widths, labels, selectedWindowDays: 30 };
   await writeFile(join(output, "admin-analytics-browser.json"), `${JSON.stringify(report, null, 2)}\n`);

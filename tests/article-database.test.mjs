@@ -134,9 +134,9 @@ test("analytics stores only the approved compact contract and stays private", as
     assert.equal((await query("select count(*)::int as n from site_admin.analytics_events where event_id=$1", [eventId]))[0].n, 1);
     assert.equal((await query("select site_admin.record_event($1,$2,'email','/','PD0002') as ok", [randomUUID(), sessionId]))[0].ok, false);
     const campaignEvent = randomUUID();
-    assert.equal((await query("select site_admin.record_event($1,$2,'line_click','/cars/pd0028','PD0028','line','messaging','pd0028_b') as ok", [campaignEvent, sessionId]))[0].ok, true);
+    assert.equal((await query("select site_admin.record_event($1,$2,'line_click','/cars/pd0028','PD0028','line','messaging','pd0028_a') as ok", [campaignEvent, sessionId]))[0].ok, true);
     assert.deepEqual((await query("select utm_source,utm_medium,utm_campaign from site_admin.analytics_events where event_id=$1", [campaignEvent]))[0], {
-      utm_source: "line", utm_medium: "messaging", utm_campaign: "pd0028_b"
+      utm_source: "line", utm_medium: "messaging", utm_campaign: "pd0028_a"
     });
     assert.equal((await query("select site_admin.record_event($1,$2,'page_view','/','PD0002','email','messaging','pd0002_a') as ok", [randomUUID(), sessionId]))[0].ok, false);
     assert.equal((await query("select site_admin.record_event($1,$2,'page_view','/','PD0002','facebook','arbitrary','pd0002_a') as ok", [randomUUID(), sessionId]))[0].ok, false);

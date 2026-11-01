@@ -86,7 +86,7 @@ export async function getDashboardMetrics(windowDays: DashboardWindowDays = 14):
       where event_day >= (now() at time zone 'Asia/Bangkok')::date - (${windowDays}::integer - 1) and event_name = 'page_view'
       group by path order by count(*) desc limit 10`,
     sql`select
-      coalesce(utm_source, 'direct') as source,
+      coalesce(utm_source, 'untagged') as source,
       coalesce(utm_medium, 'none') as medium,
       coalesce(utm_campaign, 'none') as campaign,
       count(distinct session_id) as visitors,
@@ -114,7 +114,7 @@ export async function getDashboardMetrics(windowDays: DashboardWindowDays = 14):
     topVehicles: vehicleRows.map((item) => ({ carId: String(item.car_id), views: number(item.views), gallerySwipes: number(item.gallery_swipes), phoneClicks: number(item.phone_clicks), lineClicks: number(item.line_clicks), contactClicks: number(item.contact_clicks) })),
     topPages: pageRows.map((item) => ({ path: String(item.path), views: number(item.views) })),
     sources: sourceRows.map((item) => ({
-      source: String(item.source) as AnalyticsSource | "direct",
+      source: String(item.source) as AnalyticsSource | "untagged",
       medium: String(item.medium) as AnalyticsMedium | "none",
       campaign: String(item.campaign) as AnalyticsCampaign | "none",
       visitors: number(item.visitors),

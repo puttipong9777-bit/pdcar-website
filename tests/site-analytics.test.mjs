@@ -41,6 +41,25 @@ test("campaign query parsing discards arbitrary values and normalizes a bounded 
   )), {});
 });
 
+test("all nine prepared Facebook and LINE campaign URLs match the bounded parser contract", () => {
+  const prepared = [
+    ...["pd0025_a", "pd0025_b", "pd0028_a", "pd0028_b", "pd0002_a", "pd0002_b"].map((utmCampaign) => ({
+      utmSource: "facebook", utmMedium: "organic_social", utmCampaign
+    })),
+    ...["pd0025_a", "pd0028_a", "pd0002_a"].map((utmCampaign) => ({
+      utmSource: "line", utmMedium: "messaging", utmCampaign
+    }))
+  ];
+  for (const expected of prepared) {
+    const params = new URLSearchParams({
+      utm_source: expected.utmSource,
+      utm_medium: expected.utmMedium,
+      utm_campaign: expected.utmCampaign
+    });
+    assert.deepEqual(analytics.campaignAttributionFromSearch(params), expected);
+  }
+});
+
 test("dashboard windows are restricted to supported day ranges", () => {
   assert.equal(analytics.parseDashboardWindow(1), 1);
   assert.equal(analytics.parseDashboardWindow("30"), 30);
@@ -65,7 +84,7 @@ test("browser tracking keeps a bounded first-touch campaign only for the current
     fetch: (url, options) => { requests.push({ url, options }); return Promise.resolve({ ok: true }); }
   });
   client.trackSiteEvent("vehicle_view", "PD0028");
-  fakeWindow.location.search = "?utm_source=line&utm_medium=messaging&utm_campaign=pd0002_b&token=secret";
+  fakeWindow.location.search = "?utm_source=line&utm_medium=messaging&utm_campaign=pd0002_a&token=secret";
   client.trackSiteEvent("line_click", "PD0028");
   assert.equal(requests.length, 2);
   const first = JSON.parse(requests[0].options.body); const second = JSON.parse(requests[1].options.body);
