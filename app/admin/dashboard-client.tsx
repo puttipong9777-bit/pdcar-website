@@ -1,16 +1,21 @@
 "use client";
 
-import { BarChart3, BookOpenText, CarFront, ImageIcon, Images, LayoutDashboard, LineChart, LoaderCircle, LogIn, Pencil, PhoneCall, Plus, RefreshCw, Save, Upload, Users } from "lucide-react";
+import { BarChart3, BookOpenText, CarFront, ImageIcon, Images, LayoutDashboard, LineChart, LoaderCircle, LogIn, MessageCircle, Pencil, PhoneCall, Plus, RefreshCw, Save, Upload, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Article, ArticleContent, Decision } from "@/lib/article-approval/types";
-import type { DashboardMetrics } from "@/lib/site-analytics/types";
+import { dashboardWindowValues, type DashboardMetrics, type DashboardWindowDays } from "@/lib/site-analytics/types";
 
 type Vehicle = { carId: string; title: string; photos: { fileId: string; url: string }[] };
 type Tab = "overview" | "articles" | "media";
 type ArticleForm = { id?: string; version: number; articleDate: string; slug: string; title: string; description: string; sections: { heading: string; body: string }[] };
 const number = new Intl.NumberFormat("th-TH");
+const dashboardDate = new Intl.DateTimeFormat("th-TH", { timeZone: "Asia/Bangkok", day: "numeric", month: "short", year: "numeric" });
+
+function formatDashboardDate(value?: string) {
+  return value ? dashboardDate.format(new Date(`${value}T00:00:00+07:00`)) : "—";
+}
 
 function bangkokDate() {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
@@ -73,6 +78,7 @@ export function AdminDashboard({ vehicles }: { vehicles: Vehicle[] }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [windowDays, setWindowDays] = useState<DashboardWindowDays>(14);
   const [analyticsOn, setAnalyticsOn] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
   const [form, setForm] = useState<ArticleForm | null>(null);
@@ -88,15 +94,15 @@ export function AdminDashboard({ vehicles }: { vehicles: Vehicle[] }) {
     return result;
   }, []);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (selectedWindow: DashboardWindowDays = windowDays) => {
     const [overview, articleResult] = await Promise.all([
-      api("/api/admin/dashboard", { operation: "overview" }),
+      api("/api/admin/dashboard", { operation: "overview", windowDays: selectedWindow }),
       api("/api/article-approval/admin", { operation: "list", page: 1 })
     ]);
     setMetrics(overview.metrics);
     setAnalyticsOn(Boolean(overview.analyticsEnabled));
     setArticles(articleResult.articles);
-  }, [api]);
+  }, [api, windowDays]);
 
   const initialize = useCallback(async () => {
     if (initialized.current) return;
@@ -139,6 +145,12 @@ export function AdminDashboard({ vehicles }: { vehicles: Vehicle[] }) {
   async function refresh() {
     setBusy(true);
     try { await load(); setMessage("อัปเดตข้อมูลแล้ว"); } catch (error) { setMessage(errorMessage(error)); }
+    finally { setBusy(false); }
+  }
+
+  async function changeWindow(selectedWindow: DashboardWindowDays) {
+    setWindowDays(selectedWindow); setBusy(true);
+    try { await load(selectedWindow); setMessage(`อัปเดตข้อมูล ${selectedWindow} วันแล้ว`); } catch (error) { setMessage(errorMessage(error)); }
     finally { setBusy(false); }
   }
 
@@ -204,25 +216,28 @@ export function AdminDashboard({ vehicles }: { vehicles: Vehicle[] }) {
       <nav className="admin-tabs" aria-label="เมนูแอดมิน">{tabs.map(({ id, label, icon: Icon }) => <button type="button" key={id} aria-current={tab === id ? "page" : undefined} onClick={() => setTab(id)}><Icon size={19} />{label}</button>)}</nav>
 
       {tab === "overview" && <section className="admin-panel">
-        <div className="admin-section-title"><div><span>สถิติวันนี้</span><h2>ลูกค้าสนใจอะไรบนเว็บไซต์</h2></div><small>{analyticsOn ? "อัปเดตจากข้อมูลจริง" : "รอเปิดระบบเก็บสถิติ"}</small></div>
+        <div className="admin-section-title"><div><span>สถิติวันนี้ · เวลาไทย</span><h2>ลูกค้าสนใจอะไรบนเว็บไซต์</h2></div><label className="dashboard-window"><span>ช่วงรายงาน</span><select value={windowDays} disabled={busy || !analyticsOn} onChange={(event) => void changeWindow(Number(event.target.value) as DashboardWindowDays)}>{dashboardWindowValues.map((days) => <option key={days} value={days}>{days} วัน</option>)}</select></label></div>
+        <p className="dashboard-range">{analyticsOn && metrics ? `${formatDashboardDate(metrics.windowStart)} – ${formatDashboardDate(metrics.windowEnd)} · Asia/Bangkok · อัปเดต ${new Date(metrics.generatedAt).toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })}` : "รอเปิดระบบเก็บสถิติ"}</p>
         <div className="metric-grid">
           <Metric icon={Users} label="ผู้เข้าชม" value={metrics?.today.visitors} previous={metrics?.yesterday.visitors} />
           <Metric icon={BarChart3} label="หน้าที่เปิด" value={metrics?.today.pageViews} previous={metrics?.yesterday.pageViews} />
           <Metric icon={CarFront} label="เปิดดูรถ" value={metrics?.today.vehicleViews} previous={metrics?.yesterday.vehicleViews} />
-          <Metric icon={PhoneCall} label="กดติดต่อ" value={metrics?.today.contactClicks} previous={metrics?.yesterday.contactClicks} />
+          <Metric icon={PhoneCall} label="กดโทร" value={metrics?.today.phoneClicks} previous={metrics?.yesterday.phoneClicks} />
+          <Metric icon={MessageCircle} label="กด LINE" value={metrics?.today.lineClicks} previous={metrics?.yesterday.lineClicks} />
         </div>
         <div className="admin-two-columns">
-          <article className="admin-card"><div className="card-heading"><div><small>14 วันล่าสุด</small><h3>แนวโน้มผู้เข้าชม</h3></div><LineChart size={22} /></div>
+          <article className="admin-card"><div className="card-heading"><div><small>{windowDays} วันล่าสุด</small><h3>แนวโน้มผู้เข้าชม</h3></div><LineChart size={22} /></div>
             <div className="trend-chart">{metrics?.daily.map((day) => <div className="trend-day" key={day.day} title={`${day.day}: ${day.visitors} คน`}><span style={{ height: `${Math.max(4, day.visitors / maxDaily * 100)}%` }} /><small>{day.day.slice(8)}</small></div>)}</div>
           </article>
           <article className="admin-card"><div className="card-heading"><div><small>7 วันล่าสุด</small><h3>สรุปความสนใจ</h3></div><BarChart3 size={22} /></div>
-            <dl className="summary-list"><div><dt>ผู้เข้าชม</dt><dd>{number.format(metrics?.last7Days.visitors || 0)}</dd></div><div><dt>เปิดดูรถ</dt><dd>{number.format(metrics?.last7Days.vehicleViews || 0)}</dd></div><div><dt>กดติดต่อ</dt><dd>{number.format(metrics?.last7Days.contactClicks || 0)}</dd></div></dl>
+            <dl className="summary-list"><div><dt>ผู้เข้าชม</dt><dd>{number.format(metrics?.last7Days.visitors || 0)}</dd></div><div><dt>เปิดดูรถ</dt><dd>{number.format(metrics?.last7Days.vehicleViews || 0)}</dd></div><div><dt>กดโทร</dt><dd>{number.format(metrics?.last7Days.phoneClicks || 0)}</dd></div><div><dt>กด LINE</dt><dd>{number.format(metrics?.last7Days.lineClicks || 0)}</dd></div></dl>
           </article>
         </div>
         <div className="admin-two-columns">
-          <article className="admin-card"><h3>รถที่ลูกค้าสนใจใน 30 วัน</h3><div className="admin-table"><div className="table-row table-head"><span>รถ</span><span>ดู</span><span>ปัดรูป</span><span>ติดต่อ</span></div>{metrics?.topVehicles.length ? metrics.topVehicles.map((row) => <div className="table-row" key={row.carId}><span><b>{row.carId}</b><small>{vehicles.find((vehicle) => vehicle.carId === row.carId)?.title}</small></span><span>{number.format(row.views)}</span><span>{number.format(row.gallerySwipes)}</span><span>{number.format(row.contactClicks)}</span></div>) : <p className="admin-empty">ยังไม่มีข้อมูล</p>}</div></article>
-          <article className="admin-card"><h3>หน้าที่เปิดมากที่สุดใน 30 วัน</h3><div className="page-list">{metrics?.topPages.length ? metrics.topPages.map((row) => <div key={row.path}><Link href={row.path} target="_blank">{row.path}</Link><b>{number.format(row.views)}</b></div>) : <p className="admin-empty">ยังไม่มีข้อมูล</p>}</div></article>
+          <article className="admin-card"><h3>รถที่ลูกค้าสนใจใน {windowDays} วัน</h3><div className="admin-table"><div className="table-row vehicle-table table-head"><span>รถ</span><span>ดู</span><span>ปัดรูป</span><span>โทร</span><span>LINE</span></div>{metrics?.topVehicles.length ? metrics.topVehicles.map((row) => <div className="table-row vehicle-table" key={row.carId}><span><b>{row.carId}</b><small>{vehicles.find((vehicle) => vehicle.carId === row.carId)?.title}</small></span><span>{number.format(row.views)}</span><span>{number.format(row.gallerySwipes)}</span><span>{number.format(row.phoneClicks)}</span><span>{number.format(row.lineClicks)}</span></div>) : <p className="admin-empty">ยังไม่มีข้อมูล</p>}</div></article>
+          <article className="admin-card"><h3>หน้าที่เปิดมากที่สุดใน {windowDays} วัน</h3><div className="page-list">{metrics?.topPages.length ? metrics.topPages.map((row) => <div key={row.path}><Link href={row.path} target="_blank">{row.path}</Link><b>{number.format(row.views)}</b></div>) : <p className="admin-empty">ยังไม่มีข้อมูล</p>}</div></article>
         </div>
+        <article className="admin-card attribution-card"><div className="card-heading"><div><small>{windowDays} วันล่าสุด · เก็บเฉพาะ UTM ที่อนุญาต</small><h3>แหล่งที่มาของผู้เข้าชม</h3></div><BarChart3 size={22} /></div><p className="dashboard-privacy-note">ไม่เก็บ URL เต็ม, referrer, IP, อีเมล หรือข้อความของลูกค้า · “เข้าตรง” รวมผู้ที่ไม่มีแคมเปญที่อนุญาต</p><div className="admin-table"><div className="source-row source-head"><span>แหล่งที่มา</span><span>แคมเปญ</span><span>คน</span><span>ดูรถ</span><span>โทร</span><span>LINE</span></div>{metrics?.sources.length ? metrics.sources.map((row) => <div className="source-row" key={`${row.source}:${row.medium}:${row.campaign}`}><span><b>{row.source === "direct" ? "เข้าตรง / ไม่ติดแคมเปญ" : row.source}</b><small>{row.medium === "none" ? "—" : row.medium}</small></span><span>{row.campaign === "none" ? "—" : row.campaign.toUpperCase()}</span><span>{number.format(row.visitors)}</span><span>{number.format(row.vehicleViews)}</span><span>{number.format(row.phoneClicks)}</span><span>{number.format(row.lineClicks)}</span></div>) : <p className="admin-empty">ยังไม่มีข้อมูล</p>}</div></article>
       </section>}
 
       {tab === "articles" && <section className="admin-panel">
