@@ -320,6 +320,8 @@ img, video { max-width: 100%; }
 .primary-action.full { width: 100%; }
 .line-action.full { width: 100%; }
 .detail-actions { display: grid; gap: 9px; margin-top: 18px; }
+.contact-context { margin: 18px 0 -7px; padding: 12px 14px; border: 1px solid #c9d9ea; border-radius: 7px; background: #f4f8fc; color: var(--navy); line-height: 1.55; }
+.contact-context small { display: block; margin-top: 4px; color: var(--muted); }
 .vehicle-detail-notes { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: 16px; margin-top: 28px; }
 .vehicle-description, .warranty-note { border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .vehicle-description summary { min-height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; color: var(--navy); font-weight: 850; cursor: pointer; }

@@ -82,7 +82,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
       "@type": "Offer",
       price: vehicle.salePrice,
       priceCurrency: "THB",
-      availability: vehicle.status === "available" ? "https://schema.org/InStock" : "https://schema.org/LimitedAvailability",
+      availability: vehicle.status === "available" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: `https://www.pdcarcenter.com/cars/${encodeURIComponent(vehicle.slug)}`,
       seller: { "@id": "https://www.pdcarcenter.com/#business" }
     } : undefined
@@ -122,6 +122,11 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
             </dl>
             <small>เป็นข้อมูลประมาณการจากรายการรถ ไม่ใช่คำรับรองผลอนุมัติ โปรดสอบถามเงื่อนไขล่าสุดกับร้าน</small>
           </div> : null}
+          <p className="contact-context">{vehicle.status === "reserved"
+            ? <>รถคันนี้ติดจอง กรุณาแจ้งรหัส <strong>{vehicle.carId}</strong> เพื่อตรวจสถานะล่าสุดหรือฝากความสนใจ</>
+            : <>โทรหรือเปิด LINE แล้วแจ้งรหัส <strong>{vehicle.carId}</strong> เพื่อสอบถามข้อมูลและนัดดูรถ</>}
+            <small>ปุ่ม LINE เปิดโปรไฟล์ร้านและไม่ส่งข้อความอัตโนมัติ</small>
+          </p>
           <div className="detail-actions">
             <a className="primary-action full" href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={19} />สอบถามรถคันนี้ {phone}</a>
             <a className="line-action full" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={19} />เปิด LINE {publicLineOaId}</a>
@@ -156,8 +161,8 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
       </section> : null}
 
       <div className="mobile-sticky-actions" aria-label="ติดต่อสอบถามรถคันนี้">
-        <a href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={18} />โทรหาร้าน</a>
-        <a href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={18} />LINE {publicLineOaId}</a>
+        <a href={`tel:${phone}`} data-analytics="phone_click" data-analytics-car={vehicle.carId}><Phone size={18} />โทร · {vehicle.carId}</a>
+        <a href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click" data-analytics-car={vehicle.carId}><MessageCircle size={18} />LINE · {vehicle.carId}</a>
       </div>
     </main>
   );

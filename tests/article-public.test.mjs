@@ -32,6 +32,14 @@ test("missing/unpublished detail is noindex and 404, not an empty published page
   assert.equal((await page.generateMetadata(props)).robots.index, false);
   await assert.rejects(() => page.default(props), /not_found/);
 });
+test("article index uses a self-canonical URL for paginated results", async () => {
+  const page = loadTs("app/articles/page.tsx", { "@/lib/article-approval/public": publicMock(), "next/link": link });
+  const first = await page.generateMetadata({ searchParams: Promise.resolve({}) });
+  const third = await page.generateMetadata({ searchParams: Promise.resolve({ page: "3" }) });
+  assert.equal(first.alternates.canonical, "/articles");
+  assert.equal(third.alternates.canonical, "/articles?page=3");
+  assert.equal(third.openGraph.url, "/articles?page=3");
+});
 test("article sitemap is isolated from vehicles and robots advertises both", async () => {
   const map = loadTs("app/articles/sitemap.ts", { "@/lib/article-approval/public": publicMock() });
   const urls = await map.default();

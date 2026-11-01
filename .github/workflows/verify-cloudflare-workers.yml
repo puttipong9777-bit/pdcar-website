@@ -3,7 +3,7 @@ on:
   push:
     branches: [codex/cloudflare-workers]
   pull_request:
-    branches: [main]
+    branches: [main, codex/cloudflare-workers]
 permissions:
   contents: read
 concurrency:

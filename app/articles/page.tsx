@@ -5,13 +5,24 @@ import { thaiDate } from "@/lib/article-approval/types";
 import "./articles.css";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "บทความความรู้รถยนต์และรถมือสอง", description: "ความรู้ในการดูแลรถและเตรียมตัวใช้รถมือสอง จากบทความที่ผ่านการตรวจโดยผู้ดูแล PD Car Center",
-  alternates: { canonical: "/articles" }, openGraph: { title: "บทความความรู้รถยนต์ | PD Car Center", url: "/articles", type: "website" },
-};
+function articlePageNumber(value?: string) {
+  return Math.max(1, Math.min(10000, Number.parseInt(value || "1", 10) || 1));
+}
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ page?: string }> }): Promise<Metadata> {
+  const page = articlePageNumber((await searchParams).page);
+  const canonical = page === 1 ? "/articles" : `/articles?page=${page}`;
+  return {
+    title: page === 1 ? "บทความความรู้รถยนต์และรถมือสอง" : `บทความความรู้รถยนต์ หน้า ${page}`,
+    description: "ความรู้ในการดูแลรถและเตรียมตัวใช้รถมือสอง จากบทความที่ผ่านการตรวจโดยผู้ดูแล PD Car Center",
+    alternates: { canonical },
+    openGraph: { title: page === 1 ? "บทความความรู้รถยนต์ | PD Car Center" : `บทความความรู้รถยนต์ หน้า ${page} | PD Car Center`, url: canonical, type: "website" }
+  };
+}
+
 export default async function ArticlesPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const query = await searchParams;
-  const page = Math.max(1, Math.min(10000, Number.parseInt(query.page || "1", 10) || 1));
+  const page = articlePageNumber(query.page);
   const articles = await getArticles(page);
   return <main className="pd-articles">
     <Link href="/">← กลับหน้าแรก</Link>

@@ -30,12 +30,12 @@ export function SiteHeader() {
         {navigation.map(([label, href]) => <Link href={href} key={href}>{label}</Link>)}
         <Link className="sell-nav-link" href="/sell-car">ขายรถให้เรา</Link>
         <a className="call-button" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={17} />{phone}</a>
-        <a className="header-line-button" href={lineUrl} target="_blank" rel="noopener noreferrer"><MessageCircle size={17} />LINE {publicLineOaId}</a>
+        <a className="header-line-button" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={17} />LINE {publicLineOaId}</a>
       </nav>
 
       <div className="mobile-header-actions">
         <a className="mobile-call" href={`tel:${phone}`} aria-label={`โทร ${phone}`} data-analytics="phone_click"><Phone size={19} /></a>
-        <a className="mobile-line" href={lineUrl} target="_blank" rel="noopener noreferrer" aria-label={`เปิดโปรไฟล์ LINE ${publicLineOaId}`}><MessageCircle size={19} /></a>
+        <a className="mobile-line" href={lineUrl} target="_blank" rel="noopener noreferrer" aria-label={`เปิดโปรไฟล์ LINE ${publicLineOaId}`} data-analytics="line_click"><MessageCircle size={19} /></a>
         <button
           className="menu-toggle"
           type="button"
@@ -53,7 +53,7 @@ export function SiteHeader() {
         <Link className="mobile-menu-sell" href="/sell-car" onClick={() => setMenuOpen(false)}>ขายรถให้ PD Car Center</Link>
         <Link className="mobile-menu-admin" href="/admin" onClick={() => setMenuOpen(false)}>ผู้ดูแลเว็บไซต์</Link>
         <a className="mobile-menu-call" href={`tel:${phone}`} onClick={() => setMenuOpen(false)} data-analytics="phone_click"><Phone size={18} />โทร {phone}</a>
-        <a href={lineUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}><MessageCircle size={18} />เปิด LINE {publicLineOaId}</a>
+        <a href={lineUrl} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)} data-analytics="line_click"><MessageCircle size={18} />เปิด LINE {publicLineOaId}</a>
       </nav>
     </header>
   );
