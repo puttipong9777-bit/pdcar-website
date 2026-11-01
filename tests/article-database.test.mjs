@@ -8,6 +8,7 @@ const db = new PGlite();
 await db.exec("create role anon; create role authenticated; create table public.erp_private_fixture(secret text); insert into public.erp_private_fixture values ('untouched');");
 await db.exec(readFileSync(new URL("../supabase/migrations/0002_article_approval.sql", import.meta.url), "utf8"));
 await db.exec(readFileSync(new URL("../supabase/migrations/20261014104736_admin_dashboard.sql", import.meta.url), "utf8"));
+await db.exec(readFileSync(new URL("../supabase/migrations/20261101162830_campaign_attribution.sql", import.meta.url), "utf8"));
 after(() => db.close());
 const query = async (sql, params = []) => (await db.query(sql, params)).rows;
 const claim = async (day, token = randomUUID()) => ({ token, row: (await query("select * from article_approval.claim_day($1::date,$2)", [day, token]))[0] });
@@ -132,10 +133,20 @@ test("analytics stores only the approved compact contract and stays private", as
     assert.equal((await query("select site_admin.record_event($1,$2,'vehicle_view','/cars/test','PD0002') as ok", [eventId, sessionId]))[0].ok, true);
     assert.equal((await query("select count(*)::int as n from site_admin.analytics_events where event_id=$1", [eventId]))[0].n, 1);
     assert.equal((await query("select site_admin.record_event($1,$2,'email','/','PD0002') as ok", [randomUUID(), sessionId]))[0].ok, false);
+    const campaignEvent = randomUUID();
+    assert.equal((await query("select site_admin.record_event($1,$2,'line_click','/cars/pd0028','PD0028','line','messaging','pd0028_a') as ok", [campaignEvent, sessionId]))[0].ok, true);
+    assert.deepEqual((await query("select utm_source,utm_medium,utm_campaign from site_admin.analytics_events where event_id=$1", [campaignEvent]))[0], {
+      utm_source: "line", utm_medium: "messaging", utm_campaign: "pd0028_a"
+    });
+    assert.equal((await query("select site_admin.record_event($1,$2,'page_view','/','PD0002','email','messaging','pd0002_a') as ok", [randomUUID(), sessionId]))[0].ok, false);
+    assert.equal((await query("select site_admin.record_event($1,$2,'page_view','/','PD0002','facebook','arbitrary','pd0002_a') as ok", [randomUUID(), sessionId]))[0].ok, false);
+    assert.equal((await query("select site_admin.record_event($1,$2,'page_view','/','PD0002','facebook','organic_social','customer-name') as ok", [randomUUID(), sessionId]))[0].ok, false);
+    assert.equal((await query("select site_admin.record_event($1,$2,'page_view','/?token=secret',null,null,null,null) as ok", [randomUUID(), sessionId]))[0].ok, false);
   } finally { await db.exec("reset role"); }
   await db.exec("set role anon");
   try {
     await assert.rejects(() => query("select * from site_admin.analytics_events"));
     await assert.rejects(() => query("select site_admin.record_event(gen_random_uuid(),gen_random_uuid(),'page_view','/',null)"));
+    await assert.rejects(() => query("select site_admin.record_event(gen_random_uuid(),gen_random_uuid(),'page_view','/',null,'facebook','organic_social','pd0002_a')"));
   } finally { await db.exec("reset role"); }
 });
