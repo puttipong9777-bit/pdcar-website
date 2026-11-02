@@ -2,19 +2,32 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
-import type { AnalyticsEventName } from "@/lib/site-analytics/types";
+import { campaignAttributionFromSearch, type AnalyticsAttribution, type AnalyticsEventName } from "@/lib/site-analytics/types";
 
 const sessionKey = "pdcar.analytics.session.v1";
+const attributionKey = "pdcar.analytics.attribution.v1";
 
 function sessionId() {
   try {
-    const existing = window.localStorage.getItem(sessionKey);
+    const existing = window.sessionStorage.getItem(sessionKey);
     if (existing) return existing;
     const created = crypto.randomUUID();
-    window.localStorage.setItem(sessionKey, created);
+    window.sessionStorage.setItem(sessionKey, created);
     return created;
   } catch {
     return crypto.randomUUID();
+  }
+}
+
+function sessionAttribution(): AnalyticsAttribution {
+  try {
+    const existing = window.sessionStorage.getItem(attributionKey);
+    if (existing) return JSON.parse(existing) as AnalyticsAttribution;
+    const attribution = campaignAttributionFromSearch(new URLSearchParams(window.location.search));
+    if (Object.keys(attribution).length) window.sessionStorage.setItem(attributionKey, JSON.stringify(attribution));
+    return attribution;
+  } catch {
+    return {};
   }
 }
 
@@ -25,7 +38,8 @@ export function trackSiteEvent(eventName: AnalyticsEventName, carId?: string, ex
     sessionId: sessionId(),
     eventName,
     path: explicitPath || window.location.pathname,
-    ...(carId ? { carId } : {})
+    ...(carId ? { carId } : {}),
+    ...sessionAttribution()
   };
   void fetch("/api/analytics/collect", {
     method: "POST",

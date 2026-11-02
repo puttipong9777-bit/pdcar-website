@@ -6,6 +6,7 @@ const detail = readFileSync(new URL("../app/cars/[identifier]/page.tsx", import.
 const stories = readFileSync(new URL("../components/vehicle-stories.tsx", import.meta.url), "utf8");
 const home = readFileSync(new URL("../app/page.tsx", import.meta.url), "utf8");
 const header = readFileSync(new URL("../components/site-header.tsx", import.meta.url), "utf8");
+const analyticsClient = readFileSync(new URL("../components/site-analytics.tsx", import.meta.url), "utf8");
 
 test("detail page labels model year and keeps the long seller caption after primary content", () => {
   assert(detail.includes("ปีรุ่น"));
@@ -30,7 +31,9 @@ test("reserved vehicle schema and contact context match the public status", () =
   assert(detail.includes("ปุ่ม LINE เปิดโปรไฟล์ร้านและไม่ส่งข้อความอัตโนมัติ"));
 });
 
-test("all global phone and LINE links use the existing first-party click contract", () => {
+test("all global phone and LINE links are measured without a persistent visitor id", () => {
   assert.equal((header.match(/data-analytics="phone_click"/g) || []).length, 3);
   assert.equal((header.match(/data-analytics="line_click"/g) || []).length, 3);
+  assert(analyticsClient.includes("window.sessionStorage"));
+  assert(!analyticsClient.includes("window.localStorage"));
 });
