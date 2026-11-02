@@ -39,7 +39,7 @@ URL ใช้รหัสรถซึ่ง route ปัจจุบันรอ
 ## ลำดับนำขึ้นและการตรวจ
 
 1. สำรองและตรวจ migration `20261101162830_campaign_attribution.sql` ในฐานข้อมูลทดสอบ
-2. ขออนุมัติฐานข้อมูล/สิทธิ์สำหรับฟังก์ชัน `site_admin.record_event` แบบ 8 arguments ซึ่งเป็น `SECURITY DEFINER`; migration revoke `EXECUTE` จาก `PUBLIC`, `anon`, `authenticated` และ grant `EXECUTE` เฉพาะ role เดิม `pdcar_article_worker`. ไม่มี table write grant โดยตรง แต่การเพิ่ม function grant นี้ยังถือเป็นการเปลี่ยนสิทธิ์ที่ต้องอนุมัติ
+2. ขออนุมัติฐานข้อมูล/สิทธิ์สำหรับฟังก์ชัน `site_admin.record_event` แบบ 8 arguments ซึ่งเป็น `SECURITY DEFINER`; migration revoke `EXECUTE` จาก `PUBLIC`, `anon`, `authenticated`, `service_role` และ grant `EXECUTE` เฉพาะ role เดิม `pdcar_article_worker`. ไม่มี table write grant โดยตรง แต่การเพิ่ม function grant นี้ยังถือเป็นการเปลี่ยนสิทธิ์ที่ต้องอนุมัติ
 3. ใช้ migration ก่อนโค้ด เพราะโค้ดใหม่เรียกฟังก์ชัน 8 arguments; ฟังก์ชันเดิมแบบ 5 arguments ยังคงอยู่เพื่อรองรับ rollback แอป
 4. นำโค้ดขึ้น แล้วเปิดลิงก์ทดสอบ A อย่างละหนึ่งครั้งจาก session ใหม่ โดยไม่กดโทรหรือส่ง LINE
 5. ตรวจหน้า admin ว่า source/medium/campaign ถูกต้องและไม่มี query อื่นหลุดเข้า database

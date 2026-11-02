@@ -56,7 +56,7 @@ test("dashboard keeps its time window explicit and separates phone from LINE", a
 test("dashboard SQL runs against the migrated private schema, including an empty or attributed window", async () => {
   const db = new PGlite();
   try {
-    await db.exec("create role anon; create role authenticated;");
+    await db.exec("create role anon; create role authenticated; create role service_role;");
     await db.exec(readFileSync(new URL("../supabase/migrations/0002_article_approval.sql", import.meta.url), "utf8"));
     await db.exec(readFileSync(new URL("../supabase/migrations/20261014104736_admin_dashboard.sql", import.meta.url), "utf8"));
     await db.exec(readFileSync(new URL("../supabase/migrations/20261101162830_campaign_attribution.sql", import.meta.url), "utf8"));

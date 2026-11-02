@@ -48,7 +48,7 @@ begin
   return true;
 end $$;
 
-revoke all on function site_admin.record_event(uuid,uuid,text,text,text,text,text,text) from public, anon, authenticated;
+revoke all on function site_admin.record_event(uuid,uuid,text,text,text,text,text,text) from public, anon, authenticated, service_role;
 grant execute on function site_admin.record_event(uuid,uuid,text,text,text,text,text,text) to pdcar_article_worker;
 
 -- The original five-argument function intentionally remains available so a

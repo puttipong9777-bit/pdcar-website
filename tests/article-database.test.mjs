@@ -5,7 +5,7 @@ import { after, test } from "node:test";
 import { PGlite } from "@electric-sql/pglite";
 
 const db = new PGlite();
-await db.exec("create role anon; create role authenticated; create table public.erp_private_fixture(secret text); insert into public.erp_private_fixture values ('untouched');");
+await db.exec("create role anon; create role authenticated; create role service_role; create table public.erp_private_fixture(secret text); insert into public.erp_private_fixture values ('untouched');");
 await db.exec(readFileSync(new URL("../supabase/migrations/0002_article_approval.sql", import.meta.url), "utf8"));
 await db.exec(readFileSync(new URL("../supabase/migrations/20261014104736_admin_dashboard.sql", import.meta.url), "utf8"));
 await db.exec(readFileSync(new URL("../supabase/migrations/20261101162830_campaign_attribution.sql", import.meta.url), "utf8"));
@@ -147,6 +147,10 @@ test("analytics stores only the approved compact contract and stays private", as
   try {
     await assert.rejects(() => query("select * from site_admin.analytics_events"));
     await assert.rejects(() => query("select site_admin.record_event(gen_random_uuid(),gen_random_uuid(),'page_view','/',null)"));
+    await assert.rejects(() => query("select site_admin.record_event(gen_random_uuid(),gen_random_uuid(),'page_view','/',null,'facebook','organic_social','pd0002_a')"));
+  } finally { await db.exec("reset role"); }
+  await db.exec("set role service_role");
+  try {
     await assert.rejects(() => query("select site_admin.record_event(gen_random_uuid(),gen_random_uuid(),'page_view','/',null,'facebook','organic_social','pd0002_a')"));
   } finally { await db.exec("reset role"); }
 });
