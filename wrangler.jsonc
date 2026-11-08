@@ -31,6 +31,7 @@
     "SITE_ENV": "production",
     "SITE_ANALYTICS_ENABLED": "true",
     "SITE_ADMIN_ENABLED": "true",
+    "VEHICLE_MEDIA_TIMEOUT_MS": "10000",
     "ADMIN_SITE_URL": "https://www.pdcarcenter.com",
     "ARTICLE_APPROVAL_ENABLED": "false",
     "ARTICLE_DAILY_CRON_ENABLED": "false",
