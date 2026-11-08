@@ -17,8 +17,8 @@ const nextConfig: NextConfig = {
     imageSizes: [64, 96, 128, 256],
     remotePatterns: [
       { protocol: "https", hostname: "drive.google.com" },
-      { protocol: "https", hostname: "*.supabase.co" },
-      { protocol: "https", hostname: "pdcar-erp-history.onrender.com" },
+      { protocol: "https", hostname: "supabase.srv2103943.hstgr.cloud" },
+      { protocol: "https", hostname: "erp.srv2103943.hstgr.cloud" },
       ...(process.env.ALLOW_LOCAL_MEDIA_FIXTURES === "true" ? [{ protocol: "http" as const, hostname: "127.0.0.1" }] : [])
     ]
   }

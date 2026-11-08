@@ -1,7 +1,7 @@
 import { getPublicVehicleImageMembership } from "@/lib/public-vehicle-image";
 
 const FILE_ID = /^FILE-[A-Za-z0-9-]{1,96}$/;
-const ERP_ORIGIN = (process.env.NEXT_PUBLIC_ERP_URL || "https://pdcar-erp-history.onrender.com").replace(/\/$/, "");
+const ERP_ORIGIN = (process.env.NEXT_PUBLIC_ERP_URL || "https://erp.srv2103943.hstgr.cloud").replace(/\/$/, "");
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
 export const dynamic = "force-dynamic";

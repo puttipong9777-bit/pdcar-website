@@ -203,7 +203,11 @@ test("media proxy distinguishes header timeout, network and invalid content with
   assert.equal((await invalid.get()).status, 502);
 });
 
-test("media proxy bounds stalled, failed and oversized response bodies", async () => {
+test("media proxy bounds stalled, failed and oversized response bodies", async (t) => {
+  // AbortSignal.timeout uses an unref'ed timer. A mocked stream has no socket
+  // to keep Node alive while the timeout under test expires.
+  const keepAlive = setInterval(() => {}, 1000);
+  t.after(() => clearInterval(keepAlive));
   const stalled = vehicleRoute({
     env: { VEHICLE_MEDIA_TIMEOUT_MS: "250" },
     fetchImpl: async (_input, init) => new Response(new ReadableStream({
