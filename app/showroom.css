@@ -16,8 +16,8 @@
 .discovery-proof svg { color: #79a8eb; flex-shrink: 0; }
 .discovery-photo { position: relative; min-height: 530px; overflow: hidden; --spot-x: 50%; --spot-y: 50%; }
 .discovery-photo-base { object-fit: cover; object-position: 48% center; filter: brightness(.78); animation: discovery-zoom 1.4s cubic-bezier(.16,1,.3,1) both; }
-.discovery-spotlight { position: absolute; inset: 0; background: url('/images/storefront.jpg') 48% center / cover; mask-image: radial-gradient(circle 260px at var(--spot-x) var(--spot-y), #000, transparent); opacity: 0; transition: opacity .4s; pointer-events: none; }
-@media (hover: hover) and (pointer: fine) { .discovery-photo:hover .discovery-spotlight { opacity: 1; } }
+.discovery-spotlight { position: absolute; inset: 0; mask-image: radial-gradient(circle 260px at var(--spot-x) var(--spot-y), #000, transparent); opacity: 0; transition: opacity .4s; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .discovery-spotlight { background: url('/media/site/storefront') 48% center / cover; } .discovery-photo:hover .discovery-spotlight { opacity: 1; } }
 .discovery-photo-shade { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(4,14,26,.9), transparent 60%), linear-gradient(90deg, rgba(7,20,33,.24), transparent 30%); pointer-events: none; }
 .discovery-location { position: absolute; top: 24px; right: 28px; display: flex; align-items: center; gap: 6px; padding: 8px 13px; border: 1px solid #ffffff40; border-radius: 100px; background: #06162975; backdrop-filter: blur(8px); font-size: 13px; }
 .discovery-photo-caption { position: absolute; left: 38px; right: 190px; bottom: 31px; }

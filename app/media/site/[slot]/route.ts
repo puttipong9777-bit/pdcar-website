@@ -3,8 +3,8 @@ import { imageResponse, vehicleImagesBucket } from "@/lib/cloudflare-media";
 export const dynamic = "force-dynamic";
 
 const slots = {
-  logo: { key: "site/logo.webp", fallback: "/images/pd-logo.jpg" },
-  storefront: { key: "site/storefront.webp", fallback: "/images/storefront.jpg" }
+  logo: { key: "site/logo.webp", fallback: "/images/pd-logo.webp" },
+  storefront: { key: "site/storefront.webp", fallback: "/images/storefront.webp" }
 } as const;
 
 export async function GET(request: Request, { params }: { params: Promise<{ slot: string }> }) {
