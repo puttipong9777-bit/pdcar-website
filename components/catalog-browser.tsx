@@ -4,7 +4,7 @@ import { ArrowDownUp, ArrowUpRight, CarFront, ChevronLeft, ChevronRight, Gauge, 
 import Image from "next/image";
 import Link from "next/link";
 import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
-import { catalogQuery, defaultCatalogFilters, filterCatalog, getCatalogPhotos, parseCatalogQuery, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
+import { brandKey, catalogBrands, isExplicitCashOnly, catalogQuery, defaultCatalogFilters, filterCatalog, getCatalogPhotos, parseCatalogQuery, type CatalogFilters, type CatalogSort } from "@/lib/vehicle-catalog";
 import type { PublicVehicleListing } from "@/lib/types";
 import { trackSiteEvent } from "@/components/site-analytics";
 
@@ -117,7 +117,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
           <div><small>ราคาขาย</small><strong>{vehicle.salePrice !== undefined ? <>{number.format(vehicle.salePrice)} <span>บาท</span></> : "สอบถามราคา"}</strong></div>
           <Link href={href} className="catalog-open" aria-label={`ดูรายละเอียด ${vehicle.title}`}><ArrowUpRight size={23} /></Link>
         </div>
-        <p className="catalog-installment">{vehicle.monthlyPayment !== undefined ? <><span>ผ่อน {number.format(vehicle.monthlyPayment)} บ./เดือน</span>{financeAssumptions ? <small>โดยประมาณ: {financeAssumptions}</small> : null}</> : "สอบถามเงื่อนไขผ่อนกับร้าน"}</p>
+        <p className="catalog-installment">{isExplicitCashOnly(vehicle) ? "ขายเงินสดเท่านั้น" : vehicle.monthlyPayment !== undefined ? <><span>ผ่อน {number.format(vehicle.monthlyPayment)} บ./เดือน</span>{financeAssumptions ? <small>โดยประมาณ: {financeAssumptions}</small> : null}</> : "สอบถามเงื่อนไขการซื้อกับร้าน"}</p>
       </div>
     </article>
   );
@@ -126,7 +126,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
 export function CatalogBrowser({ vehicles }: { vehicles: PublicVehicleListing[] }) {
   const [filters, setFilters] = useState<CatalogFilters>(defaultCatalogFilters);
   const [queryReady, setQueryReady] = useState(false);
-  const brands = useMemo(() => Array.from(new Set(vehicles.map((vehicle) => vehicle.brand).filter(Boolean))).sort(), [vehicles]);
+  const brands = useMemo(() => catalogBrands(vehicles), [vehicles]);
   const years = useMemo(() => Array.from(new Set(vehicles.map((vehicle) => vehicle.year))).sort((a, b) => b - a), [vehicles]);
   const filtered = useMemo(() => filterCatalog(vehicles, filters), [vehicles, filters]);
   const hasFilters = filters.query !== "" || filters.brand !== "all" || filters.year !== "all" || filters.maxPrice !== "all" || filters.status !== "all" || filters.sort !== "recommended";
@@ -152,7 +152,7 @@ export function CatalogBrowser({ vehicles }: { vehicles: PublicVehicleListing[] 
     <div className="catalog-browser">
       <div className="catalog-brands" role="group" aria-label="เลือกยี่ห้อรถ">
         <button type="button" aria-pressed={filters.brand === "all"} onClick={() => update("brand", "all")}><CarFront size={19} />ทุกยี่ห้อ <span>{vehicles.length}</span></button>
-        {brands.map((brand) => <button type="button" key={brand} aria-pressed={filters.brand === brand} onClick={() => update("brand", brand)}>{brand}<span>{vehicles.filter((vehicle) => vehicle.brand === brand).length}</span></button>)}
+        {brands.map((brand) => <button type="button" key={brand} aria-pressed={filters.brand === brand} onClick={() => update("brand", brand)}>{brand}<span>{vehicles.filter((vehicle) => brandKey(vehicle.brand) === brandKey(brand)).length}</span></button>)}
       </div>
       <div className="catalog-filters">
         <label className="catalog-search"><Search size={20} aria-hidden="true" /><span className="sr-only">ค้นหารถ</span><input value={filters.query} onChange={(event) => update("query", event.target.value)} placeholder="ค้นหารุ่น ปี หรือรหัสรถ" type="search" /></label>

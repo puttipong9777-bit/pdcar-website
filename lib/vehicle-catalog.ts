@@ -7,8 +7,30 @@ const catalogPrices = new Set(["300000", "500000", "800000", "1000000", "1500000
 const catalogStatuses = new Set<CatalogFilters["status"]>(["all", "available", "reserved"]);
 const catalogSorts = new Set<CatalogSort>(["recommended", "price-asc", "price-desc", "year-desc"]);
 
+export function brandKey(brand: string): string {
+  return brand.trim().toLocaleLowerCase("en-US");
+}
+
+export function catalogBrands(vehicles: PublicVehicleListing[]): string[] {
+  const labels = new Map<string, string>();
+  for (const vehicle of vehicles) {
+    const label = vehicle.brand.trim();
+    const key = brandKey(label);
+    if (key && !labels.has(key)) labels.set(key, label);
+  }
+  return Array.from(labels.values()).sort();
+}
+
+// Only an explicit standalone cash-only declaration is evidence; missing finance
+// numbers alone must never be interpreted as cash-only.
+export function isExplicitCashOnly(vehicle: PublicVehicleListing): boolean {
+  return (vehicle.description || "").split(/\r?\n/).some((line) =>
+    /^(?:ขาย)?เงินสดเท่านั้น(?:\s|$)/u.test(line.trim())
+  );
+}
+
 export function parseCatalogQuery(params: Record<string, string | undefined>, brands: string[], years: number[]): CatalogFilters {
-  const brand = params.brand && brands.includes(params.brand) ? params.brand : "all";
+  const brand = (params.brand && brands.find((label) => brandKey(label) === brandKey(params.brand!))) || "all";
   const year = params.year && years.includes(Number(params.year)) ? params.year : "all";
   const maxPrice = params.max && catalogPrices.has(params.max) ? params.max : "all";
   const status = params.status && catalogStatuses.has(params.status as CatalogFilters["status"])
@@ -38,7 +60,7 @@ export function filterCatalog(vehicles: PublicVehicleListing[], filters: Catalog
   const filtered = vehicles.filter((vehicle) => {
     const haystack = [vehicle.carId, vehicle.title, vehicle.brand, vehicle.model, vehicle.variant, vehicle.year].filter(Boolean).join(" ").toLocaleLowerCase("th-TH");
     return (filters.status === "all" || vehicle.status === filters.status)
-      && (filters.brand === "all" || vehicle.brand === filters.brand)
+      && (filters.brand === "all" || brandKey(vehicle.brand) === brandKey(filters.brand))
       && (filters.year === "all" || String(vehicle.year) === filters.year)
       && (filters.maxPrice === "all" || (vehicle.salePrice !== undefined && vehicle.salePrice <= Number(filters.maxPrice)))
       && (!needle || haystack.includes(needle));

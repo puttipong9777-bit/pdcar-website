@@ -9,7 +9,7 @@ const source = readFileSync(new URL("../lib/vehicle-catalog.ts", import.meta.url
 const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
 const context = { exports: {} };
 runInNewContext(outputText, context);
-const { catalogQuery, filterCatalog, getCatalogPhotos, parseCatalogQuery, defaultCatalogFilters } = context.exports;
+const { brandKey, catalogBrands, isExplicitCashOnly, catalogQuery, filterCatalog, getCatalogPhotos, parseCatalogQuery, defaultCatalogFilters } = context.exports;
 const makeVehicle = (fields) => Object.freeze({ carId: "TEST", slug: "test", status: "available", brand: "Toyota", model: "Yaris", title: "Toyota Yaris", year: 2020, photos: [], featured: false, updatedAt: "2026-01-01", ...fields });
 const vehicles = Object.freeze([
   makeVehicle({ carId: "A", salePrice: 500000, year: 2023, featured: true }),
@@ -37,4 +37,24 @@ test("shareable catalog query accepts only known filter values", () => {
 test("catalog query serializes only non-default filters", () => {
   assert.deepEqual({ ...catalogQuery(defaultCatalogFilters) }, {});
   assert.deepEqual({ ...catalogQuery({ ...defaultCatalogFilters, brand: "Toyota", status: "reserved" }) }, { brand: "Toyota", status: "reserved" });
+});
+
+
+test("brand grouping and filtering unify case and whitespace without mutating records", () => {
+  const cars = [makeVehicle({brand: "HONDA"}), makeVehicle({brand: "Honda"}), makeVehicle({brand: " honda "}), makeVehicle({brand: "Toyota"})];
+  const before = JSON.stringify(cars);
+  assert.equal(catalogBrands(cars).join(","), "HONDA,Toyota");
+  assert.equal(filterCatalog(cars, {...defaultCatalogFilters, brand: "hOnDa"}).length, 3);
+  assert.equal(parseCatalogQuery({brand: " Honda "}, catalogBrands(cars), []).brand, "HONDA");
+  assert.equal(brandKey(" Toyota "), "toyota");
+  assert.equal(JSON.stringify(cars), before);
+});
+test("cash-only requires explicit declaration, not missing payment or incidental wording", () => {
+  for (const description of ["Honda Civic\nขายเงินสดเท่านั้น 198,000 บาท", "เงินสดเท่านั้น"]) {
+    assert.equal(isExplicitCashOnly(makeVehicle({description})), true);
+  }
+  for (const description of [undefined, "มีบริการเงินสด/เงินผ่อน", "ไม่ได้ขายเงินสดเท่านั้น", "สอบถามว่าขายเงินสดเท่านั้นหรือไม่"]) {
+    assert.equal(isExplicitCashOnly(makeVehicle({description})), false);
+  }
+  assert.equal(isExplicitCashOnly(makeVehicle({description: "ขายเงินสดเท่านั้น 198,000 บาท", monthlyPayment: 999})), true);
 });
