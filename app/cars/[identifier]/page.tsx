@@ -35,6 +35,12 @@ export async function generateMetadata({ params }: { params: Promise<{ identifie
       url: `/cars/${encodeURIComponent(vehicle.slug)}`,
       images: vehicle.coverImageUrl ? [{ url: vehicle.coverImageUrl, alt: vehicle.title }] : undefined
     },
+    twitter: {
+      card: vehicle.coverImageUrl ? "summary_large_image" : "summary",
+      title: vehicle.title,
+      description,
+      images: vehicle.coverImageUrl ? [{ url: vehicle.coverImageUrl, alt: vehicle.title }] : []
+    },
     other: {
       "product:retailer_item_id": vehicle.carId,
       "product:condition": "used",
