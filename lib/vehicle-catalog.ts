@@ -25,7 +25,7 @@ export function catalogBrands(vehicles: PublicVehicleListing[]): string[] {
 // numbers alone must never be interpreted as cash-only.
 export function isExplicitCashOnly(vehicle: PublicVehicleListing): boolean {
   return (vehicle.description || "").split(/\r?\n/).some((line) =>
-    /^(?:ขาย)?เงินสดเท่านั้น(?:\s|$)/u.test(line.trim())
+    /^[\s💰💵✅•*\-\uFE0F]*(?:ขาย)?เงินสดเท่านั้น(?:\s|$)/u.test(line.trim())
   );
 }
 

@@ -50,10 +50,10 @@ test("brand grouping and filtering unify case and whitespace without mutating re
   assert.equal(JSON.stringify(cars), before);
 });
 test("cash-only requires explicit declaration, not missing payment or incidental wording", () => {
-  for (const description of ["Honda Civic\nขายเงินสดเท่านั้น 198,000 บาท", "เงินสดเท่านั้น"]) {
+  for (const description of ["Honda Civic\nขายเงินสดเท่านั้น 198,000 บาท", "เงินสดเท่านั้น", "Honda Civic FD 1.8E (A/T) 2010\n\n💰ขายเงินสดเท่านั้น 198,000 บาท", "✅ เงินสดเท่านั้น", "• ขายเงินสดเท่านั้น"]) {
     assert.equal(isExplicitCashOnly(makeVehicle({description})), true);
   }
-  for (const description of [undefined, "มีบริการเงินสด/เงินผ่อน", "ไม่ได้ขายเงินสดเท่านั้น", "สอบถามว่าขายเงินสดเท่านั้นหรือไม่"]) {
+  for (const description of [undefined, "มีบริการเงินสด/เงินผ่อน", "ไม่ได้ขายเงินสดเท่านั้น", "สอบถามว่าขายเงินสดเท่านั้นหรือไม่", "💰ไม่ได้ขายเงินสดเท่านั้น", "✅สอบถามว่าขายเงินสดเท่านั้นหรือไม่"]) {
     assert.equal(isExplicitCashOnly(makeVehicle({description})), false);
   }
   assert.equal(isExplicitCashOnly(makeVehicle({description: "ขายเงินสดเท่านั้น 198,000 บาท", monthlyPayment: 999})), true);
