@@ -31,6 +31,21 @@ function sessionAttribution(): AnalyticsAttribution {
   }
 }
 
+function currentVehicleForContact(): string | undefined {
+  // Read the rendered page at click time, not a remembered vehicle from a previous route.
+  // During navigation the URL can change before the old page disappears, so require
+  // its server-rendered identifier to match the current URL before attributing a click.
+  const match = /^\/cars\/([^/]+)\/?$/.exec(window.location.pathname);
+  if (!match) return undefined;
+  const page = document.querySelector<HTMLElement>("main[data-analytics-vehicle]");
+  try {
+    if (!page || decodeURIComponent(match[1]) !== page.dataset.analyticsIdentifier) return undefined;
+  } catch {
+    return undefined;
+  }
+  return page.dataset.analyticsVehicle;
+}
+
 export function trackSiteEvent(eventName: AnalyticsEventName, carId?: string, explicitPath?: string) {
   if (typeof window === "undefined" || document.documentElement.dataset.siteAnalytics !== "enabled") return;
   const payload = {
@@ -65,7 +80,8 @@ export function SiteAnalytics({ enabled }: { enabled: boolean }) {
       const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-analytics]") : null;
       const eventName = target?.dataset.analytics as AnalyticsEventName | undefined;
       if (!eventName || !target) return;
-      trackSiteEvent(eventName, target.dataset.analyticsCar);
+      const contactEvent = eventName === "phone_click" || eventName === "line_click";
+      trackSiteEvent(eventName, target.dataset.analyticsCar || (contactEvent ? currentVehicleForContact() : undefined));
     };
     document.addEventListener("click", handleClick, { capture: true });
     return () => document.removeEventListener("click", handleClick, { capture: true });

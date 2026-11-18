@@ -95,7 +95,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ identi
   };
 
   return (
-    <main className="detail-page">
+    <main className="detail-page" data-analytics-vehicle={vehicle.carId} data-analytics-identifier={decodeURIComponent(identifier)}>
       <MetaViewContent carId={vehicle.carId} title={vehicle.title} value={vehicle.salePrice} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c") }} />
       <Link className="back-link" href="/#inventory"><ArrowLeft size={18} />กลับไปดูรถทั้งหมด</Link>
