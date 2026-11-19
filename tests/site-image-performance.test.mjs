@@ -36,3 +36,11 @@ test('hero is eager high priority and touch devices have no spotlight background
   assert.match(css,/@media \(hover: hover\) and \(pointer: fine\) \{ \.discovery-spotlight \{ background: url\('\/media\/site\/storefront'\)/);
   assert.doesNotMatch(css,/storefront\.jpg/);
 });
+
+test('catalog requests only the visible photo until a user changes the gallery', () => {
+  const catalog=readFileSync('components/catalog-browser.tsx','utf8');
+  assert.doesNotMatch(catalog,/IntersectionObserver|new window\.Image|shouldPreloadNeighbors|preload\.src/);
+  assert.match(catalog,/const changePhoto = \(direction: number\) =>/);
+  assert.match(catalog,/onPointerUp=\{handlePointerUp\}/);
+  assert.match(catalog,/onClick=\{\(\) => changePhoto\(1\)\}/);
+});
