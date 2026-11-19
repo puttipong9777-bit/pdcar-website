@@ -14,8 +14,6 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   const photos = useMemo(() => getCatalogPhotos(vehicle), [vehicle]);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [galleryUsed, setGalleryUsed] = useState(false);
-  const [shouldPreloadNeighbors, setShouldPreloadNeighbors] = useState(false);
-  const cardRef = useRef<HTMLElement>(null);
   const pointerStart = useRef<{ id: number; x: number; y: number } | null>(null);
   const suppressPhotoLink = useRef(false);
   const activeIndex = photoIndex < photos.length ? photoIndex : 0;
@@ -24,39 +22,6 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
     vehicle.downPayment !== undefined ? `ดาวน์ ${number.format(vehicle.downPayment)} บ.` : "",
     vehicle.installment !== undefined ? `${number.format(vehicle.installment)} งวด` : ""
   ].filter(Boolean).join(" · ");
-
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card || !("IntersectionObserver" in window)) {
-      setShouldPreloadNeighbors(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      setShouldPreloadNeighbors(true);
-      observer.disconnect();
-    }, { rootMargin: "240px 0px" });
-
-    observer.observe(card);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!shouldPreloadNeighbors || photos.length < 2) return;
-
-    const neighborIndexes = new Set([
-      (activeIndex + 1) % photos.length,
-      (activeIndex - 1 + photos.length) % photos.length
-    ]);
-
-    neighborIndexes.forEach((index) => {
-      const preload = new window.Image();
-      preload.decoding = "async";
-      preload.fetchPriority = "low";
-      preload.src = photos[index];
-    });
-  }, [activeIndex, photos, shouldPreloadNeighbors]);
 
   const changePhoto = (direction: number) => {
     setGalleryUsed(true);
@@ -87,7 +52,7 @@ function VehicleCard({ vehicle }: { vehicle: PublicVehicleListing }) {
   };
 
   return (
-    <article ref={cardRef} className="catalog-card" aria-label={vehicle.title}>
+    <article className="catalog-card" aria-label={vehicle.title}>
       <div className="catalog-photo">
         <Link href={href} className="catalog-photo-link" aria-label={`ดูรายละเอียด ${vehicle.title}`} draggable={false} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onPointerCancel={() => { pointerStart.current = null; }} onClick={(event) => {
           if (!suppressPhotoLink.current) return;

@@ -132,10 +132,12 @@ const chromePort = await freePort();
 const userData = await mkdtemp(join(os.tmpdir(), "pdcar-chrome-"));
 let serverLogs = "";
 let chromeLogs = "";
+const mediaRequests = [];
 const mediaBase = `http://127.0.0.1:${mockPort}/images`;
 await mkdir(output, { recursive: true });
 const mock = http.createServer((request, response) => {
   if (request.url?.startsWith("/images/")) {
+    mediaRequests.push(request.url);
     const label = request.url.split("/").pop()?.replace("fixture-", "") || "1";
     response.writeHead(200, { "Access-Control-Allow-Origin": "*", "Cache-Control": "no-store", "Content-Type": "image/svg+xml" });
     response.end(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="100%" height="100%" fill="#0c3158"/><circle cx="850" cy="390" r="260" fill="#176dcc"/><text x="80" y="170" fill="white" font-size="72" font-family="sans-serif">PD CAR TEST PHOTO ${label}</text><text x="80" y="260" fill="#cfe3fb" font-size="36" font-family="sans-serif">SYNTHETIC FIXTURE · NOT A REAL LISTING</text></svg>`);
@@ -234,6 +236,24 @@ try {
     return evaluate(cdp, `Array.from(document.querySelectorAll('.catalog-card')).map((card) => card.innerText)`);
   };
 
+  const hondaCards = await navigateHome("?q=Honda", `document.querySelectorAll('.catalog-card').length === 1 && document.querySelector('.catalog-card').innerText.includes('Honda City')`);
+  assert.equal(hondaCards.length, 1);
+  const coverDeadline = Date.now() + 15_000;
+  while (Date.now() < coverDeadline && !mediaRequests.some((url) => url.includes("/images/honda-1"))) {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+  }
+  assert.ok(mediaRequests.some((url) => url.includes("/images/honda-1")), "the visible catalog cover is requested");
+  await new Promise((resolveWait) => setTimeout(resolveWait, 500));
+  assert.equal(mediaRequests.some((url) => url.includes("/images/honda-2") || url.includes("/images/honda-6")), false, "hidden catalog neighbors are not requested before interaction");
+  await evaluate(cdp, `document.querySelector('.catalog-card .catalog-photo-controls button:last-child').click()`);
+  await waitForExpression(cdp, `document.querySelector('.catalog-card .catalog-photo-link img')?.alt.includes('ภาพที่ 2')`);
+  const interactionDeadline = Date.now() + 15_000;
+  while (Date.now() < interactionDeadline && !mediaRequests.some((url) => url.includes("/images/honda-2"))) {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+  }
+  assert.ok(mediaRequests.some((url) => url.includes("/images/honda-2")), "the next visible photo is requested after user interaction");
+  assert.equal(mediaRequests.some((url) => url.includes("/images/honda-3")), false, "interaction does not speculatively request another hidden neighbor");
+
   const reservedCards = await navigateHome("?status=reserved&sort=price-desc", `document.querySelectorAll('.catalog-card').length === 2 && document.querySelectorAll('.catalog-card')[0].innerText.includes('Corolla Cross') && document.querySelectorAll('.catalog-card')[1].innerText.includes('Mazda 2')`);
   assert.match(reservedCards[0], /ปีรุ่น 2022/);
   assert.match(reservedCards[0], /ดาวน์ 120,000 บ\./);
@@ -277,7 +297,7 @@ try {
     detailResponsive: responsive,
     homeResponsive,
     home,
-    catalog: { publishedCards: 4, reservedSort: ["PDTEST18", "PDMAZDA1"], brandStatus: "PDTOYOTA2", search: "PDHONDA1", ascendingPrice: ["PDMAZDA1", "PDHONDA1", "PDTEST18", "PDTOYOTA2"], reset: true, soldAndUnpublishedExcluded: true },
+    catalog: { publishedCards: 4, reservedSort: ["PDTEST18", "PDMAZDA1"], brandStatus: "PDTOYOTA2", search: "PDHONDA1", ascendingPrice: ["PDMAZDA1", "PDHONDA1", "PDTEST18", "PDTOYOTA2"], reset: true, soldAndUnpublishedExcluded: true, initialHiddenNeighborRequested: false, nextPhotoRequestedAfterInteraction: true, speculativePostInteractionNeighborRequested: false },
     gallery: { keyboardNext: true, tabWrap: true, shiftTabWrap: true, backgroundInert: true, simulatedPointerSwipe: true, escapeClose: true, focusRestored: true, focusStableDuringImageChange: true }
   };
   await writeFile(join(output, "browser-gallery.json"), `${JSON.stringify(report, null, 2)}\n`);
