@@ -23,6 +23,7 @@ import { CatalogBrowser } from "@/components/catalog-browser";
 import { VehicleStories } from "@/components/vehicle-stories";
 import { ShowroomHero } from "@/components/showroom-hero";
 import { getPublicLineUrl, publicLineOaId } from "@/lib/contact-info";
+import { homeBuyingAnswers } from "@/lib/discovery-content";
 import { getPublicVehicles } from "@/lib/vehicle-data";
 import "./showroom.css";
 
@@ -57,6 +58,25 @@ export default async function HomePage() {
         </div>
         {!inventoryAvailable ? <div className="setup-notice" role="status"><strong>{result.message}</strong><span>ยังยืนยันจำนวนและสถานะรถไม่ได้ในขณะนี้ กรุณาลองโหลดหน้าใหม่ภายหลัง หรือติดต่อร้านเพื่อตรวจสอบรถที่สนใจ</span></div> : null}
         {inventoryAvailable ? <CatalogBrowser vehicles={result.vehicles} /> : <div className="inventory-unavailable-actions"><a className="phone-action" href={`tel:${phone}`} data-analytics="phone_click"><Phone size={18} />โทรตรวจสอบสต็อก {phone}</a><a className="line-action" href={lineUrl} target="_blank" rel="noopener noreferrer" data-analytics="line_click"><MessageCircle size={18} />เปิด LINE {publicLineOaId}</a></div>}
+      </section>
+
+      <section className="local-answer-section" aria-labelledby="local-buying-title">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">USED CAR GUIDE · NAKHON PATHOM</p>
+            <h2 id="local-buying-title">ซื้อรถมือสองในนครปฐม เริ่มอย่างไร</h2>
+            <p>ดูข้อมูลรถที่ร้านเผยแพร่ เปรียบเทียบสิ่งสำคัญ แล้วนัดดูรถจริงก่อนตัดสินใจ</p>
+          </div>
+        </div>
+        <div className="local-answer-grid">
+          {homeBuyingAnswers.map((item) => (
+            <article className="local-answer-card" key={item.question}>
+              <h3>{item.question}</h3>
+              <p>{item.answer}</p>
+              <Link href={item.href}>{item.linkLabel}<ArrowRight size={17} /></Link>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="sell-acquisition-section" id="sell-car">
