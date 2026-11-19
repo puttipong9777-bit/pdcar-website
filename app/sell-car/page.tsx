@@ -19,6 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BusinessVisitInfo } from "@/components/business-visit-info";
 import { getPublicLineUrl, publicLineOaId } from "@/lib/contact-info";
+import { sellCarFaqPageSchema, sellCarFaqs } from "@/lib/discovery-content";
 
 export const metadata: Metadata = {
   title: "รับซื้อรถมือสองนครปฐม | ขายรถให้เรา",
@@ -37,14 +38,6 @@ export const metadata: Metadata = {
     images: ["/og-sell-car.png"]
   }
 };
-
-const faqs = [
-  ["ต้องเตรียมข้อมูลอะไรเพื่อประเมินรถเบื้องต้น?", "ส่งยี่ห้อ รุ่น ปีจดทะเบียน เลขไมล์ จังหวัดที่รถอยู่ รูปภายนอก ภายใน และหน้าปัดเลขไมล์ ข้อมูลที่ครบช่วยให้คุยรายละเอียดได้เร็วขึ้น"],
-  ["รถที่ยังผ่อนไม่หมดสอบถามได้ไหม?", "สอบถามได้ กรุณาแจ้งยอดคงเหลือโดยประมาณและชื่อไฟแนนซ์ เพื่อให้ร้านเข้าใจสถานะของรถก่อนแนะนำขั้นตอนที่เหมาะสม"],
-  ["ประเมินผ่านรูปแล้วเป็นราคาสุดท้ายหรือไม่?", "การประเมินจากข้อมูลและรูปเป็นเพียงข้อมูลเบื้องต้น ราคาซื้อขายจริงต้องพิจารณาสภาพรถ เอกสาร และรายละเอียดอื่นหลังตรวจรถ"],
-  ["ต้องนำรถมาที่ร้านทันทีหรือไม่?", "เริ่มจากส่งข้อมูลและคุยกับร้านก่อนได้ เมื่อต้องตรวจรถจริงจึงค่อยตกลงสถานที่และเวลานัดหมายกับผู้ดูแล"],
-  ["ติดต่อช่องทางไหนเร็วที่สุด?", "โทรหาร้านโดยตรง หรือใช้ช่องทางติดต่ออื่นที่แสดงในหน้านี้เมื่อมีให้บริการ"],
-] as const;
 
 export default function SellCarPage() {
   const phone = process.env.NEXT_PUBLIC_SHOP_PHONE || "0840079122";
@@ -68,7 +61,8 @@ export default function SellCarPage() {
           { "@type": "ListItem", position: 1, name: "หน้าแรก", item: "https://www.pdcarcenter.com/" },
           { "@type": "ListItem", position: 2, name: "ขายรถให้เรา", item: "https://www.pdcarcenter.com/sell-car" }
         ]
-      }
+      },
+      sellCarFaqPageSchema()
     ]
   };
 
@@ -152,13 +146,18 @@ export default function SellCarPage() {
           <h2>คำถามก่อนขายรถ</h2>
         </div>
         <div className="sell-faq-list">
-          {faqs.map(([question, answer]) => (
+          {sellCarFaqs.map(({ question, answer }) => (
             <details key={question}>
               <summary>{question}<ArrowRight size={18} /></summary>
               <p>{answer}</p>
             </details>
           ))}
         </div>
+        <nav className="sell-related-links" aria-label="ข้อมูลที่เกี่ยวข้อง">
+          <Link href="/#inventory">ดูรถมือสองที่พร้อมขาย</Link>
+          <Link href="/#articles">อ่านคู่มือก่อนซื้อรถ</Link>
+          <Link href="/#contact">ข้อมูลติดต่อและเวลาเปิดร้าน</Link>
+        </nav>
       </section>
 
       <section className="sell-final-cta">
